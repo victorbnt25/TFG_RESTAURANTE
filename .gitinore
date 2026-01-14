@@ -1,0 +1,12 @@
+# Environment variables
+.env
+.env.local
+
+# Node
+node_modules/
+
+# Symfony
+backend/vendor/
+
+# Logs
+*.log
