@@ -84,9 +84,7 @@ Servicios disponibles:
 - MySQL → puerto 3306
 - n8n → http://localhost:5678
 
-Credenciales n8n (entorno desarrollo):
-- Usuario: `admin`
-- Contraseña: `admin`
+
 
 ---
 
