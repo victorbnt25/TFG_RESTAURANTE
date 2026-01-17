@@ -1,42 +1,221 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Reset básico para evitar estilos raros del navegador */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos generales de la página */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+/* Contenedor principal de la aplicación */
+.aplicacion {
+  width: 100vw;
+}
+
+/* ===== CABECERA ===== */
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background-color: #111;
+  border-bottom: 1px solid #222;
+}
+
+.cabecera-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+/* Logo o nombre del restaurante */
+.logo-restaurante {
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/* ===== MENÚ PRINCIPAL ===== */
+.menu-principal {
+  display: flex;
+  gap: 30px;
+}
+
+.menu-principal a {
+  text-decoration: none;
+  color: #ddd;
+  font-weight: 500;
+}
+
+.menu-principal a:hover {
+  color: #c89b3c;
+}
+
+/* ===== ACCESO DE USUARIO ===== */
+.acceso-usuario {
+  position: relative;
+}
+
+/* Contenedor del botón y el desplegable */
+.contenedor-acceso {
+  position: relative;
+}
+
+/* Botón de acceder */
+.boton-acceso {
+  background: none;
+  border: 1px solid #c89b3c;
+  border-radius: 4px;
+  color: #c89b3c;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.boton-acceso:hover {
+  background-color: #c89b3c;
+  color: #000;
+}
+
+/* Menú que se despliega al pasar el ratón */
+.menu-desplegable-acceso {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #ffffff;
+  min-width: 180px;
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+/* Pequeño margen invisible para que no se cierre al mover el ratón */
+.menu-desplegable-acceso::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+/* Opciones del menú de acceso */
+.opcion-acceso {
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333333;
+  font-size: 0.9rem;
+}
+
+.opcion-acceso:hover {
+  background-color: #f2f2f2;
+}
+
+/* Mostrar el menú al pasar el ratón */
+.contenedor-acceso:hover .menu-desplegable-acceso {
+  display: flex;
+}
+
+/* ===== SECCIÓN HERO ===== */
+.seccion-hero {
+  height: 80vh;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.6)
+    ),
+    url("https://images.unsplash.com/photo-1555992336-cbf7c2eae7d4");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+}
+
+.contenido-hero {
+  max-width: 600px;
+  margin-left: 80px;
+}
+
+.seccion-hero h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.seccion-hero p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* Botón de reservar */
+.boton-reservar {
+  background-color: #c89b3c;
+  color: #000;
+  border: none;
+  padding: 14px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.boton-reservar:hover {
+  background-color: #e0b04f;
+}
+
+/* ===== SECCIÓN INFORMACIÓN ===== */
+.seccion-informacion {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  padding: 60px 20px;
+  background-color: #111;
+}
+
+.bloque-informacion {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.bloque-informacion h4 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #c89b3c;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.bloque-informacion p {
+  color: #ccc;
+  line-height: 1.6;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* ===== PIE DE PÁGINA ===== */
+.footer {
+  text-align: center;
+  padding: 25px;
+  background-color: #0b0b0b;
+  font-size: 0.85rem;
+  color: #777;
 }
-
-.card {
-  padding: 2em;
+.footer-redes {
+  text-align: center;
+  padding: 25px;
+  background-color: #c89b3c;
+  font-size: 0.85rem;
+  color: #777;
+    width: 100vw;
 }
-
-.read-the-docs {
-  color: #888;
+.footer-derechos {
+  text-align: center;
+  padding: 10px;
+  background-color: #413f3f;
+  font-size: 0.85rem;
+  color: #f8efef;
+    width: 100vw;
 }
