@@ -1,0 +1,100 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #ffffff;
+
+}
+
+
+/* ===== CABECERA ===== */
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background-color: #111;
+  border-bottom: 1px solid #222;
+}
+
+.cabecera-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+/* Logo */
+.logo-restaurante {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #f2f2f2;
+}
+
+/* ===== MENÚ PRINCIPAL ===== */
+.menu-principal {
+  display: flex;
+  gap: 30px;
+}
+
+.menu-principal a {
+  text-decoration: none;
+  color: #ddd;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.menu-principal a:hover {
+  color: #c89b3c;
+}
+
+/* ===== ACCESO USUARIO ===== */
+.contenedor-acceso {
+  position: relative;
+}
+
+.boton-acceso {
+  background: none;
+  border: 1px solid #c89b3c;
+  border-radius: 4px;
+  color: #c89b3c;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.boton-acceso:hover {
+  background-color: #c89b3c;
+  color: #000;
+}
+
+/* Menú desplegable */
+.menu-desplegable-acceso {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 180px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.opcion-acceso {
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.opcion-acceso:hover {
+  background-color: #f2f2f2;
+}
+
+/* Mostrar menú */
+.contenedor-acceso:hover .menu-desplegable-acceso {
+  display: flex;
+}

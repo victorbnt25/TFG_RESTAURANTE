@@ -1,0 +1,20 @@
+/* ===== PIE DE PÁGINA ===== */
+.footer {
+  margin-top: auto; 
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* Redes */
+.footer-redes {
+  padding: 25px;
+  background-color: #c89b3c;
+  color: #777;
+}
+
+/* Derechos */
+.footer-derechos {
+  padding: 10px;
+  background-color: #413f3f;
+  color: #f8efef;
+}
