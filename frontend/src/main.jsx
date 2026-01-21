@@ -5,6 +5,7 @@ import './index.css'
 import Cabecera from './componentes/Cabecera/cabecera.jsx'
 import Footer from './componentes/Footer/footer.jsx'
 import App from './App.jsx'
+import "./styles/theme.css";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

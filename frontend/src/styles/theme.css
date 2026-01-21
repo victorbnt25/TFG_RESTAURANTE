@@ -1,0 +1,12 @@
+:root {
+  /* Marca */
+  --color-primary: #c89b3c; 
+  --color-secondary: #111111;
+
+  /* Tipografía */
+  --font-family: "Segoe UI", Arial, sans-serif;
+
+  /* Texto */
+  --text-primary: #ffffff;
+  --text-secondary: #bdbdbd;
+}

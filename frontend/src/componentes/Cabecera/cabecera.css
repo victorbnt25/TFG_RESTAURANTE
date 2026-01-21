@@ -1,10 +1,9 @@
+
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #ffffff;
-
+  font-family: var(--font-family);
+  background-color: #ffffff; 
 }
-
 
 /* ===== CABECERA ===== */
 .cabecera {
@@ -12,8 +11,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 20px 60px;
-  background-color: #111;
-  border-bottom: 1px solid #222;
+  background-color: var(--color-secondary);
+  border-bottom: 1px solid #222; 
 }
 
 .cabecera-izquierda {
@@ -27,7 +26,7 @@ body {
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 2px;
-  color: #f2f2f2;
+  color: var(--text-primary);
 }
 
 /* ===== MENÚ PRINCIPAL ===== */
@@ -38,13 +37,15 @@ body {
 
 .menu-principal a {
   text-decoration: none;
-  color: #ddd;
+  color:var(--text-primary); 
   font-weight: 500;
-  transition: color 0.2s ease;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .menu-principal a:hover {
-  color: #c89b3c;
+   transform: scale(1.2);
+  color: var(--color-primary);
 }
 
 /* ===== ACCESO USUARIO ===== */
@@ -54,9 +55,9 @@ body {
 
 .boton-acceso {
   background: none;
-  border: 1px solid #c89b3c;
+  border: 1px solid var(--color-primary);
   border-radius: 4px;
-  color: #c89b3c;
+  color: var(--color-primary);
   font-size: 0.9rem;
   padding: 8px 16px;
   cursor: pointer;
@@ -64,7 +65,7 @@ body {
 }
 
 .boton-acceso:hover {
-  background-color: #c89b3c;
+  background-color: var(--color-primary);
   color: #000;
 }
 

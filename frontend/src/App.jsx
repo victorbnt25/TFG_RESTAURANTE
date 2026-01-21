@@ -8,7 +8,7 @@ function App() {
       <Cabecera />
 
       <main className="contenido">
-        {/* aquí van tus páginas */}
+       
       </main>
 
       <Footer />
