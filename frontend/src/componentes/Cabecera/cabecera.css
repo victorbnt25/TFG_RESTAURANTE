@@ -22,6 +22,13 @@ body {
 }
 
 /* Logo */
+.logo{
+   width: 100px;
+  height: 100px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+
+}
 .logo-restaurante {
   font-size: 1.4rem;
   font-weight: 700;

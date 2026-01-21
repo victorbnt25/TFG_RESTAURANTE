@@ -1,4 +1,5 @@
 import "./cabecera.css";
+import Logo from '../../assets/media/logo1.png';
 
 function Cabecera() {
   return (
@@ -7,6 +8,7 @@ function Cabecera() {
       <header className="cabecera">
         <div className="cabecera-izquierda">
           <h1 className="logo-restaurante">NOMBRE RESTAURANTE</h1>
+          <img src={Logo} alt="" className="logo" />
 
           {/* Menú principal de la web */}
           <nav className="menu-principal">

@@ -1,6 +1,7 @@
 import "./footer.css";
 import instagramLogo from '../../assets/media/logoInstagram.svg';
 import tiktokLogo from '../../assets/media/tiktokLogo.svg';
+import Logo from '../../assets/media/logo1.png';
 
 
 function Footer() {
@@ -12,6 +13,7 @@ function Footer() {
     <div className="footer-logo">
       {/* logo */}
       LOGO DE RESTAURANTE
+      <img src={Logo} alt="" />
     </div>
 
     {/* 2️⃣ Preguntas */}
@@ -25,7 +27,7 @@ function Footer() {
     {/* 3️⃣ Redes sociales */}
     <div className="footer-social">
       {/* iconos instagram / tiktok */}
-
+    
    
         <img src={instagramLogo} alt="" />
        <img src={tiktokLogo} alt="" />

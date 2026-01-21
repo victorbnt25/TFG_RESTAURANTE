@@ -1,5 +1,6 @@
 import Cabecera from "./componentes/Cabecera/cabecera.jsx";
 import Footer from "./componentes/Footer/footer.jsx";
+import Hero from "./componentes/Hero/hero.jsx";
 import "./App.css";
 
 function App() {
@@ -8,7 +9,7 @@ function App() {
       <Cabecera />
 
       <main className="contenido">
-       
+       <Hero />
       </main>
 
       <Footer />
