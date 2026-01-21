@@ -1,0 +1,102 @@
+frontend/
+│
+├── public/
+│   ├── favicon.ico
+│   └── robots.txt
+│
+├── src/
+│   │
+│   ├── assets/
+│   │   ├── images/
+│   │   │   ├── logo.svg
+│   │   │   ├── hero/
+│   │   │   └── footer/
+│   │   │       ├── instagram.svg
+│   │   │       └── tiktok.svg
+│   │   │
+│   │   ├── icons/
+│   │   └── fonts/
+│   │
+│   ├── components/
+│   │   ├── Cabecera/
+│   │   │   ├── Cabecera.jsx
+│   │   │   └── Cabecera.css
+│   │   │
+│   │   ├── Footer/
+│   │   │   ├── Footer.jsx
+│   │   │   └── Footer.css
+│   │   │
+│   │   ├── Hero/
+│   │   │   ├── Hero.jsx
+│   │   │   └── Hero.css
+│   │   │
+│   │   ├── UI/
+│   │   │   ├── Button/
+│   │   │   │   ├── Button.jsx
+│   │   │   │   └── Button.css
+│   │   │   │
+│   │   │   ├── Icon/
+│   │   │   │   ├── Icon.jsx
+│   │   │   │   └── Icon.css
+│   │   │   │
+│   │   │   └── Modal/
+│   │   │       ├── Modal.jsx
+│   │   │       └── Modal.css
+│   │   │
+│   │   └── index.js
+│   │
+│   ├── pages/
+│   │   ├── Home/
+│   │   │   ├── Home.jsx
+│   │   │   └── Home.css
+│   │   │
+│   │   ├── Carta/
+│   │   │   ├── Carta.jsx
+│   │   │   └── Carta.css
+│   │   │
+│   │   ├── Reservas/
+│   │   │   ├── Reservas.jsx
+│   │   │   └── Reservas.css
+│   │   │
+│   │   └── Contacto/
+│   │       ├── Contacto.jsx
+│   │       └── Contacto.css
+│   │
+│   ├── layouts/
+│   │   ├── MainLayout.jsx
+│   │   └── MainLayout.css
+│   │
+│   ├── routes/
+│   │   └── AppRouter.jsx
+│   │
+│   ├── services/
+│   │   ├── api.js
+│   │   └── reservas.service.js
+│   │
+│   ├── hooks/
+│   │   └── useScroll.js
+│   │
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   │
+│   ├── utils/
+│   │   ├── constants.js
+│   │   └── helpers.js
+│   │
+│   ├── styles/
+│   │   ├── reset.css
+│   │   ├── variables.css
+│   │   └── theme.css
+│   │
+│   ├── App.jsx
+│   ├── App.css
+│   ├── main.jsx
+│   └── index.css
+│
+├── .env
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+├── vite.config.js
+└── README.md

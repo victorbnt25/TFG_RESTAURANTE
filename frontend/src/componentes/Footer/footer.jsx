@@ -1,4 +1,7 @@
 import "./footer.css";
+import instagramLogo from '../../assets/media/logoInstagram.svg';
+import tiktokLogo from '../../assets/media/tiktokLogo.svg';
+
 
 function Footer() {
   return (
@@ -23,7 +26,9 @@ function Footer() {
     <div className="footer-social">
       {/* iconos instagram / tiktok */}
 
-      ICONOS DE REDES SOCIALES
+   
+        <img src={instagramLogo} alt="" />
+       <img src={tiktokLogo} alt="" />
     </div>
 
   </div>
