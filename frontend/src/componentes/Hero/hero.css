@@ -1,9 +1,8 @@
 .hero {
   height: 80vh;
   background-color: var(--color-secondary);
-  padding-bottom: 40px;   /* 👈 separación visual */
+  padding-bottom: 40px;
 }
-
 
 /* Contenedor general */
 .hero-overlay {
@@ -17,34 +16,30 @@
 .hero-imagen {
   height: 100%;
   overflow: hidden;
-
 }
 
 .hero-imagen img {
   width: 100%;
   height: 100%;
-  object-fit: cover;  /* 🔑 CLAVE */
+  object-fit: cover;
   display: block;
 }
-
 
 /* DERECHA → contenido */
 .hero-contenido {
   padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
 
 .hero-contenido h1 {
-<<<<<<< HEAD
-  font-family: var(--font-graffiti);
+  font-family: var(--font-graffiti); /* nombre consistente */
   font-size: clamp(2.8rem, 6vw, 6rem);
   line-height: 1.1;
-=======
-  font-size: 3rem;
   margin-bottom: 15px;
-  font-family: var(--font-Graffity);
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
-
 
 .hero-contenido p {
   font-size: 1.2rem;

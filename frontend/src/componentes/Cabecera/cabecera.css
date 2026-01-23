@@ -1,8 +1,9 @@
-<<<<<<< HEAD
-/* ===== CABECERA ===== */
+/* =========================
+   CABECERA GENERAL
+========================= */
 .cabecera {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   padding: 20px 60px;
   background-color: var(--color-secondary);
@@ -10,105 +11,38 @@
   position: relative;
 }
 
-/* ===== IZQUIERDA ===== */
-=======
 /* =========================
-   RESET BÁSICO
+   IZQUIERDA (LOGO)
 ========================= */
-body {
-  margin: 0;
-  font-family: var(--font-base);
-  background-color: #ffffff;
-}
-
-/* =========================
-   CABECERA GENERAL
-========================= */
-.cabecera {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: stretch;
-  padding: 20px 60px;
-  background-color: var(--color-secondary);
-  border-bottom: 1px solid #222;
-}
-
-/* =========================
-   IZQUIERDA
-   (Nombre arriba + logo debajo)
-========================= */
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 .cabecera-izquierda {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.logo-restaurante {
-  margin: 0;
-  font-size: 3rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--text-primary);
-  font-family: var(--font-graffiti);
-  text-align: center;
+  gap: 16px;
 }
 
 .logo {
-  width: 100px;
+  width: 70px;
   height: auto;
   cursor: pointer;
 }
 
-/*
+/* =========================
    MENÚ PRINCIPAL (CENTRO)
-*/
+========================= */
 .menu-principal {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-<<<<<<< HEAD
-/* Logo */
-.logo {
-  width: 70px;
-  height: auto;
-}
-
-.logo-restaurante {
-  color: var(--text-primary);
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-/* ===== MENÚ PRINCIPAL ===== */
-.menu-principal {
-  display: flex;
   gap: 30px;
-  margin-left: 40px;
 }
 
-=======
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 .menu-principal a {
-  font-size: 1.35rem; /* MÁS GRANDE */
+  position: relative;
+  font-size: 1.2rem;
   font-weight: 600;
   text-decoration: none;
   color: var(--text-primary);
-<<<<<<< HEAD
-  font-weight: 500;
   transition: color 0.2s ease;
-=======
-
-
-  transition: color 0.2s ease;
-   align-items: flex-end;
 }
 
 /* Subrayado animado */
@@ -123,34 +57,27 @@ body {
   transition: width 0.25s ease;
 }
 
-.menu-principal a:hover::after {
-  width: 100%;
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
-}
-
 .menu-principal a:hover {
   color: var(--color-primary);
 }
 
-<<<<<<< HEAD
-/* ===== ACCESO USUARIO ===== */
-.acceso-usuario {
-  position: relative;
-  z-index: 200;
-=======
+.menu-principal a:hover::after {
+  width: 100%;
+}
+
 /* =========================
    ACCESO USUARIO (DERECHA)
 ========================= */
 .acceso-usuario {
-  display: flex;
-  align-items: flex-end; /* Pegado abajo */
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
+  position: relative;
 }
 
 .contenedor-acceso {
   position: relative;
+  display: inline-block;
 }
 
+/* Botón */
 .boton-acceso {
   background: none;
   border: 1px solid var(--color-primary);
@@ -166,49 +93,23 @@ body {
   background-color: var(--color-primary);
   color: #000;
 }
-/*
-   ACCESO – DESPLEGABLE 
- */
 
-<<<<<<< HEAD
-/* Dropdown acceso */
-=======
-.contenedor-acceso {
-  position: relative;
-  display: inline-block;
-}
-
-/* ZONA PUENTE INVISIBLE */
+/* Puente invisible */
 .contenedor-acceso::after {
   content: "";
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  height: 12px;             
+  height: 12px;
 }
 
-/* MENÚ DE INICIO DE SESION/REGISTRO */
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
+/* Dropdown */
 .menu-desplegable-acceso {
-  display: none;
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   min-width: 180px;
-<<<<<<< HEAD
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 300;
-}
-
-.contenedor-acceso:hover .menu-desplegable-acceso {
-  display: flex;
-=======
-
   background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
@@ -216,7 +117,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  z-index: 100;
+  z-index: 200;
 
   opacity: 0;
   visibility: hidden;
@@ -224,7 +125,13 @@ body {
   pointer-events: none;
 
   transition: opacity 0.15s ease, transform 0.15s ease;
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
+}
+
+.contenedor-acceso:hover .menu-desplegable-acceso {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .opcion-acceso {
@@ -238,8 +145,9 @@ body {
   background-color: #f4f4f4;
 }
 
-<<<<<<< HEAD
-/* ===== HAMBURGUESA ===== */
+/* =========================
+   HAMBURGUESA (MÓVIL)
+========================= */
 .hamburguesa {
   display: none;
   background: none;
@@ -277,36 +185,10 @@ body {
   top: 10px;
 }
 
-/* ===== TABLET ===== */
-@media (max-width: 1024px) {
-  .cabecera {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    text-align: center;
-  }
-
-  .cabecera-izquierda {
-    justify-content: center;
-  }
-
-  .menu-principal {
-    margin-left: 0;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .acceso-usuario {
-    justify-self: center;
-  }
-}
-
-/* ===== MÓVIL ===== */
-@media (max-width: 768px) {
-  .cabecera {
-    padding: 16px 24px;
-  }
-
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
   .menu-principal {
     position: absolute;
     top: 100%;
@@ -314,8 +196,8 @@ body {
     right: 0;
     background: var(--color-secondary);
     flex-direction: column;
-    gap: 16px;
-    padding: 20px;
+    gap: 20px;
+    padding: 24px;
     display: none;
   }
 
@@ -328,7 +210,6 @@ body {
   }
 }
 
-/* ===== MÓVIL PEQUEÑO ===== */
 @media (max-width: 480px) {
   .acceso-usuario {
     display: none;
@@ -337,16 +218,4 @@ body {
   .logo {
     width: 60px;
   }
-
-  .logo-restaurante {
-    font-size: 1.2rem;
-  }
-=======
-/* MOSTRAR CON HOVER (BOTÓN + PUENTE + MENÚ) */
-.contenedor-acceso:hover .menu-desplegable-acceso {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  pointer-events: auto;
->>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
