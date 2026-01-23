@@ -19,6 +19,14 @@
 /* Logo */
 .footer-logo {
   text-align: left;
+  
+}
+
+  
+.footer-logo img {
+  width: 120px;
+  height: auto;
+  cursor: pointer;
 }
 
 .footer-logo img {

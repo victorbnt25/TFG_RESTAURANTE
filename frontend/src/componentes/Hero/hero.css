@@ -34,9 +34,15 @@
 }
 
 .hero-contenido h1 {
+<<<<<<< HEAD
   font-family: var(--font-graffiti);
   font-size: clamp(2.8rem, 6vw, 6rem);
   line-height: 1.1;
+=======
+  font-size: 3rem;
+  margin-bottom: 15px;
+  font-family: var(--font-Graffity);
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
 
 

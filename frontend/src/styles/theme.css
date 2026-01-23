@@ -13,7 +13,11 @@
 
   /* Tipografías */
   --font-family: "Segoe UI", Arial, sans-serif;
+<<<<<<< HEAD
   --font-graffiti: "Barcelona Graffiti Bombing", cursive;
+=======
+  --font-Graffity: 'BlankRiver';
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 
   --text-primary: #ffffff;
   --text-secondary: #bdbdbd;

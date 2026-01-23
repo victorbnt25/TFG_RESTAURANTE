@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ===== CABECERA ===== */
 .cabecera {
   display: grid;
@@ -10,13 +11,69 @@
 }
 
 /* ===== IZQUIERDA ===== */
+=======
+/* =========================
+   RESET BÁSICO
+========================= */
+body {
+  margin: 0;
+  font-family: var(--font-base);
+  background-color: #ffffff;
+}
+
+/* =========================
+   CABECERA GENERAL
+========================= */
+.cabecera {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: stretch;
+  padding: 20px 60px;
+  background-color: var(--color-secondary);
+  border-bottom: 1px solid #222;
+}
+
+/* =========================
+   IZQUIERDA
+   (Nombre arriba + logo debajo)
+========================= */
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 .cabecera-izquierda {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logo-restaurante {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+  font-family: var(--font-graffiti);
+  text-align: center;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+  cursor: pointer;
+}
+
+/*
+   MENÚ PRINCIPAL (CENTRO)
+*/
+.menu-principal {
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 20px;
   flex-wrap: wrap;
 }
 
+<<<<<<< HEAD
 /* Logo */
 .logo {
   width: 70px;
@@ -37,21 +94,57 @@
   margin-left: 40px;
 }
 
+=======
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 .menu-principal a {
+  font-size: 1.35rem; /* MÁS GRANDE */
+  font-weight: 600;
   text-decoration: none;
   color: var(--text-primary);
+<<<<<<< HEAD
   font-weight: 500;
   transition: color 0.2s ease;
+=======
+
+
+  transition: color 0.2s ease;
+   align-items: flex-end;
+}
+
+/* Subrayado animado */
+.menu-principal a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width 0.25s ease;
+}
+
+.menu-principal a:hover::after {
+  width: 100%;
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
 
 .menu-principal a:hover {
   color: var(--color-primary);
 }
 
+<<<<<<< HEAD
 /* ===== ACCESO USUARIO ===== */
 .acceso-usuario {
   position: relative;
   z-index: 200;
+=======
+/* =========================
+   ACCESO USUARIO (DERECHA)
+========================= */
+.acceso-usuario {
+  display: flex;
+  align-items: flex-end; /* Pegado abajo */
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
 
 .contenedor-acceso {
@@ -63,8 +156,8 @@
   border: 1px solid var(--color-primary);
   border-radius: 4px;
   color: var(--color-primary);
-  font-size: 0.9rem;
-  padding: 8px 16px;
+  font-size: 0.95rem;
+  padding: 10px 18px;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -73,14 +166,37 @@
   background-color: var(--color-primary);
   color: #000;
 }
+/*
+   ACCESO – DESPLEGABLE 
+ */
 
+<<<<<<< HEAD
 /* Dropdown acceso */
+=======
+.contenedor-acceso {
+  position: relative;
+  display: inline-block;
+}
+
+/* ZONA PUENTE INVISIBLE */
+.contenedor-acceso::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;             
+}
+
+/* MENÚ DE INICIO DE SESION/REGISTRO */
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 .menu-desplegable-acceso {
   display: none;
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
   min-width: 180px;
+<<<<<<< HEAD
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
@@ -91,19 +207,38 @@
 
 .contenedor-acceso:hover .menu-desplegable-acceso {
   display: flex;
+=======
+
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  pointer-events: none;
+
+  transition: opacity 0.15s ease, transform 0.15s ease;
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
 
 .opcion-acceso {
-  padding: 12px 16px;
+  padding: 14px 18px;
   text-decoration: none;
   color: #333;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .opcion-acceso:hover {
-  background-color: #f2f2f2;
+  background-color: #f4f4f4;
 }
 
+<<<<<<< HEAD
 /* ===== HAMBURGUESA ===== */
 .hamburguesa {
   display: none;
@@ -206,4 +341,12 @@
   .logo-restaurante {
     font-size: 1.2rem;
   }
+=======
+/* MOSTRAR CON HOVER (BOTÓN + PUENTE + MENÚ) */
+.contenedor-acceso:hover .menu-desplegable-acceso {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+>>>>>>> aaf08883e3f25b351f723a451ef18666727154ef
 }
