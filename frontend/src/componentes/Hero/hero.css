@@ -17,6 +17,7 @@
 .hero-imagen {
   height: 100%;
   overflow: hidden;
+
 }
 
 .hero-imagen img {
@@ -33,14 +34,17 @@
 }
 
 .hero-contenido h1 {
-  font-size: 3rem;
-  margin-bottom: 15px;
+  font-family: var(--font-graffiti);
+  font-size: clamp(2.8rem, 6vw, 6rem);
+  line-height: 1.1;
 }
+
 
 .hero-contenido p {
   font-size: 1.2rem;
   margin-bottom: 30px;
   color: var(--text-secondary);
+  font-family: Helvetica;
 }
 
 /* Botones */

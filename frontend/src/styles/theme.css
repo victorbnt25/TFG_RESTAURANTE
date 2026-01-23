@@ -1,12 +1,107 @@
+@font-face {
+  font-family: "Barcelona Graffiti Bombing";
+  src: url("/src/assets/fuentes/BarcelonaGraffitiBombing.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 :root {
-  /* Marca */
-  --color-primary: #c89b3c; 
+  --color-primary: #c89b3c;
   --color-secondary: #111111;
 
-  /* Tipografía */
+  /* Tipografías */
   --font-family: "Segoe UI", Arial, sans-serif;
+  --font-graffiti: "Barcelona Graffiti Bombing", cursive;
 
-  /* Texto */
   --text-primary: #ffffff;
   --text-secondary: #bdbdbd;
+
+  --max-width: 1200px;
+  --padding: 16px;
+}
+
+
+
+/* ===== RESET ===== */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  font-family: var(--font-family);
+  background: var(--color-secondary);
+  color: var(--text-primary);
+}
+
+/* ===== CONTENEDOR ===== */
+.container{
+  max-width: var(--max-width);
+  margin: auto;
+  padding: 0 var(--padding);
+}
+
+/* ===== RESPONSIVE PADDING ===== */
+@media (max-width: 768px){
+  :root{
+    --padding: 12px;
+  }
+}
+
+@media (max-width: 480px){
+  :root{
+    --padding: 10px;
+  }
+}
+
+/* ===== GRID GENERAL ===== */
+.grid{
+  display: grid;
+  gap: 16px;
+}
+
+.grid-2{ grid-template-columns: repeat(2, 1fr); }
+.grid-3{ grid-template-columns: repeat(3, 1fr); }
+.grid-4{ grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 1024px){
+  .grid-4{ grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px){
+  .grid-3,
+  .grid-4{ grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px){
+  .grid-2,
+  .grid-3,
+  .grid-4{ grid-template-columns: 1fr; }
+}
+
+/* ===== TEXTO RESPONSIVE ===== */
+.title{
+  font-size: 2rem;
+}
+
+.text{
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 640px){
+  .title{ font-size: 1.4rem; }
+  .text{ font-size: 0.95rem; }
+}
+
+/* ===== VISIBILIDAD ===== */
+.hide-mobile{ display: block; }
+.show-mobile{ display: none; }
+
+@media (max-width: 768px){
+  .hide-mobile{ display: none; }
+  .show-mobile{ display: block; }
 }

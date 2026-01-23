@@ -11,9 +11,10 @@ function Hero() {
           <img src={heroFoto} alt="Plato del restaurante" />
         </div>
 
-        {/* DERECHADONDE VA EL CONTENIDO */}
+        {/* DERECHA DONDE VA EL CONTENIDO */}
         <div className="hero-contenido">
-          <h1>Nombre del Restaurante</h1>
+          <h1>Sons of Burger</h1>
+          <br />
           <p>Cocina auténtica desde 1985</p>
 
           <div className="hero-btn">
@@ -21,6 +22,9 @@ function Hero() {
             <a href="/reservas" className="hero-btn outline">Reservar mesa</a>
           </div>
         </div>
+
+      </div>
+      <div>
 
       </div>
     </section>

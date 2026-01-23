@@ -1,61 +1,59 @@
-
-body {
-  margin: 0;
-  font-family: var(--font-family);
-  background-color: #ffffff; 
-}
-
 /* ===== CABECERA ===== */
 .cabecera {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
   padding: 20px 60px;
   background-color: var(--color-secondary);
-  border-bottom: 1px solid #222; 
+  border-bottom: 1px solid #222;
+  position: relative;
 }
 
+/* ===== IZQUIERDA ===== */
 .cabecera-izquierda {
   display: flex;
   align-items: center;
-  gap: 50px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 /* Logo */
-.logo{
-   width: 100px;
-  height: 100px;
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-
+.logo {
+  width: 70px;
+  height: auto;
 }
+
 .logo-restaurante {
+  color: var(--text-primary);
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 2px;
-  color: var(--text-primary);
 }
 
 /* ===== MENÚ PRINCIPAL ===== */
 .menu-principal {
   display: flex;
   gap: 30px;
+  margin-left: 40px;
 }
 
 .menu-principal a {
   text-decoration: none;
-  color:var(--text-primary); 
+  color: var(--text-primary);
   font-weight: 500;
-  display: inline-block;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .menu-principal a:hover {
-   transform: scale(1.2);
   color: var(--color-primary);
 }
 
 /* ===== ACCESO USUARIO ===== */
+.acceso-usuario {
+  position: relative;
+  z-index: 200;
+}
+
 .contenedor-acceso {
   position: relative;
 }
@@ -76,8 +74,9 @@ body {
   color: #000;
 }
 
-/* Menú desplegable */
+/* Dropdown acceso */
 .menu-desplegable-acceso {
+  display: none;
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
@@ -85,10 +84,13 @@ body {
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  display: none;
   flex-direction: column;
   overflow: hidden;
-  z-index: 100;
+  z-index: 300;
+}
+
+.contenedor-acceso:hover .menu-desplegable-acceso {
+  display: flex;
 }
 
 .opcion-acceso {
@@ -102,7 +104,106 @@ body {
   background-color: #f2f2f2;
 }
 
-/* Mostrar menú */
-.contenedor-acceso:hover .menu-desplegable-acceso {
-  display: flex;
+/* ===== HAMBURGUESA ===== */
+.hamburguesa {
+  display: none;
+  background: none;
+  border: none;
+  width: 32px;
+  height: 24px;
+  cursor: pointer;
+  position: relative;
+}
+
+.hamburguesa span {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: var(--text-primary);
+  left: 0;
+  transition: 0.3s ease;
+}
+
+.hamburguesa span:nth-child(1) { top: 0; }
+.hamburguesa span:nth-child(2) { top: 10px; }
+.hamburguesa span:nth-child(3) { top: 20px; }
+
+.hamburguesa.abierto span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 10px;
+}
+
+.hamburguesa.abierto span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburguesa.abierto span:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 10px;
+}
+
+/* ===== TABLET ===== */
+@media (max-width: 1024px) {
+  .cabecera {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .cabecera-izquierda {
+    justify-content: center;
+  }
+
+  .menu-principal {
+    margin-left: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .acceso-usuario {
+    justify-self: center;
+  }
+}
+
+/* ===== MÓVIL ===== */
+@media (max-width: 768px) {
+  .cabecera {
+    padding: 16px 24px;
+  }
+
+  .menu-principal {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-secondary);
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    display: none;
+  }
+
+  .menu-principal.activo {
+    display: flex;
+  }
+
+  .hamburguesa {
+    display: block;
+  }
+}
+
+/* ===== MÓVIL PEQUEÑO ===== */
+@media (max-width: 480px) {
+  .acceso-usuario {
+    display: none;
+  }
+
+  .logo {
+    width: 60px;
+  }
+
+  .logo-restaurante {
+    font-size: 1.2rem;
+  }
 }

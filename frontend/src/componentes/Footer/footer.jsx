@@ -11,8 +11,8 @@ function Footer() {
     
     {/* 1️⃣ Logo */}
     <div className="footer-logo">
-      {/* logo */}
-      LOGO DE RESTAURANTE
+      {/* LOGO DE RESTAURANTE */}
+      
       <img src={Logo} alt="" />
     </div>
 
