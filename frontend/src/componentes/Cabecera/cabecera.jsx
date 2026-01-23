@@ -7,7 +7,7 @@ function Cabecera() {
       {/* Cabecera con el nombre del restaurante y la navegación */}
       <header className="cabecera">
   <div className="cabecera-izquierda">
-    <h1 className="logo-restaurante">Sons of Burger</h1>
+    <h1 className="logo-restaurante"></h1>
     <img src={Logo} alt="Logo Sons of Burger" className="logo" />
   </div>
 
