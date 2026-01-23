@@ -6,32 +6,29 @@ function Cabecera() {
     <>
       {/* Cabecera con el nombre del restaurante y la navegación */}
       <header className="cabecera">
-        <div className="cabecera-izquierda">
-          <h1 className="logo-restaurante">NOMBRE RESTAURANTE</h1>
-          <img src={Logo} alt="" className="logo" />
+  <div className="cabecera-izquierda">
+    <h1 className="logo-restaurante">Sons of Burger</h1>
+    <img src={Logo} alt="Logo Sons of Burger" className="logo" />
+  </div>
 
-          {/* Menú principal de la web */}
-          <nav className="menu-principal">
-            <a href="#">Inicio</a>
-            <a href="#">Carta</a>
-            <a href="#">Reservas</a>
-            <a href="#">Contacto</a>
-          </nav>
-        </div>
+  <nav className="menu-principal">
+    <a href="#">Inicio</a>
+    <a href="#">Carta</a>
+    <a href="#">Reservas</a>
+    <a href="#">Contacto</a>
+  </nav>
 
-        {/* Zona de acceso del usuario */}
-        <nav className="acceso-usuario">
-          <div className="contenedor-acceso">
-            <button className="boton-acceso">Acceder</button>
+  <nav className="acceso-usuario">
+    <div className="contenedor-acceso">
+      <button className="boton-acceso">Acceder</button>
+      <div className="menu-desplegable-acceso">
+        <a href="#" className="opcion-acceso">Iniciar sesión</a>
+        <a href="#" className="opcion-acceso">Registrarse</a>
+      </div>
+    </div>
+  </nav>
+</header>
 
-            {/* Opciones que aparecen al pasar el ratón */}
-            <div className="menu-desplegable-acceso">
-              <a href="#" className="opcion-acceso">Iniciar sesión</a>
-              <a href="#" className="opcion-acceso">Registrarse</a>
-            </div>
-          </div>
-        </nav>
-      </header>
     </>
   );
 }
