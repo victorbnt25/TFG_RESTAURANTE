@@ -14,7 +14,7 @@ function Cabecera() {
   <nav className="menu-principal">
     <a href="#">Inicio</a>
     <a href="#">Carta</a>
-    <a href="#">Reservas</a>
+    <a href="#">Reservas hola</a>
     <a href="#">Contacto</a>
   </nav>
 
