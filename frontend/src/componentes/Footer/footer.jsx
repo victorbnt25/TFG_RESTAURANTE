@@ -12,7 +12,7 @@ function Footer() {
     {/* 1️⃣ Logo */}
     <div className="footer-logo">
       {/* logo */}
-      LOGO DE RESTAURANTE
+   
       <img src={Logo} alt="" />
     </div>
 
@@ -36,7 +36,7 @@ function Footer() {
   </div>
 
   <div className="footer-derechos">
-    <p>© 2026 Nombre del restaurante</p>
+    <p>© 2026 Sons of Burger</p>
     <p>Calle Hijos de la Ruina 17, Getafe, Madrid</p>
   </div>
 </footer>

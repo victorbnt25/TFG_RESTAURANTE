@@ -13,8 +13,8 @@ function Hero() {
 
         {/* DERECHADONDE VA EL CONTENIDO */}
         <div className="hero-contenido">
-          <h1>Nombre del Restaurante</h1>
-          <p>Cocina auténtica desde 1985</p>
+          <h1>Sons of Burger</h1>
+          <p>Cocina auténtica desde 2024</p>
 
           <div className="hero-btn">
             <a href="/carta" className="hero-btn primary">Ver carta</a>

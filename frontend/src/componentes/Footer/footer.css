@@ -19,6 +19,14 @@
 /* 1️⃣ Logo */
 .footer-logo {
   text-align: left;
+  
+}
+
+  
+.footer-logo img {
+  width: 120px;
+  height: auto;
+  cursor: pointer;
 }
 
 /* 2️⃣ Links */
