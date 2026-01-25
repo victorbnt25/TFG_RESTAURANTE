@@ -58,7 +58,9 @@
   font-family:'Times New Roman', Times, serif;
   font-size: clamp(2.6rem, 6vw, 5rem);
   margin-bottom: 12px;
+
   color: var(--color-primary);
+-webkit-text-stroke: 1px #ffffff;
 }
 
 .hero_subtitulo {
