@@ -1,85 +1,82 @@
+/*
+   HERO
+*/
 .hero {
-  height: 80vh;
-  background-color: var(--color-secondary);
-  padding-bottom: 40px;
-}
-
-/* Contenedor general */
-.hero-overlay {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-}
-
-/* IZQUIERDA → imagen */
-.hero-imagen {
-  height: 100%;
-  overflow: hidden;
-}
-
-.hero-imagen img {
+  position: relative;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  height: var(--hero-height);   
+  overflow: hidden;
+  background-color: var(--color-secondary);
 }
 
-/* DERECHA → contenido */
-.hero-contenido {
-  padding: 60px;
+/*
+   FONDO
+*/
+.hero__foto {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  background-attachment: fixed;
+  z-index: 0;
+}
+
+/* Overlay para legibilidad */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 8, 8, 0.425),
+    rgba(8, 8, 8, 0.7)
+  );
+  z-index: 0;
+}
+/*
+   CONTENIDO
+ */
+.hero__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 0 var(--padding);
 }
 
-
-.hero-contenido h1 {
-  font-family: var(--font-graffiti); /* nombre consistente */
-  font-size: clamp(2.8rem, 6vw, 6rem);
-  line-height: 1.1;
-  margin-bottom: 15px;
-}
-
-.hero-contenido p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-  color: var(--text-secondary);
-  font-family: Helvetica;
-}
-
-/* Botones */
-.hero-btn {
-  display: flex;
-  gap: 15px;
-}
-
-.hero-btn a {
-  padding: 12px 26px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: transform 0.2s ease;
-}
-
-/* Primario */
-.hero-btn a.primary {
-  background-color: var(--color-primary);
-  color: var(--color-secondary);
-}
-
-.hero-btn a.primary:hover {
-  transform: scale(1.05);
-}
-
-/* Secundario */
-.hero-btn a.outline {
-  border: 2px solid var(--color-primary);
+/* 
+   TEXTO
+ */
+.hero_titulo {
+  font-family:'Times New Roman', Times, serif;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  margin-bottom: 12px;
   color: var(--color-primary);
 }
 
-.hero-btn a.outline:hover {
-  background-color: var(--color-primary);
-  color: var(--color-secondary);
-  transform: scale(1.05);
+.hero_subtitulo {
+   font-family:'Times New Roman', Times, serif;
+  font-size: 1.7rem;
+  color: var(--text-primary);
+  max-width: 720px;
+}
+
+/* 
+   RESPONSIVE FINO
+ */
+@media (max-width: 768px) {
+  .hero_titulo {
+    font-size: 2.2rem;
+  }
+
+  .hero_subtitulo {
+    font-size: 1rem;
+  }
 }

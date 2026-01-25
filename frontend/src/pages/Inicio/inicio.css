@@ -1,0 +1,123 @@
+/* =========================
+   SECCIÓN INICIO
+========================= */
+.inicio {
+  background-color: var(--color-secondary);
+  padding: 80px 0 40px;
+}
+
+/* =========================
+   GRID PRINCIPAL
+========================= */
+.inicio-overlay {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+/* =========================
+   IMAGEN
+========================= */
+.inicio-imagen {
+  width: 100%;
+}
+
+.inicio-imagen img {
+  width: 100%;
+  height: auto;           /* CLAVE */
+  display: block;
+}
+
+/* =========================
+   CONTENIDO
+========================= */
+.inicio-contenido {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.inicio-contenido h1 {
+  font-family: var(--font-graffiti);
+  font-size: clamp(2.8rem, 6vw, 6rem);
+  line-height: 1.1;
+  margin-bottom: 15px;
+}
+
+.inicio-contenido p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: var(--text-secondary);
+  font-family: Helvetica;
+}
+
+/* =========================
+   BOTONES
+========================= */
+.inicio-btn {
+  display: flex;
+  gap: 15px;
+}
+
+.inicio-btn a {
+  padding: 12px 26px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+/* Primario */
+.inicio-btn a.primary {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+}
+
+.inicio-btn a.primary:hover {
+  transform: scale(1.05);
+}
+
+/* Secundario */
+.inicio-btn a.outline {
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.inicio-btn a.outline:hover {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  transform: scale(1.05);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  .inicio-overlay {
+    grid-template-columns: 1fr;
+  }
+
+  .inicio-contenido {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inicio {
+    padding: 60px 0 30px;
+  }
+
+  .inicio-contenido {
+    padding: 24px;
+  }
+
+  .inicio-contenido h1 {
+    font-size: 2.4rem;
+  }
+
+  .inicio-contenido p {
+    font-size: 1.05rem;
+  }
+}

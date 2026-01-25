@@ -1,3 +1,6 @@
+/* =========================
+   FUENTES
+========================= */
 @font-face {
   font-family: "Barcelona Graffiti Bombing";
   src: url("/src/assets/fuentes/BarcelonaGraffitiBombing.otf") format("opentype");
@@ -6,7 +9,11 @@
   font-display: swap;
 }
 
+/* =========================
+   VARIABLES GLOBALES
+========================= */
 :root {
+  /* Colores */
   --color-primary: #c89b3c;
   --color-secondary: #111111;
 
@@ -14,14 +21,21 @@
   --font-family: "Segoe UI", Arial, sans-serif;
   --font-graffiti: "Barcelona Graffiti Bombing", cursive;
 
+  /* Texto */
   --text-primary: #ffffff;
   --text-secondary: #bdbdbd;
 
+  /* Layout */
   --max-width: 1200px;
   --padding: 16px;
+
+  /* HERO (GLOBAL) */
+  --hero-height: clamp(220px, 35vw, 480px);
 }
 
-/* ===== RESET ===== */
+/* =========================
+   RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -34,27 +48,45 @@ body {
   color: var(--text-primary);
 }
 
-/* ===== CONTENEDOR ===== */
+/* =========================
+   CONTENEDORES
+========================= */
 .container {
   max-width: var(--max-width);
   margin: auto;
   padding: 0 var(--padding);
 }
 
-/* ===== RESPONSIVE PADDING ===== */
+/* =========================
+   RESPONSIVE VARIABLES
+========================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  :root {
+    --hero-height: clamp(200px, 40vw, 420px);
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   :root {
     --padding: 12px;
+    --hero-height: 60vh;
   }
 }
 
+/* Mobile pequeño */
 @media (max-width: 480px) {
   :root {
     --padding: 10px;
+    --hero-height: 50vh;
   }
 }
 
-/* ===== GRID GENERAL ===== */
+/* =========================
+   GRID GENERAL
+========================= */
 .grid {
   display: grid;
   gap: 16px;
@@ -65,21 +97,29 @@ body {
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 
 @media (max-width: 1024px) {
-  .grid-4 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
   .grid-3,
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 480px) {
   .grid-2,
   .grid-3,
-  .grid-4 { grid-template-columns: 1fr; }
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* ===== TEXTO RESPONSIVE ===== */
+/* =========================
+   TEXTO RESPONSIVE
+========================= */
 .title {
   font-size: 2rem;
 }
@@ -90,15 +130,32 @@ body {
 }
 
 @media (max-width: 640px) {
-  .title { font-size: 1.4rem; }
-  .text { font-size: 0.95rem; }
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .text {
+    font-size: 0.95rem;
+  }
 }
 
-/* ===== VISIBILIDAD ===== */
-.hide-mobile { display: block; }
-.show-mobile { display: none; }
+/* =========================
+   VISIBILIDAD
+========================= */
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
 
 @media (max-width: 768px) {
-  .hide-mobile { display: none; }
-  .show-mobile { display: block; }
+  .hide-mobile {
+    display: none;
+  }
+
+  .show-mobile {
+    display: block;
+  }
 }
