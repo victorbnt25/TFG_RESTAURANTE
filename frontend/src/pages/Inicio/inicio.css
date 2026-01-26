@@ -4,43 +4,71 @@
 .inicio {
   background-color: var(--color-secondary);
   padding: 80px 0 40px;
+
 }
 
 /* =========================
-   GRID PRINCIPAL
+   GRID PRINCIPAL (PARECE 1 BLOQUE)
 ========================= */
 .inicio-overlay {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 40px;
+  align-items: start;
+  gap: 0;
+
+  background-color: var(--color-secondary);
+
+  /* 🔥 AQUÍ SÍ */
+  border: 3px solid var(--color-primary);
+  border-radius: 16px;
+  overflow: hidden;
+
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* =========================
-   IMAGEN
+   VIDEO (IZQUIERDA)
 ========================= */
-.inicio-imagen {
+.inicio-imagen{
+  position: relative;
   width: 100%;
+  min-height: 520px;
+  overflow: hidden;
 }
 
-.inicio-imagen img {
+.inicio-video{
+  position: relative;           /* CLAVE: para que top/left funcionen */
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;           /* CLAVE */
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
   display: block;
 }
 
 /* =========================
-   CONTENIDO
+   CONTENIDO (DERECHA)
 ========================= */
 .inicio-contenido {
   padding: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-color: transparent; /* CLAVE: no otra caja */
+ border-left: 1px solid rgba(255,255,255,0.04); /* antes más visible */
+}
+
+/* Separación sutil entre mitades (opcional) */
+.inicio-contenido{
+  border-left: 1px solid rgba(255,255,255,0.08);
 }
 
 .inicio-contenido h1 {
-  font-family: var(--font-graffiti);
+ font-family: 'Bebas Neue', sans-serif;
+transform: skewX(-10deg);
+letter-spacing: 1px;
   font-size: clamp(2.8rem, 6vw, 6rem);
   line-height: 1.1;
   margin-bottom: 15px;
@@ -50,11 +78,13 @@
   font-size: 1.2rem;
   margin-bottom: 30px;
   color: var(--text-secondary);
-  font-family: Helvetica;
+ font-family: 'Bebas Neue', sans-serif;
+transform: skewX(-10deg);
+letter-spacing: 1px;
 }
 
 /* =========================
-   BOTONES
+   BOTONES (NO TOCADO)
 ========================= */
 .inicio-btn {
   display: flex;
@@ -94,30 +124,153 @@
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 1024px) {
-  .inicio-overlay {
-    grid-template-columns: 1fr;
-  }
+/* =========================
+RESPONSIVE – MANTIENE 2 BLOQUES
+========================= */
 
-  .inicio-contenido {
-    padding: 40px;
-  }
+
+/* -------- TABLET -------- */
+@media (max-width: 1024px) {
+
+
+.inicio {
+padding: 60px 0 30px;
 }
 
+
+.inicio-overlay {
+grid-template-columns: 45% 55%;
+border-radius: 12px;
+}
+
+
+.inicio-imagen {
+min-height: 420px;
+}
+
+
+.inicio-video {
+object-position: center top;
+}
+
+
+.inicio-contenido {
+padding: 40px;
+border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+
+.inicio-contenido h1 {
+font-size: clamp(2.4rem, 5vw, 3.8rem);
+}
+
+
+.inicio-contenido p {
+font-size: 1.1rem;
+}
+
+
+.inicio-btn {
+gap: 12px;
+}
+}
+
+
+/* -------- MÓVIL -------- */
 @media (max-width: 768px) {
-  .inicio {
-    padding: 60px 0 30px;
-  }
 
-  .inicio-contenido {
-    padding: 24px;
-  }
 
-  .inicio-contenido h1 {
-    font-size: 2.4rem;
-  }
+.inicio {
+padding: 40px 0 20px;
+}
 
-  .inicio-contenido p {
-    font-size: 1.05rem;
-  }
+
+.inicio-overlay {
+grid-template-columns: 42% 58%;
+max-width: 100%;
+border-radius: 0;
+}
+
+
+.inicio-imagen {
+min-height: 320px;
+}
+
+
+.inicio-video {
+object-position: center;
+}
+
+
+.inicio-contenido {
+padding: 24px;
+}
+
+
+.inicio-contenido h1 {
+font-size: 2rem;
+line-height: 1.1;
+}
+
+
+.inicio-contenido p {
+font-size: 1rem;
+}
+
+
+.inicio-btn {
+flex-direction: column;
+gap: 12px;
+}
+
+
+.inicio-btn a {
+text-align: center;
+padding: 12px;
+}
+}
+
+
+@media (max-width: 600px) {
+
+
+.inicio-overlay {
+grid-template-columns: 1fr;
+}
+
+
+.inicio-imagen {
+min-height: 45vh;
+}
+
+
+.inicio-contenido {
+border-left: 0;
+border-top: 1px solid rgba(255,255,255,0.08);
+padding: 28px 24px;
+text-align: center;
+}
+
+
+.inicio-contenido h1 {
+transform: none; /* mejora legibilidad en móvil */
+font-size: 2.2rem;
+}
+
+
+.inicio-contenido p {
+transform: none;
+font-size: 1.05rem;
+}
+
+
+.inicio-btn {
+align-items: center;
+}
+
+
+.inicio-btn a {
+width: 100%;
+max-width: 260px;
+}
 }

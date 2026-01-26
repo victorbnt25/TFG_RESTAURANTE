@@ -1,5 +1,6 @@
 import './inicio.css';
 import fotoInicio from '../../assets/media/portada.jpg'; // ruta de la foto
+import videoHumo from  '../../assets/media/videoHumoHamburguesa3.mp4';
 
 function Inicio() {
   return (
@@ -8,7 +9,16 @@ function Inicio() {
 
         {/* IZQUIERDA DONDE VA LA FOTO */}
         <div className="inicio-imagen">
-          <img src={fotoInicio} alt="Plato del restaurante" />
+      {  /*  <img src={fotoInicio} alt="Plato del restaurante" />*/}
+   <video
+src={videoHumo}
+autoPlay
+muted
+loop
+playsInline
+preload="auto"
+className="inicio-video"
+/>
         </div>
 
         {/* DERECHA DONDE VA EL CONTENIDO */}

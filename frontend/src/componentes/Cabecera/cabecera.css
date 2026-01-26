@@ -21,11 +21,27 @@
 }
 
 .logo {
-  width: 70px;
-  height: auto;
-  cursor: pointer;
+width: 70px;
+height: auto;
+cursor: pointer;
+
+
+animation: moneda 2.5s linear infinite;
+
+
+transform-style: preserve-3d;
+will-change: transform;
 }
 
+
+@keyframes moneda {
+from {
+transform: perspective(800px) rotateY(0deg);
+}
+to {
+transform: perspective(800px) rotateY(360deg);
+}
+}
 /* =========================
    MENÚ PRINCIPAL (CENTRO)
 ========================= */
@@ -38,11 +54,14 @@
 
 .menu-principal a {
   position: relative;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   text-decoration: none;
   color: var(--text-primary);
   transition: color 0.2s ease;
+  font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
+  letter-spacing: 1px;
 }
 
 /* Subrayado animado */
@@ -186,36 +205,90 @@
 }
 
 /* =========================
-   RESPONSIVE
+CABECERA RESPONSIVE
 ========================= */
+
 @media (max-width: 900px) {
+
+  /* =========================
+     CABECERA
+  ========================= */
+  .cabecera {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 14px 20px;
+  }
+
+  /* =========================
+     LOGO (IZQUIERDA)
+  ========================= */
+  .cabecera-izquierda {
+    justify-self: start;
+  }
+
+  .logo {
+    width: 56px;
+  }
+
+  /* =========================
+     HAMBURGUESA (CENTRO REAL)
+  ========================= */
+  .hamburguesa {
+    display: block;
+    justify-self: center;
+    width: 34px;
+    height: 26px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* =========================
+     ACCESO USUARIO (DERECHA)
+  ========================= */
+  .acceso-usuario {
+    justify-self: end;
+  }
+
+  .boton-acceso {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  /* =========================
+     MENÚ PRINCIPAL (DESPLEGABLE)
+  ========================= */
   .menu-principal {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--color-secondary);
+
     flex-direction: column;
+    align-items: center;
     gap: 20px;
-    padding: 24px;
-    display: none;
+
+    background-color: var(--color-secondary);
+    padding: 24px 0;
+
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 150;
   }
 
   .menu-principal.activo {
-    display: flex;
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  .hamburguesa {
-    display: block;
-  }
-}
-
-@media (max-width: 480px) {
-  .acceso-usuario {
-    display: none;
-  }
-
-  .logo {
-    width: 60px;
+  .menu-principal a {
+    font-size: 1.4rem;
+    transform: none;
   }
 }

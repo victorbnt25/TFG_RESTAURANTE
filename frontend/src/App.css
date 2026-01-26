@@ -3,7 +3,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-secondary);
+  background-color: var(--color-primary);
 }
 
 /* Zona central que empuja el footer hacia abajo */
