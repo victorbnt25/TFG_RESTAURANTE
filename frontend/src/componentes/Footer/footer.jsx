@@ -1,7 +1,7 @@
 import "./footer.css";
 import instagramLogo from "../../assets/media/logoInstagram.svg";
 import tiktokLogo from "../../assets/media/tiktokLogo.svg";
-import Logo from "../../assets/media/logo1.png";
+import Logo from "../../assets/media/logoNegro.png";
 
 function Footer() {
   return (

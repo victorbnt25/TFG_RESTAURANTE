@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./cabecera.css";
-import Logo from "../../assets/media/logo1.png";
+import Logo from "../../assets/media/logoBlanco.png";
 
 function Cabecera() {
   const [menuOpen, setMenuOpen] = useState(false);
