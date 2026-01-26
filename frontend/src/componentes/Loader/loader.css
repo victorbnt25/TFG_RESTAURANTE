@@ -1,0 +1,39 @@
+/* =========================
+   LOADER OVERLAY
+========================= */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-secondary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* =========================
+   LOGO
+========================= */
+.loader-logo {
+width: 300px;
+height: auto;
+
+
+animation: giroRueda 8.8s linear infinite;
+
+
+will-change: transform;
+}
+
+
+/* =========================
+ANIMACIÓN RUEDA
+========================= */
+@keyframes giroRueda {
+from {
+transform: rotate(-100deg);
+}
+to {
+transform: rotate(360deg);
+}
+}

@@ -23,7 +23,7 @@ className="inicio-video"
 
         {/* DERECHA DONDE VA EL CONTENIDO */}
         <div className="inicio-contenido">
-          <h1>Sons of Burger</h1>
+          <h1>Fuego, carne y verdad</h1>
           <p>Cocina auténtica desde 1985</p>
 
           <div className="inicio-btn">

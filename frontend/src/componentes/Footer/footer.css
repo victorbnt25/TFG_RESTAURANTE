@@ -39,21 +39,39 @@
 
 /* Links */
 .footer-links {
-  text-align:center;
+text-align: center;
+}
+
+
+/* Título */
+.footer-links h2 {
+margin-bottom: 12px;
+font-size: 1.6rem;
+}
+
+
+/* Párrafos en línea */
+.footer-links p {
+display: inline-block;
+margin: 0 12px;
 
 }
 
+
+/* Enlaces */
 .footer-links a {
-  color: inherit;
-  text-decoration: none;
-  display: inline-block;
-  margin: 0 8px;
-  transition: transform 0.2s ease, color 0.2s ease;
+color: inherit;
+text-decoration: none;
+font-size: 1rem; /* ⬅️ cambia aquí el tamaño */
+display: inline-block;
+transition: transform 0.2s ease, color 0.2s ease;
 }
 
+
+/* Hover */
 .footer-links a:hover {
-  transform: scale(1.1);
-  color: #000;
+transform: scale(1.1);
+color: #000;
 }
 
 /* Redes */

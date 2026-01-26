@@ -55,7 +55,7 @@
    TEXTO
  */
 .hero_titulo {
-  font-family:'Times New Roman', Times, serif;
+   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(2.6rem, 6vw, 5rem);
   margin-bottom: 12px;
 
@@ -64,7 +64,7 @@
 }
 
 .hero_subtitulo {
-   font-family:'Times New Roman', Times, serif;
+    font-family: 'Bebas Neue', sans-serif;
   font-size: 1.7rem;
   color: var(--text-primary);
   max-width: 720px;

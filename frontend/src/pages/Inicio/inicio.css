@@ -55,32 +55,37 @@
   padding: 60px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background-color: transparent; /* CLAVE: no otra caja */
- border-left: 1px solid rgba(255,255,255,0.04); /* antes más visible */
-}
 
-/* Separación sutil entre mitades (opcional) */
-.inicio-contenido{
+  /* CLAVE */
+  justify-content: space-between;
+
+  background-color: transparent;
   border-left: 1px solid rgba(255,255,255,0.08);
 }
 
 .inicio-contenido h1 {
- font-family: 'Bebas Neue', sans-serif;
-transform: skewX(-10deg);
-letter-spacing: 1px;
-  font-size: clamp(2.8rem, 6vw, 6rem);
-  line-height: 1.1;
-  margin-bottom: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
+  letter-spacing: 2px;
+
+  /* CLAVE */
+  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  line-height: 1;
+  margin: 0;
+
+  max-width: 100%;
 }
 
 .inicio-contenido p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
+  font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
+  letter-spacing: 1.5px;
+
+  font-size: 1.4rem;
   color: var(--text-secondary);
- font-family: 'Bebas Neue', sans-serif;
-transform: skewX(-10deg);
-letter-spacing: 1px;
+
+  margin-top: 20px;
+  margin-bottom: 0;
 }
 
 /* =========================
@@ -121,12 +126,12 @@ letter-spacing: 1px;
   transform: scale(1.05);
 }
 
-/* =========================
+
+
+/*
    RESPONSIVE
-========================= */
-/* =========================
-RESPONSIVE – MANTIENE 2 BLOQUES
-========================= */
+ */
+
 
 
 /* -------- TABLET -------- */

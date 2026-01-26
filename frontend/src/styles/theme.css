@@ -14,12 +14,14 @@
 ========================= */
 :root {
   /* Colores */
-  --color-primary: #c89b3c;
+   /* --color-primary: #8c1d18;*/
+  --color-primary: #a97c2a;
   --color-secondary: #111111;
 
   /* Tipografías */
   --font-family: "Segoe UI", Arial, sans-serif;
   --font-graffiti: "Barcelona Graffiti Bombing", cursive;
+   --font-fitz: 'Bebas Neue', sans-serif;
 
   /* Texto */
   --text-primary: #ffffff;
