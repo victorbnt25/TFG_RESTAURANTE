@@ -1,0 +1,164 @@
+/* =========================
+   SECTION NOSOTROS (WRAPPER)
+========================= */
+
+.nosotros {
+  width: 100%;
+  background-color: var(--color-secondary);
+}
+
+/* =========================
+  CONTENIDO CENTRADO
+========================= */
+
+.nosotros__inner {
+  position: relative;
+  max-width:none;        /* 👈 controla el ancho */
+  min-height: 80vh;
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================
+   FOTO DE FONDO
+========================= */
+
+.nosotros_foto {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  z-index: 0;
+  filter: saturate(1.5) contrast(0.8);
+}
+
+/* =========================
+   OVERLAY
+========================= */
+
+.nosotros__inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0.75)
+  );
+  z-index: 0;
+}
+
+/* =========================
+   CONTENIDO
+========================= */
+
+.nosotros__content {
+  position: relative;
+  z-index: 1;
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 var(--padding);
+  
+}
+
+/* =========================
+   TÍTULO
+========================= */
+
+.nosotros__title {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1.5px;
+  transform: skewX(-6deg);
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.75);
+}
+
+.nosotros__title span {
+  display: block;
+  line-height: 1;
+}
+
+/* TAMAÑOS */
+.nosotros__title .big {
+  font-size: 5rem;
+}
+
+.nosotros__title .small {
+  font-size: 3.5rem;
+}
+
+/* COLORES */
+.nosotros__title .white {
+  color: #ffffff;
+}
+
+.nosotros__title .primary {
+  color: var(--color-primary);
+}
+
+/* =========================
+   SECCIÓN HISTORIA
+========================= */
+
+.nosotros-historia {
+  background-color: var(--color-secondary);
+  padding: clamp(40px, 6vw, 80px);
+  max-width: 1100px;
+  margin: clamp(60px, 14vw, 40px) auto 80px;
+  border-radius: 16px;
+  border: 3px solid var(--color-primary);
+ box-shadow: 0 5px 10px var(--color-primary);/*duda*/
+}
+.nosotros-historia h1 {
+ font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
+  font-size: 3rem;
+  margin-bottom: 24px;
+  color: var(--color-primary);
+  letter-spacing: 1px;
+  
+}
+
+.nosotros-historia p {
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+  color: #eaeaea;
+   font-family: 'Bebas Neue', sans-serif;
+}
+
+.nosotros-historia p strong {
+  color: #ffffff;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .nosotros {
+    padding: 40px 0;
+  }
+
+  .nosotros__inner {
+    min-height: 70vh;
+    border-radius: 14px;
+    margin: 0 16px;
+  }
+
+  .nosotros__title .big {
+    font-size: 3rem;
+  }
+
+  .nosotros__title .small {
+    font-size: 2rem;
+  }
+
+  .nosotros-historia {
+    margin: 40px 16px 60px;
+    padding: 32px;
+  }
+}

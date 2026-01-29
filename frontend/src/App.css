@@ -3,7 +3,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-primary);
+  background-color: rgba(0, 0, 0, 0.548);
+  
+
 }
 
 /* Zona central que empuja el footer hacia abajo */

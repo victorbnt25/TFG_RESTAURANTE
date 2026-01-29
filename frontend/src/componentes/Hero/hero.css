@@ -4,21 +4,23 @@
 .hero {
   position: relative;
   width: 100%;
-  height: var(--hero-height);   
+  height: var(--hero-height);
   overflow: hidden;
-  background-color: var(--color-secondary);
+  background-color: var(--color-secondary); /* placeholder mientras carga */
 }
 
 /*
-   FONDO
+   FONDO (IMG, NO BACKGROUND)
 */
 .hero__foto {
   position: absolute;
   inset: 0;
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: cover;
-  background-attachment: fixed;
+
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+
   z-index: 0;
 }
 
@@ -29,14 +31,15 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(8, 8, 8, 0.425),
-    rgba(8, 8, 8, 0.7)
+    rgba(8, 8, 8, 0.45),
+    rgba(8, 8, 8, 0.75)
   );
   z-index: 0;
 }
+
 /*
    CONTENIDO
- */
+*/
 .hero__content {
   position: relative;
   z-index: 1;
@@ -51,28 +54,28 @@
   padding: 0 var(--padding);
 }
 
-/* 
+/*
    TEXTO
- */
+*/
 .hero_titulo {
-   font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
   font-size: clamp(2.6rem, 6vw, 5rem);
   margin-bottom: 12px;
-
   color: var(--color-primary);
--webkit-text-stroke: 1px #ffffff;
 }
 
 .hero_subtitulo {
-    font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
   font-size: 1.7rem;
   color: var(--text-primary);
   max-width: 720px;
 }
 
-/* 
-   RESPONSIVE FINO
- */
+/*
+   RESPONSIVE
+*/
 @media (max-width: 768px) {
   .hero_titulo {
     font-size: 2.2rem;

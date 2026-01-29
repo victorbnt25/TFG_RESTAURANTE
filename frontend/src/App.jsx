@@ -9,19 +9,24 @@ import Carta from "./pages/Carta/carta.jsx";
 import Reservas from "./pages/Reservas/reservas.jsx";
 import Contacto from "./pages/Contacto/contacto.jsx";
 import Loader from "./componentes/Loader/loader.jsx";
-
+import Nosotros from "./pages/Nosotros/nosotros.jsx";
 import "./App.css";
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    return !sessionStorage.getItem("appLoaded");
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1800); // duración del loader
+    if (loading) {
+      const timer = setTimeout(() => {
+        sessionStorage.setItem("appLoaded", "true");
+        setLoading(false);
+      }, 1800);
 
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   if (loading) {
     return <Loader />;
@@ -45,6 +50,7 @@ function App() {
           <Route path="/carta" element={<Carta />} />
           <Route path="/reservas" element={<Reservas />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/nosotros" element={<Nosotros />} />
         </Routes>
       </main>
 
