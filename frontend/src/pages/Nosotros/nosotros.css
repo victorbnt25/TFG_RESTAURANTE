@@ -4,7 +4,7 @@
 
 .nosotros {
   width: 100%;
-  background-color: var(--color-secondary);
+ 
 }
 
 /* =========================
@@ -13,7 +13,7 @@
 
 .nosotros__inner {
   position: relative;
-  max-width:none;        /* 👈 controla el ancho */
+  max-width:none;        /* controla el ancho */
   min-height: 80vh;
   margin: 0 auto;
   overflow: hidden;
