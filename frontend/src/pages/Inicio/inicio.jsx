@@ -23,8 +23,10 @@ className="inicio-video"
 
         {/* DERECHA DONDE VA EL CONTENIDO */}
         <div className="inicio-contenido">
-          <h1>Fuego, carne y verdad</h1>
-          <p>Cocina auténtica desde 1985</p>
+          <h1>Fuego,</h1>
+          <h2 className='carne'>carne</h2>
+          <h1> y verdad</h1>
+          <p>Cocina auténtica desde 2024</p>
 
           <div className="inicio-btn">
             <a href="/carta" className="inicio-btn primary">Ver carta</a>

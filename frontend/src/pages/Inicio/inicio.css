@@ -67,12 +67,22 @@
   font-family: 'Bebas Neue', sans-serif;
   transform: skewX(-10deg);
   letter-spacing: 2px;
-
+color: #ffffff;
   /* CLAVE */
   font-size: clamp(3.5rem, 6vw, 6.5rem);
   line-height: 1;
   margin: 0;
-
+  max-width: 100%;
+}
+.inicio-contenido h2 {
+ font-family: 'Bebas Neue', sans-serif;
+  transform: skewX(-10deg);
+  letter-spacing: 2px;
+color:var(--color-primary);
+  /* CLAVE */
+  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  line-height: 1;
+  margin: 0;
   max-width: 100%;
 }
 
@@ -82,7 +92,7 @@
   letter-spacing: 1.5px;
 
   font-size: 1.4rem;
-  color: var(--text-secondary);
+  color: #fff;;
 
   margin-top: 20px;
   margin-bottom: 0;
