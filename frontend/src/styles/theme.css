@@ -57,6 +57,11 @@ body {
   max-width: var(--max-width);
   margin: auto;
   padding: 0 var(--padding);
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 /* =========================
