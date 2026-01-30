@@ -15,7 +15,7 @@ function Hero() {
       <div className="hero__content">
         <h1 className="hero_titulo"><b>SONS OF BURGER</b></h1>
         <p className="hero_subtitulo">
-          Auténtica cocina italiana desde 2024
+          Auténtica parrilla española desde 2024
         </p>
       </div>
     </section>
