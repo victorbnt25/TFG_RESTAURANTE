@@ -58,7 +58,7 @@ body {
   margin: auto;
   padding: 0 var(--padding);
 
-  min-height: 100vh;
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
