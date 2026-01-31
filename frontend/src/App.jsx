@@ -12,6 +12,16 @@ import Loader from "./componentes/Loader/loader.jsx";
 import Nosotros from "./pages/Nosotros/nosotros.jsx";
 import "./App.css";
 
+// IMPORTS PARA LA PARTE DE ADMINISTRACIÓN
+import AdminLayout from "./pages/Admin/AdminLayout.jsx";
+import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
+import AdminPlatos from "./pages/Admin/AdminPlatos.jsx";
+import AdminSubirFoto from "./pages/Admin/AdminSubirFoto.jsx";
+import RutaProtegida from "./componentes/auth/RutaProtegida.jsx";
+import AdminLogin from "./pages/Admin/AdminLogin.jsx";
+
+
+
 function App() {
   const [loading, setLoading] = useState(() => {
     return !sessionStorage.getItem("appLoaded");
@@ -33,6 +43,7 @@ function App() {
   }
 
   return (
+
     <div className="layout">
       <Cabecera />
 
@@ -47,10 +58,23 @@ function App() {
               </>
             }
           />
+               {/* Páginas públicas */}
           <Route path="/carta" element={<Carta />} />
           <Route path="/reservas" element={<Reservas />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/nosotros" element={<Nosotros />} />
+
+          {/* Ruta de login admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          {/* Rutas para la parte de administración */}
+            <Route element={<RutaProtegida />}>
+            <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="platos" element={<AdminPlatos />} />
+            <Route path="subir-foto" element={<AdminSubirFoto />} />
+           </Route>
+          </Route>
+
         </Routes>
       </main>
 
