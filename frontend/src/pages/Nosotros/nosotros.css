@@ -1,15 +1,15 @@
-/* =========================
+/* 
    SECTION NOSOTROS (WRAPPER)
-========================= */
+ */
 
 .nosotros {
   width: 100%;
  
 }
 
-/* =========================
+/* 
   CONTENIDO CENTRADO
-========================= */
+ */
 
 .nosotros__inner {
   position: relative;
@@ -20,9 +20,9 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
-/* =========================
+/* 
    FOTO DE FONDO
-========================= */
+ */
 
 .nosotros_foto {
   position: absolute;
@@ -34,9 +34,9 @@
   filter: saturate(1.5) contrast(0.8);
 }
 
-/* =========================
+/* 
    OVERLAY
-========================= */
+ */
 
 .nosotros__inner::after {
   content: "";
@@ -50,9 +50,9 @@
   z-index: 0;
 }
 
-/* =========================
+/* 
    CONTENIDO
-========================= */
+ */
 
 .nosotros__content {
   position: relative;
@@ -66,9 +66,9 @@
   
 }
 
-/* =========================
+/* 
    TÍTULO
-========================= */
+ */
 
 .nosotros__title {
   font-family: 'Bebas Neue', sans-serif;
@@ -100,9 +100,9 @@
   color: var(--color-primary);
 }
 
-/* =========================
+/* 
    SECCIÓN HISTORIA
-========================= */
+ */
 
 .nosotros-historia {
   background-color: var(--color-secondary);
@@ -134,9 +134,9 @@
   color: #ffffff;
 }
 
-/* =========================
+/* 
    RESPONSIVE
-========================= */
+ */
 
 @media (max-width: 768px) {
   .nosotros {

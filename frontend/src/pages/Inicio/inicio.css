@@ -24,9 +24,8 @@
   margin: 0 auto;
 }
 
-/* =========================
-   VIDEO (IZQUIERDA)
-========================= */
+/* 
+   VIDEO (IZQUIERDA) */
 .inicio-imagen{
   position: relative;
   width: 100%;
@@ -35,8 +34,7 @@
 }
 
 .inicio-video{
-  position: relative;           /* CLAVE: para que top/left funcionen */
-  top: 0;
+  position: relative;         
   left: 0;
   width: 100%;
   height: 100%;
@@ -45,9 +43,9 @@
   display: block;
 }
 
-/* =========================
+/* 
    CONTENIDO (DERECHA)
-========================= */
+ */
 .inicio-contenido {
   padding: 60px;
   display: flex;
@@ -90,9 +88,8 @@ color:var(--color-primary);
   margin-bottom: 0;
 }
 
-/* =========================
-   BOTONES (NO TOCADO)
-========================= */
+/* 
+   BOTONES */
 .inicio-btn {
   display: flex;
   gap: 15px;
@@ -136,7 +133,7 @@ color:var(--color-primary);
 
 
 
-/* -------- TABLET -------- */
+/*TABLET*/
 @media (max-width: 1024px) {
 
 
@@ -260,7 +257,7 @@ text-align: center;
 
 
 .inicio-contenido h1 {
-transform: none; /* mejora legibilidad en móvil */
+transform: none; 
 font-size: 2.2rem;
 }
 

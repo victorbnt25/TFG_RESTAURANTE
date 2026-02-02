@@ -1,8 +1,8 @@
-/* =========================
+/*
    CABECERA GENERAL
-========================= */
+*/
 .cabecera {
-  position: absolute;          /* 👈 CLAVE */
+  position: absolute;        
   top: 0;
   left: 0;
   width: 100%;
@@ -16,9 +16,9 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* =========================
+/*
    IZQUIERDA (LOGO)
-========================= */
+*/
 .cabecera-izquierda {
   display: flex;
   align-items: center;
@@ -47,9 +47,9 @@ to {
 transform: perspective(800px) rotateY(360deg);
 }
 }
-/* =========================
-   MENÚ PRINCIPAL (CENTRO)
-========================= */
+/*
+   MENÚ PRINCIPAL 
+ */
 .menu-principal {
   display: flex;
   justify-content: center;
@@ -89,9 +89,9 @@ transform: perspective(800px) rotateY(360deg);
   width: 100%;
 }
 
-/* =========================
+/*
    ACCESO USUARIO (DERECHA)
-========================= */
+ */
 .acceso-usuario {
   position: relative;
 }
@@ -118,7 +118,6 @@ transform: perspective(800px) rotateY(360deg);
   color: #ffffff;
 }
 
-/* Puente invisible */
 .contenedor-acceso::after {
   content: "";
   position: absolute;
@@ -128,7 +127,7 @@ transform: perspective(800px) rotateY(360deg);
   height: 12px;
 }
 
-/* Dropdown */
+
 .menu-desplegable-acceso {
   position: absolute;
   top: calc(100% + 8px);
@@ -169,9 +168,9 @@ transform: perspective(800px) rotateY(360deg);
   background-color: #f4f4f4;
 }
 
-/* =========================
+/* 
    HAMBURGUESA (MÓVIL)
-========================= */
+ */
 .hamburguesa {
   display: none;
   background: none;
@@ -209,15 +208,15 @@ transform: perspective(800px) rotateY(360deg);
   top: 10px;
 }
 
-/* =========================
+/* 
 CABECERA RESPONSIVE
-========================= */
+*/
 
 @media (max-width: 900px) {
 
-  /* =========================
+  /*
      CABECERA
-  ========================= */
+*/
   .cabecera {
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -225,9 +224,9 @@ CABECERA RESPONSIVE
     padding: 14px 20px;
   }
 
-  /* =========================
+  /*
      LOGO (IZQUIERDA)
-  ========================= */
+   */
   .cabecera-izquierda {
     justify-self: start;
   }
@@ -236,9 +235,9 @@ CABECERA RESPONSIVE
     width: 56px;
   }
 
-  /* =========================
-     HAMBURGUESA (CENTRO REAL)
-  ========================= */
+  /* 
+     HAMBURGUESA 
+*/
   .hamburguesa {
     display: block;
     justify-self: center;
@@ -250,9 +249,9 @@ CABECERA RESPONSIVE
     position: relative;
   }
 
-  /* =========================
+  /*
      ACCESO USUARIO (DERECHA)
-  ========================= */
+ */
   .acceso-usuario {
     justify-self: end;
   }
@@ -262,9 +261,9 @@ CABECERA RESPONSIVE
     font-size: 0.85rem;
   }
 
-  /* =========================
+  /* 
      MENÚ PRINCIPAL (DESPLEGABLE)
-  ========================= */
+   */
   .menu-principal {
     position: absolute;
     top: 100%;

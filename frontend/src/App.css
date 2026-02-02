@@ -8,10 +8,10 @@
 
 }
 
-/* Zona central que empuja el footer hacia abajo */
+/* Zona del centro que empuja el footer hacia abajo */
 .contenido {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Evita scrolls laterales accidentales */
+  overflow-x: hidden; 
 }

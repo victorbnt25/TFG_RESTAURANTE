@@ -6,11 +6,11 @@
   width: 100%;
   height: var(--hero-height);
   overflow: hidden;
-  background-color: var(--color-secondary); /* placeholder mientras carga */
+  background-color: var(--color-secondary); 
 }
 
 /*
-   FONDO (IMG, NO BACKGROUND)
+   FONDO 
 */
 .hero__foto {
   position: absolute;

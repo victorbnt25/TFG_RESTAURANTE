@@ -1,6 +1,6 @@
-/* =========================
+/* 
    FUENTES
-========================= */
+ */
 @font-face {
   font-family: "Barcelona Graffiti Bombing";
   src: url("/src/assets/fuentes/BarcelonaGraffitiBombing.otf") format("opentype");
@@ -9,9 +9,9 @@
   font-display: swap;
 }
 
-/* =========================
+/* 
    VARIABLES GLOBALES
-========================= */
+ */
 :root {
   /* Colores */
    /* --color-primary: #8c1d18;*/
@@ -35,9 +35,9 @@
   --hero-height: clamp(220px, 35vw, 480px);
 }
 
-/* =========================
+/* 
    RESET
-========================= */
+ */
 * {
   margin: 0;
   padding: 0;
@@ -50,9 +50,9 @@ body {
   color: var(--text-primary);
 }
 
-/* =========================
+/* 
    CONTENEDORES
-========================= */
+ */
 .container {
   max-width: var(--max-width);
   margin: auto;
@@ -64,9 +64,9 @@ body {
   justify-content: flex-end;
 }
 
-/* =========================
+/* 
    RESPONSIVE VARIABLES
-========================= */
+ */
 
 /* Tablet */
 @media (max-width: 1024px) {
@@ -91,9 +91,9 @@ body {
   }
 }
 
-/* =========================
+/* 
    GRID GENERAL
-========================= */
+ */
 .grid {
   display: grid;
   gap: 16px;
@@ -124,9 +124,9 @@ body {
   }
 }
 
-/* =========================
+/* 
    TEXTO RESPONSIVE
-========================= */
+ */
 .title {
   font-size: 2rem;
 }
@@ -146,9 +146,9 @@ body {
   }
 }
 
-/* =========================
+/* 
    VISIBILIDAD
-========================= */
+ */
 .hide-mobile {
   display: block;
 }
