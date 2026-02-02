@@ -1,62 +1,43 @@
-/*
-   HERO
-*/
 .hero {
   position: relative;
   width: 100%;
   height: var(--hero-height);
-  overflow: hidden;
-  background-color: var(--color-secondary); 
+  overflow: hidden;                         /* Corta lo que sobresalga de la foto */
+  background-color: var(--color-secondary);
 }
 
-/*
-   FONDO 
-*/
 .hero__foto {
   position: absolute;
   inset: 0;
-
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-
+  height: 110%;                             /* Un poco más alta para permitir margen de encuadre */
+  object-fit: cover;                        /* Cubre el área sin deformar */
+  object-position: center -120%;              /* Baja la foto (20% desde arriba) para evitar el zoom excesivo */
   z-index: 0;
 }
 
-/* Overlay para legibilidad */
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(8, 8, 8, 0.45),
-    rgba(8, 8, 8, 0.75)
-  );
-  z-index: 0;
+  background: linear-gradient(rgba(8, 8, 8, 0.45), rgba(8, 8, 8, 0.75));
+  z-index: 1;                               /* Capa intermedia entre foto y texto */
 }
 
-/*
-   CONTENIDO
-*/
 .hero__content {
-  position: relative;
-  z-index: 1;
-  height: 100%;
-
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);         /* Centrado absoluto sobre la foto */
+  z-index: 2;                               /* Siempre por encima del overlay */
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-
   text-align: center;
   padding: 0 var(--padding);
 }
 
-/*
-   TEXTO
-*/
 .hero_titulo {
   font-family: 'Bebas Neue', sans-serif;
   transform: skewX(-10deg);
@@ -73,15 +54,7 @@
   max-width: 720px;
 }
 
-/*
-   RESPONSIVE
-*/
 @media (max-width: 768px) {
-  .hero_titulo {
-    font-size: 2.2rem;
-  }
-
-  .hero_subtitulo {
-    font-size: 1rem;
-  }
+  .hero_titulo { font-size: 2.2rem; }
+  .hero_subtitulo { font-size: 1rem; }
 }
