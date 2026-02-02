@@ -1,5 +1,8 @@
 FROM php:8.2-apache
 
+#  Añadir Composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
 # Habilitar mod_rewrite (Symfony lo necesita)
 RUN a2enmod rewrite
 
