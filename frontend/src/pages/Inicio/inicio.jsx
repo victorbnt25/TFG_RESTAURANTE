@@ -1,5 +1,5 @@
 import './inicio.css';
-import fotoInicio from '../../assets/media/portada.jpg'; // ruta de la foto
+
 import videoHumo from  '../../assets/media/videoHumoHamburguesa3.mp4';
 
 function Inicio() {
