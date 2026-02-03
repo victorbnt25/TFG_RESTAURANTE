@@ -14,7 +14,7 @@
         "symfony/dotenv": "7.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.4.*",
-        "symfony/runtime": "*",
+        "symfony/runtime": "7.4.*",
         "symfony/security-bundle": "7.4.*",
         "symfony/yaml": "7.4.*"
     },
@@ -69,7 +69,7 @@
         }
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "*",
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "symfony/maker-bundle": "*"
     }
 }
