@@ -2,18 +2,18 @@
    CABECERA GENERAL
 */
 .cabecera {
-  position: absolute;        
+  position: sticky; 
   top: 0;
-  left: 0;
   width: 100%;
   z-index: 1000;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   padding: 20px 60px;
-  background-color: rgba(0, 0, 0, 0.808); /* transparente */
+  background-color: rgba(0, 0, 0, 0.85); /* Un poco más sólida para que no se vea el corte */
   backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0; /* Asegura que no haya margen externo */
 }
 
 /*

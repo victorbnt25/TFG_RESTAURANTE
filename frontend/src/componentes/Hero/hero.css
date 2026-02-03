@@ -1,18 +1,24 @@
+/* hero.css completo */
+
 .hero {
   position: relative;
   width: 100%;
-  height: var(--hero-height);
-  overflow: hidden;                         /* Corta lo que sobresalga de la foto */
-  background-color: var(--color-secondary);
+  height: var(--hero-height, 80vh);
+  overflow: hidden;
+  background-color: #000;
+  
+  /* ELIMINADO: margin-top: 80px; */
+  margin-top: 0; /* Forzamos a que esté pegado */
 }
 
 .hero__foto {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 110%;                             /* Un poco más alta para permitir margen de encuadre */
-  object-fit: cover;                        /* Cubre el área sin deformar */
-  object-position: center -120%;              /* Baja la foto (20% desde arriba) para evitar el zoom excesivo */
+  height: 130%; /* Mantén altura extra para el efecto parallax */
+  object-fit: cover;
+  object-position: center center; 
   z-index: 0;
 }
 
@@ -20,41 +26,49 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(8, 8, 8, 0.45), rgba(8, 8, 8, 0.75));
-  z-index: 1;                               /* Capa intermedia entre foto y texto */
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.4), 
+    rgba(0, 0, 0, 0.7)
+  );
+  z-index: 1;
 }
 
 .hero__content {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);         /* Centrado absoluto sobre la foto */
-  z-index: 2;                               /* Siempre por encima del overlay */
+  transform: translate(-50%, -50%);
+  z-index: 2;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0 var(--padding);
+  padding: 0 20px;
 }
 
 .hero_titulo {
   font-family: 'Bebas Neue', sans-serif;
   transform: skewX(-10deg);
-  font-size: clamp(2.6rem, 6vw, 5rem);
-  margin-bottom: 12px;
-  color: var(--color-primary);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  margin-bottom: 10px;
+  color: var(--color-primary, #ffcc00);
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
 }
 
 .hero_subtitulo {
   font-family: 'Bebas Neue', sans-serif;
   transform: skewX(-10deg);
-  font-size: 1.7rem;
-  color: var(--text-primary);
-  max-width: 720px;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: #fff;
+  max-width: 800px;
+  letter-spacing: 1px;
 }
 
 @media (max-width: 768px) {
-  .hero_titulo { font-size: 2.2rem; }
-  .hero_subtitulo { font-size: 1rem; }
+  .hero {
+    height: 60vh;
+    /* Ajusta el margen en móvil si el header cambia de tamaño */
+    margin-top: var(--header-height-mobile, 70px);
+  }
 }
