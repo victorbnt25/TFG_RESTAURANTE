@@ -1,4 +1,4 @@
-import fondoNosotros from "../../assets/media/camarero.png";
+import fondoNosotros from "../../assets/media/camarero.webp";
 import "./nosotros.css";
 
 

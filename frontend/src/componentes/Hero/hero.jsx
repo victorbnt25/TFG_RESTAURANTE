@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import fondoHero from "../../assets/media/fondoHero.png";
+import fondoHero from "../../assets/media/fondoHero.webp";
 import "./hero.css";
 
 function Hero() {
