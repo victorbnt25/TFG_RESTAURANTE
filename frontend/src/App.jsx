@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Cabecera from "./componentes/Cabecera/cabecera.jsx";
@@ -12,20 +12,16 @@ import Loader from "./componentes/Loader/loader.jsx";
 import Nosotros from "./pages/Nosotros/nosotros.jsx";
 import "./App.css";
 
-// IMPORTS PARA LA PARTE DE ADMINISTRACIÓN
+// IMPORTS ADMINISTRACIÓN
 import AdminLayout from "./pages/Admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import AdminPlatos from "./pages/Admin/AdminPlatos.jsx";
-import AdminSubirFoto from "./pages/Admin/AdminSubirFoto.jsx";
 import RutaProtegida from "./componentes/auth/RutaProtegida.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 
-
-
 function App() {
-  const [loading, setLoading] = useState(() => {
-    return !sessionStorage.getItem("appLoaded");
-  });
+  const location = useLocation();
+  const [loading, setLoading] = useState(() => !sessionStorage.getItem("appLoaded"));
 
   useEffect(() => {
     if (loading) {
@@ -33,52 +29,39 @@ function App() {
         sessionStorage.setItem("appLoaded", "true");
         setLoading(false);
       }, 1800);
-
       return () => clearTimeout(timer);
     }
   }, [loading]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
+
+  const esRutaAdmin = location.pathname.startsWith("/admin");
 
   return (
-
     <div className="layout">
-      <Cabecera />
+      {!esRutaAdmin && <Cabecera />}
 
-      <main className="contenido">
+      <main className={esRutaAdmin ? "" : "contenido"}>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Hero />
-                <Inicio />
-              </>
-            }
-          />
-               {/* Páginas públicas */}
+          <Route path="/" element={<><Hero /><Inicio /></>} />
           <Route path="/carta" element={<Carta />} />
           <Route path="/reservas" element={<Reservas />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/nosotros" element={<Nosotros />} />
 
-          {/* Ruta de login admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          {/* Rutas para la parte de administración */}
-            <Route element={<RutaProtegida />}>
-            <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="platos" element={<AdminPlatos />} />
-            <Route path="subir-foto" element={<AdminSubirFoto />} />
-           </Route>
-          </Route>
 
+          <Route element={<RutaProtegida />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="platos" element={<AdminPlatos />} />
+              {/* Ruta Subir Foto eliminada con éxito */}
+            </Route>
+          </Route>
         </Routes>
       </main>
 
-      <Footer />
+      {!esRutaAdmin && <Footer />}
     </div>
   );
 }

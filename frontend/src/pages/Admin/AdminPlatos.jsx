@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { listarPlatos, subirFotoPlato } from "../../servicios/adminApi";
+import { listarPlatos, subirFotoPlato, crearPlato, eliminarPlato, actualizarPlato } from "../../servicios/adminApi";
 import { API_URL } from "../../servicios/api";
+import "./admin.css";
 
 export default function AdminPlatos() {
   const [platos, setPlatos] = useState([]);
@@ -9,163 +10,180 @@ export default function AdminPlatos() {
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [filtro, setFiltro] = useState("TODOS");
 
-  useEffect(() => {
-    cargarPlatos();
-  }, []);
+  const [editForm, setEditForm] = useState({ nombre: "", precio: "", descripcion: "", tipo: "" });
 
-  const cargarPlatos = async () => {
+  useEffect(() => { fetchPlatos(); }, []);
+
+  const fetchPlatos = async () => {
     try {
       const data = await listarPlatos();
       setPlatos(data);
-    } catch (e) {
-      setError(e.message);
-    }
+    } catch (e) { setError(e.message); }
   };
 
-  const crearPlato = async (e) => {
+  const seleccionarParaEditar = (plato) => {
+    setPlatoSeleccionado(plato);
+    setEditForm({
+      nombre: plato.nombre,
+      precio: plato.precio,
+      descripcion: plato.descripcion || "",
+      tipo: plato.tipo
+    });
+    setArchivo(null);
+    setMensaje("");
+    setError("");
+  };
+
+  const handleEditChange = (e) => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  const onCrear = async (e) => {
     e.preventDefault();
-    setMensaje("");
-    setError("");
     setCargando(true);
-
     try {
-      const res = await fetch(`${API_URL}/index.php/api/platos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: e.target.nombre.value,
-          precio: e.target.precio.value,
-          descripcion: e.target.descripcion.value, // NUEVO
-          tipo: e.target.tipo.value, // NUEVO
-        }),
-      });
-
-      if (!res.ok) throw new Error("Error al crear plato");
-
-      setMensaje("✅ Plato creado correctamente");
+      const body = {
+        nombre: e.target.nombre.value,
+        precio: e.target.precio.value,
+        descripcion: e.target.descripcion.value,
+        tipo: e.target.tipo.value,
+      };
+      await crearPlato(body);
+      setMensaje("✅ Plato añadido");
       e.target.reset();
-      cargarPlatos();
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setCargando(false);
-    }
+      await fetchPlatos();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
   };
 
-  const subirFoto = async () => {
-    if (!platoSeleccionado || !archivo) {
-      setError("Selecciona plato y archivo");
-      return;
-    }
-
-    setMensaje("");
-    setError("");
+  const onActualizar = async () => {
     setCargando(true);
+    try {
+      await actualizarPlato(platoSeleccionado.id, editForm);
+      setMensaje("✅ Cambios guardados");
+      await fetchPlatos();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
+  };
 
+  const onSubirFoto = async () => {
+    if (!archivo) return;
+    setCargando(true);
     try {
       await subirFotoPlato(platoSeleccionado.id, archivo);
-      setMensaje("✅ Foto subida correctamente");
-      setArchivo(null);
-      await cargarPlatos();
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setCargando(false);
-    }
+      setMensaje("✅ Foto actualizada");
+      await fetchPlatos();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
+  };
+
+  const onEliminar = async () => {
+    if (!window.confirm(`¿Eliminar ${platoSeleccionado.nombre}?`)) return;
+    setCargando(true);
+    try {
+      await eliminarPlato(platoSeleccionado.id);
+      setPlatoSeleccionado(null);
+      await fetchPlatos();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
   };
 
   return (
-    <div style={{ display: "flex", gap: 40, padding: 20 }}>
-      {/* IZQUIERDA: LISTADO Y CREACIÓN */}
-      <div>
-        <h2>Gestión de Platos</h2>
+    <div className="platos-container">
+      <section className="platos-main">
+        <h2 className="admin-title-graffiti">Gestión de Carta</h2>
+        
+        {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+        {error && <p className="mensaje-error">{error}</p>}
 
-        {mensaje && <p style={{ color: "green", fontWeight: "bold" }}>{mensaje}</p>}
-        {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
-
-        <form onSubmit={crearPlato} style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-          <input name="nombre" placeholder="Nombre del plato" required disabled={cargando} />
-          <input name="precio" type="number" step="0.01" placeholder="Precio (ej: 12.50)" required disabled={cargando} />
-          <textarea name="descripcion" placeholder="Descripción breve..." disabled={cargando} />
-          
-          <select name="tipo" disabled={cargando}>
-            <option value="PRINCIPAL">Principal</option>
+        <form onSubmit={onCrear} className="platos-form">
+          <h3 className="admin-subtitle">Nuevo Producto</h3>
+          <div style={{display: 'flex', gap: '10px'}}>
+            <input name="nombre" placeholder="Nombre" required />
+            <input name="precio" type="number" step="0.01" placeholder="Precio" required />
+          </div>
+          <select name="tipo">
+            <option value="PRINCIPAL">Hamburguesa</option>
             <option value="ENTRANTE">Entrante</option>
             <option value="POSTRE">Postre</option>
             <option value="BEBIDA">Bebida</option>
           </select>
-
-          <button type="submit" disabled={cargando}>
-            {cargando ? "Procesando..." : "Crear plato"}
-          </button>
+          <button type="submit">CREAR PRODUCTO</button>
         </form>
 
-        <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ background: "#b8860b" }}>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Tipo</th>
-              <th>¿Foto?</th>
-            </tr>
-          </thead>
-          <tbody>
-            {platos.map((p) => (
-              <tr
-                key={p.id}
-                onClick={() => setPlatoSeleccionado(p)}
-                style={{
-                  cursor: "pointer",
-                  background: platoSeleccionado?.id === p.id ? "#b8860b" : "transparent",
-                }}
-              >
-                <td>{p.id}</td>
-                <td>{p.nombre}</td>
-                <td>{p.precio} €</td>
-                <td><small>{p.tipo}</small></td>
-                <td>{p.foto_url ? "✅" : "❌"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        <div className="tabla-header">
+           <h3 className="admin-subtitle">Lista de Productos</h3>
+           <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className="select-filtro">
+              <option value="TODOS">Todos</option>
+              <option value="PRINCIPAL">Hamburguesas</option>
+              <option value="ENTRANTE">Entrantes</option>
+              <option value="POSTRE">Postres</option>
+              <option value="BEBIDA">Bebidas</option>
+           </select>
+        </div>
 
-      {/* DERECHA: EDICIÓN DE IMAGEN */}
-      <div style={{ minWidth: 200 }}>
-        <h3>Imagen del Plato</h3>
+        <div className="contenedor-tabla">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Vista</th>
+                <th>Nombre</th>
+                <th>Tipo</th> {/* Columna de Tipo Restaurada */}
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {platos.filter(p => filtro === "TODOS" || p.tipo === filtro).map((p) => (
+                <tr key={p.id} onClick={() => seleccionarParaEditar(p)} className={platoSeleccionado?.id === p.id ? "row-selected" : ""}>
+                  <td>{p.foto_url ? <img className="img-mini" src={`${API_URL}${p.foto_url}`} width="40" alt="" /> : "—"}</td>
+                  <td>{p.nombre}</td>
+                  {/* Etiqueta de color según tipo restaurada */}
+                  <td><span className={`badge ${p.tipo.toLowerCase()}`}>{p.tipo}</span></td>
+                  <td>{p.precio}€</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside className="platos-aside">
         {platoSeleccionado ? (
-          <>
-            <p>Editando: <strong>{platoSeleccionado.nombre}</strong></p>
-            {platoSeleccionado.foto_url && (
-              <div style={{ marginBottom: 10 }}>
-                <img
-                  src={`${API_URL}${platoSeleccionado.foto_url}?t=${Date.now()}`}
-                  width="100%"
-                  style={{ borderRadius: 8 }}
-                  alt="Vista previa"
-                />
+          <div>
+            <h3 className="admin-subtitle" style={{ color: 'var(--color-primary)' }}>{platoSeleccionado.nombre}</h3>
+            
+            <div className="img-preview-container">
+              {platoSeleccionado.foto_url ? (
+                <img src={`${API_URL}${platoSeleccionado.foto_url}?t=${Date.now()}`} alt="" />
+              ) : <div className="no-photo">Sin imagen</div>}
+            </div>
+
+            <div className="edit-inputs">
+              <input name="nombre" value={editForm.nombre} onChange={handleEditChange} placeholder="Nombre" />
+              <input name="precio" value={editForm.precio} onChange={handleEditChange} type="number" step="0.01" />
+              <textarea name="descripcion" value={editForm.descripcion} onChange={handleEditChange} placeholder="Descripción" />
+              <select name="tipo" value={editForm.tipo} onChange={handleEditChange}>
+                <option value="PRINCIPAL">Hamburguesa</option>
+                <option value="ENTRANTE">Entrante</option>
+                <option value="POSTRE">Postre</option>
+                <option value="BEBIDA">Bebida</option>
+              </select>
+              
+              <button onClick={onActualizar} className="btn-gold">GUARDAR CAMBIOS</button>
+              
+              <div style={{marginTop: '15px'}}>
+                <label htmlFor="file-upload" className="custom-file-upload">
+                  {archivo ? "ARCHIVO SELECCIONADO" : "CAMBIAR FOTO"}
+                </label>
+                <input id="file-upload" type="file" className="input-file-hidden" onChange={(e) => setArchivo(e.target.files[0])} />
+                <button onClick={onSubirFoto} disabled={!archivo} className="btn-gold" style={{marginTop: '5px', width: '100%'}}>ACTUALIZAR FOTO</button>
               </div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setArchivo(e.target.files[0])}
-              disabled={cargando}
-            />
-            <button 
-                onClick={subirFoto} 
-                disabled={cargando || !archivo}
-                style={{ marginTop: 10, width: "100%" }}
-            >
-              {cargando ? "Subiendo..." : "Actualizar Foto"}
-            </button>
-          </>
+              
+              <button onClick={onEliminar} className="btn-delete">ELIMINAR PRODUCTO</button>
+            </div>
+          </div>
         ) : (
-          <p style={{ fontStyle: "italic" }}>Selecciona un plato de la lista para gestionar su foto.</p>
+          <p className="placeholder-text">Haz clic en un producto de la tabla para editar su información o cambiar la foto.</p>
         )}
-      </div>
+      </aside>
     </div>
   );
 }

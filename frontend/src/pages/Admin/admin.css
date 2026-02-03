@@ -1,0 +1,236 @@
+/* =========================================
+   ADMIN LAYOUT & NAVEGACIÓN
+   ========================================= */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--color-secondary);
+}
+
+.admin-sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: #0a0a0a;
+    border-right: 1px solid #333;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.admin-nav-link {
+    text-decoration: none;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: var(--font-fitz);
+    font-size: 1.3rem;
+    transition: 0.3s;
+}
+
+.admin-nav-link:hover {
+    background: #1a1a1a;
+    color: var(--color-primary);
+}
+
+.admin-nav-link.active {
+    background: var(--color-primary);
+    color: #000;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 40px;
+    background-color: var(--color-secondary);
+}
+
+/* =========================================
+   CONTENEDOR DE PLATOS (2 COLUMNAS)
+   ========================================= */
+.platos-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.platos-main {
+    flex: 2;
+}
+
+.platos-aside {
+    flex: 1;
+    min-width: 380px;
+    background: #111;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #222;
+    position: sticky;
+    top: 20px;
+}
+
+/* =========================================
+   TABLA, FILTROS Y BADGES
+   ========================================= */
+.tabla-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.select-filtro {
+    background: #111;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-fitz);
+}
+
+.contenedor-tabla {
+    max-height: 550px;
+    overflow-y: auto;
+    border: 1px solid #222;
+    border-radius: 8px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table thead tr {
+    background-color: var(--color-primary);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.admin-table th {
+    color: #000;
+    padding: 15px;
+    font-family: var(--font-fitz);
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid #222;
+    color: #fff;
+}
+
+.row-selected {
+    background-color: #1a1a1a !important;
+    border-left: 5px solid var(--color-primary);
+}
+
+/* Estilos de los Badges por Categoría */
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #222;
+    display: inline-block;
+}
+
+.badge.principal { color: #ffcc00; border: 1px solid #ffcc00; } /* Hamburguesas */
+.badge.entrante { color: #00ccff; border: 1px solid #00ccff; }  /* Entrantes */
+.badge.postre { color: #ff00ff; border: 1px solid #ff00ff; }    /* Postres */
+.badge.bebida { color: #00ff88; border: 1px solid #00ff88; }    /* Bebidas */
+
+/* =========================================
+   FORMULARIOS E INPUTS
+   ========================================= */
+.platos-form, .edit-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #0f0f0f;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+input, textarea, select {
+    padding: 12px;
+    background: #181818;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   IMÁGENES Y BOTONES
+   ========================================= */
+.img-preview-container img {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+    border: 2px solid var(--color-primary);
+    margin-bottom: 15px;
+}
+
+.img-mini {
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.custom-file-upload {
+    display: block;
+    padding: 12px;
+    border: 1px dashed var(--color-primary);
+    color: var(--color-primary);
+    text-align: center;
+    cursor: pointer;
+    font-family: var(--font-fitz);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.input-file-hidden { display: none; }
+
+button, .btn-gold {
+    background: var(--color-primary);
+    color: #000;
+    font-family: var(--font-fitz);
+    font-size: 1.4rem;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    width: 100%;
+    transition: 0.2s;
+}
+
+button:hover { filter: brightness(1.2); }
+
+.btn-delete {
+    background: #8c1d18;
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 15px;
+}
+
+.btn-delete:hover { background: #b3241d; }
+
+.mensaje-exito { color: #28a745; margin-bottom: 15px; font-weight: bold; }
+.mensaje-error { color: #dc3545; margin-bottom: 15px; font-weight: bold; }
+.placeholder-text { text-align: center; color: var(--text-secondary); padding: 50px 20px; }
+.no-photo { padding: 40px; background: #181818; text-align: center; color: #444; border: 1px dashed #333; }

@@ -1,29 +1,47 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import "./admin.css";
 
 export default function AdminLayout() {
+  const location = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token_admin");
+    window.location.href = "/admin/login";
+  };
+
   return (
-    <div style={{marginTop: 120, display: "flex", gap: 20 }}>
-      <aside style={{ width: 220 }}>
-        <h3>Panel Admin</h3>
-        <nav style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <Link to="/admin">Dashboard</Link>
-          <Link to="/admin/platos">Platos</Link>
-          <Link to="/admin/subir-foto">Subir foto</Link>
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <h3 className="admin-title-graffiti" style={{ fontSize: "1.8rem" }}>Panel Admin</h3>
+        
+        <nav className="admin-nav">
+           <Link 
+            to="/admin/platos" 
+            className={`admin-nav-link ${location.pathname === "/admin/platos" ? "active" : ""}`}
+          >
+            Platos
+          </Link>
+          <Link 
+            to="/admin" 
+            className={`admin-nav-link ${location.pathname === "/admin" ? "active" : ""}`}
+          >
+            Dashboard
+          </Link>
+         
         </nav>
+
+        <button 
+          onClick={handleLogout} 
+          className="btn-delete" 
+          style={{ marginTop: "auto" }}
+        >
+          CERRAR SESIÓN
+        </button>
       </aside>
 
-      <section style={{ flex: 1 }}>
+      <main className="admin-content">
         <Outlet />
-      </section>
-      <button
-      onClick={() => {
-          localStorage.removeItem("token_admin");
-          window.location.href = "/admin/login";
-        }}>
-       Cerrar sesión
-        </button>
-
+      </main>
     </div>
-    
   );
 }
