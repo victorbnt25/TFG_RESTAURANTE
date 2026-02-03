@@ -43,18 +43,27 @@ export default function AdminPlatos() {
   const onCrear = async (e) => {
     e.preventDefault();
     setCargando(true);
+    setMensaje("");
+    setError("");
+
     try {
+      // CORRECCIÓN: Usamos una comprobación de seguridad para la descripción
       const body = {
         nombre: e.target.nombre.value,
         precio: e.target.precio.value,
-        descripcion: e.target.descripcion.value,
+        descripcion: e.target.descripcion ? e.target.descripcion.value : "", // Evita el error si no existe
         tipo: e.target.tipo.value,
       };
+      
       await crearPlato(body);
-      setMensaje("✅ Plato añadido");
+      setMensaje("✅ Plato añadido correctamente");
       e.target.reset();
       await fetchPlatos();
-    } catch (e) { setError(e.message); } finally { setCargando(false); }
+    } catch (e) { 
+      setError(e.message); 
+    } finally { 
+      setCargando(false); 
+    }
   };
 
   const onActualizar = async () => {
@@ -94,6 +103,7 @@ export default function AdminPlatos() {
         {mensaje && <p className="mensaje-exito">{mensaje}</p>}
         {error && <p className="mensaje-error">{error}</p>}
 
+        {/* Formulario de creación sin descripción según tu captura */}
         <form onSubmit={onCrear} className="platos-form">
           <h3 className="admin-subtitle">Nuevo Producto</h3>
           <div style={{display: 'flex', gap: '10px'}}>
@@ -106,7 +116,9 @@ export default function AdminPlatos() {
             <option value="POSTRE">Postre</option>
             <option value="BEBIDA">Bebida</option>
           </select>
-          <button type="submit">CREAR PRODUCTO</button>
+          <button type="submit" disabled={cargando}>
+            {cargando ? "CARGANDO..." : "CREAR PRODUCTO"}
+          </button>
         </form>
 
         <div className="tabla-header">
@@ -126,7 +138,7 @@ export default function AdminPlatos() {
               <tr>
                 <th>Vista</th>
                 <th>Nombre</th>
-                <th>Tipo</th> {/* Columna de Tipo Restaurada */}
+                <th>Tipo</th>
                 <th>Precio</th>
               </tr>
             </thead>
@@ -135,7 +147,6 @@ export default function AdminPlatos() {
                 <tr key={p.id} onClick={() => seleccionarParaEditar(p)} className={platoSeleccionado?.id === p.id ? "row-selected" : ""}>
                   <td>{p.foto_url ? <img className="img-mini" src={`${API_URL}${p.foto_url}`} width="40" alt="" /> : "—"}</td>
                   <td>{p.nombre}</td>
-                  {/* Etiqueta de color según tipo restaurada */}
                   <td><span className={`badge ${p.tipo.toLowerCase()}`}>{p.tipo}</span></td>
                   <td>{p.precio}€</td>
                 </tr>
@@ -149,13 +160,11 @@ export default function AdminPlatos() {
         {platoSeleccionado ? (
           <div>
             <h3 className="admin-subtitle" style={{ color: 'var(--color-primary)' }}>{platoSeleccionado.nombre}</h3>
-            
             <div className="img-preview-container">
               {platoSeleccionado.foto_url ? (
                 <img src={`${API_URL}${platoSeleccionado.foto_url}?t=${Date.now()}`} alt="" />
               ) : <div className="no-photo">Sin imagen</div>}
             </div>
-
             <div className="edit-inputs">
               <input name="nombre" value={editForm.nombre} onChange={handleEditChange} placeholder="Nombre" />
               <input name="precio" value={editForm.precio} onChange={handleEditChange} type="number" step="0.01" />
@@ -166,9 +175,7 @@ export default function AdminPlatos() {
                 <option value="POSTRE">Postre</option>
                 <option value="BEBIDA">Bebida</option>
               </select>
-              
               <button onClick={onActualizar} className="btn-gold">GUARDAR CAMBIOS</button>
-              
               <div style={{marginTop: '15px'}}>
                 <label htmlFor="file-upload" className="custom-file-upload">
                   {archivo ? "ARCHIVO SELECCIONADO" : "CAMBIAR FOTO"}
@@ -176,12 +183,11 @@ export default function AdminPlatos() {
                 <input id="file-upload" type="file" className="input-file-hidden" onChange={(e) => setArchivo(e.target.files[0])} />
                 <button onClick={onSubirFoto} disabled={!archivo} className="btn-gold" style={{marginTop: '5px', width: '100%'}}>ACTUALIZAR FOTO</button>
               </div>
-              
               <button onClick={onEliminar} className="btn-delete">ELIMINAR PRODUCTO</button>
             </div>
           </div>
         ) : (
-          <p className="placeholder-text">Haz clic en un producto de la tabla para editar su información o cambiar la foto.</p>
+          <p className="placeholder-text">Haz clic en un producto para editarlo.</p>
         )}
       </aside>
     </div>

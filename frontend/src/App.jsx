@@ -55,7 +55,6 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="platos" element={<AdminPlatos />} />
-              {/* Ruta Subir Foto eliminada con éxito */}
             </Route>
           </Route>
         </Routes>
