@@ -47,7 +47,7 @@ export default function AdminPlatos() {
     setError("");
 
     try {
-  
+      // CORRECCIÓN: Usamos una comprobación de seguridad para la descripción
       const body = {
         nombre: e.target.nombre.value,
         precio: e.target.precio.value,
