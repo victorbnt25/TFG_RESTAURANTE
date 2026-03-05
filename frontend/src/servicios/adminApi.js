@@ -8,14 +8,14 @@ export function obtenerKpisReservas() {
 // Platos
 
 /**
- * Obtiene la lista completa de platos desde la base de datos.
+ * Obtiene la lista completa de platos desde la base de datos
  */
 export function listarPlatos() {
   return request("/api/platos");
 }
 
 /**
- * Crea un nuevo plato en la base de datos.
+ * Crea un nuevo plato en la base de datos
  */
 export function crearPlato(datos) {
   return request("/api/platos", {
@@ -26,8 +26,8 @@ export function crearPlato(datos) {
 }
 
 /**
- * Actualiza la información de un plato existente (Nombre, Precio, etc.).
- * Se utiliza el método PUT según la lógica de tu controlador en Symfony.
+ * Actualiza la información de un plato existente (Nombre, Precio, etc...)
+ * Se utiliza el método PUT según la lógica de tu controlador en Symfony
  */
 export function actualizarPlato(id, datos) {
   return request(`/api/platos/${id}`, {

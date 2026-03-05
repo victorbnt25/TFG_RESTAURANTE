@@ -1,0 +1,163 @@
+/* 
+   SECCION NOSOTROS (WRAPPER)
+ */
+
+.reservas {
+    width: 100%;
+}
+
+/* HERO - Contenedor principal */
+.reservas-inner {
+    position: relative;
+    width: 100%;
+    min-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* HERO - Foto de fondo */
+.reservas-foto {
+    position: absolute;
+    inset: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    z-index: 0;
+    filter: saturate(1.5) contrast(0.8);
+}
+
+/* HERO - Overlay oscuro */
+.reservas-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.75));
+    z-index: 0;
+}
+
+/* HERO - Contenido centrado encima */
+.reservas-content {
+    position: relative;
+    z-index: 1;
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* HERO - Título */
+.reservas-title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1.5px;
+    transform: skewX(-6deg);
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.75);
+}
+
+.reservas-title span {
+    display: block;
+    line-height: 1;
+}
+
+.reservas-title .big {
+    font-size: 5rem;
+}
+
+.reservas-title .small {
+    font-size: 3.5rem;
+}
+
+.reservas-title .white {
+    color: #ffffff;
+}
+
+.reservas-title .primary {
+    color: var(--color-primary);
+}
+
+
+.formulario-reservas {
+    background-color: var(--color-secondary);
+    padding: clamp(30px, 4vw, 60px);
+    max-width: 1100px;
+    margin: clamp(40px, 8vw, 60px) auto 80px;
+    border-radius: 16px;
+    border: 3px solid var(--color-primary);
+    box-shadow: 0 5px 10px var(--color-primary);
+
+    /* 2 columnas iguales para los campos */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Cada campo (label + input) */
+.formulario-reservas div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.formulario-reservas label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--color-primary);
+    letter-spacing: 1px;
+}
+
+.formulario-reservas input,
+.formulario-reservas select,
+.formulario-reservas textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-primary);
+    background-color: #1a1a1a;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+
+.formulario-reservas input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+
+/* Elementos que ocupan las 2 columnas enteras */
+.formulario-fila-completa {
+    grid-column: 1 / -1;
+}
+
+/* Botón */
+.formulario-reservas button {
+    grid-column: 1 / -1;
+    background-color: var(--color-primary);
+    color: #111;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    transition: transform 0.2s ease;
+}
+
+.formulario-reservas button:hover {
+    transform: scale(1.02);
+}
+
+/* Responsive: 1 sola columna en móvil */
+@media (max-width: 600px) {
+    .formulario-reservas {
+        grid-template-columns: 1fr;
+    }
+
+    .formulario-fila-completa {
+        grid-column: 1;
+    }
+
+    .formulario-reservas button {
+        grid-column: 1;
+    }
+}
