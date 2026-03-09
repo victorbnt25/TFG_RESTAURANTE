@@ -11,6 +11,7 @@ import Contacto from "./pages/Contacto/contacto.jsx";
 import Loader from "./componentes/Loader/loader.jsx";
 import Nosotros from "./pages/Nosotros/nosotros.jsx";
 import Registrarse from "./pages/Registrarse/registrarse.jsx";
+import Login from "./pages/Login/login.jsx";
 import "./App.css";
 
 // IMPORTS ADMINISTRACIÓN
@@ -51,6 +52,7 @@ function App() {
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/registrarse" element={<Registrarse />} />
+          <Route path="/login" element={<Login />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
 

@@ -5,6 +5,14 @@ import Logo from "../../assets/media/logoBlanco.png";
 function Cabecera() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Comprobar si hay sesión
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("usuario");
+    window.location.reload();
+  };
+
   return (
     <header className="cabecera">
       {/* IZQUIERDA: LOGO */}
@@ -31,13 +39,25 @@ function Cabecera() {
         <a href="/contacto">Contacto</a>
       </nav>
 
-      {/* ACCESO USUARIO */}
+      {/* ACCESO USUARIO / PERFIL */}
       <nav className="acceso-usuario">
         <div className="contenedor-acceso">
-          <button className="boton-acceso">Acceder</button>
+          <button className="boton-acceso">
+            {usuario ? `HOLA, ${usuario.nombre.split(' ')[0].toUpperCase()}` : "Acceder"}
+          </button>
+          
           <div className="menu-desplegable-acceso">
-            <a href="/login" className="opcion-acceso">Iniciar sesión</a>
-            <a href="/registrarse" className="opcion-acceso">Registrarse</a>
+            {usuario ? (
+              <>
+                {usuario.rol === "ADMIN" && <a href="/admin" className="opcion-acceso">Panel Admin</a>}
+                <button onClick={cerrarSesion} className="opcion-acceso" style={{ background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}>Cerrar sesión</button>
+              </>
+            ) : (
+              <>
+                <a href="/login" className="opcion-acceso">Iniciar sesión</a>
+                <a href="/registrarse" className="opcion-acceso">Registrarse</a>
+              </>
+            )}
           </div>
         </div>
       </nav>

@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;   // Para guardar cosas en la BBDD
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 // Todas las rutas de este controller empiezan por /api/reservas
@@ -49,18 +50,18 @@ final class ReservaController extends AbstractController
         return $this->json($data);
     }
 
-    // ============================================================
+    
     // CREAR UNA RESERVA
     // URL: POST /api/reservas
     // El frontend envía un JSON con: fecha, hora, numero_personas,
     // nombre, email, y opcionalmente zona y observaciones
-    // ============================================================
     #[Route('', methods: ['POST'])]
     public function create(
         Request $request,
         EntityManagerInterface $em,
         MesaRepository $mesaRepo,
-        UsuarioRepository $usuarioRepo
+        UsuarioRepository $usuarioRepo,
+        UserPasswordHasherInterface $hasher
     ): JsonResponse {
 
         // Leemos el JSON que envía el frontend
@@ -94,7 +95,9 @@ final class ReservaController extends AbstractController
             $usuario = new Usuario();
             $usuario->setNombre($data['nombre']);
             $usuario->setEmail($data['email']);
-            $usuario->setContrasena(password_hash('temporal', PASSWORD_BCRYPT));
+            // Ahora usamos el hasher oficial de Symfony para que sea 100% seguro y consistente
+            $hashedPassword = $hasher->hashPassword($usuario, 'temporal');
+            $usuario->setContrasena($hashedPassword);
             $em->persist($usuario);
         }
 

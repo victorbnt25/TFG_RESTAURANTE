@@ -103,6 +103,24 @@ class MesaController extends AbstractController
         $em->remove($mesa);
         $em->flush();
 
+        // ------------------------------------------------------------
+        // RE-INDEXAR AUTOMÁTICAMENTE (Requisito TFG)
+        // Al borrar M-1, la M-2 pasa a ser M-1, etc.
+        // ------------------------------------------------------------
+        $mesasRestantes = $repo->findBy([], ['id' => 'ASC']);
+        $contador = 1;
+        
+        foreach ($mesasRestantes as $m) {
+            // Solo reindexamos las que siguen el patrón "M-"
+            if (str_starts_with($m->getCodigo(), 'M-')) {
+                $nuevoCodigo = 'M-' . $contador;
+                $m->setCodigo($nuevoCodigo);
+                $contador++;
+            }
+        }
+        
+        $em->flush();
+
         return $this->json(['ok' => true]);
     }
 }

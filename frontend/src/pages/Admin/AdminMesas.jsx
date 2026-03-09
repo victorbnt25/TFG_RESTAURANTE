@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import { listarMesas, crearMesa, actualizarMesa, eliminarMesa } from "../../servicios/adminApi";
-import Modal from "../../componentes/Admin/Modal";
+import { listarMesas, crearMesa, eliminarMesa, actualizarMesa } from "../../servicios/adminApi";
 import "./admin.css";
 
 export default function AdminMesas() {
   const [mesas, setMesas] = useState([]);
-  const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+  
+  // Estados para edición
+  const [mesaEditando, setMesaEditando] = useState(null);
+  const [formData, setFormData] = useState({ codigo: "", capacidad: "", zona: "SALA" });
 
-  const [editForm, setEditForm] = useState({ codigo: "", capacidad: "", zona: "SALA", activo: true });
-
-  useEffect(() => { fetchMesas(); }, []);
+  useEffect(() => { 
+    fetchMesas(); 
+  }, []);
 
   const fetchMesas = async () => {
     try {
@@ -33,39 +34,53 @@ export default function AdminMesas() {
     return `M-${maxNum + 1}`;
   };
 
-  const seleccionarParaEditar = (mesa) => {
-    setMesaSeleccionada(mesa);
-    setEditForm({
+  // Al cambiar campos del formulario
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Cargar mesa en el formulario para editar
+  const prepararEdicion = (mesa) => {
+    setMesaEditando(mesa);
+    setFormData({
       codigo: mesa.codigo,
       capacidad: mesa.capacidad,
-      zona: mesa.zona,
-      activo: mesa.activo
+      zona: mesa.zona
     });
     setMensaje("");
     setError("");
-    setIsModalOpen(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleEditChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    setEditForm({ ...editForm, [e.target.name]: value });
+  const cancelarEdicion = () => {
+    setMesaEditando(null);
+    setFormData({ codigo: "", capacidad: "", zona: "SALA" });
   };
 
-  const onCrear = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setCargando(true);
     setMensaje("");
     setError("");
 
     try {
-      const body = {
-        codigo: e.target.codigo.value,
-        capacidad: e.target.capacidad.value,
-        zona: e.target.zona.value,
-      };
-
-      await crearMesa(body);
-      setMensaje("✅ Mesa añadida correctamente");
+      if (mesaEditando) {
+        // ACTUALIZAR
+        await actualizarMesa(mesaEditando.id, formData);
+        setMensaje("✅ Mesa actualizada correctamente");
+        setMesaEditando(null);
+      } else {
+        // CREAR
+        const body = {
+          codigo: e.target.codigo.value || getNextMesaCode(),
+          capacidad: formData.capacidad,
+          zona: formData.zona,
+        };
+        await crearMesa(body);
+        setMensaje("✅ Mesa añadida correctamente");
+      }
+      
+      setFormData({ codigo: "", capacidad: "", zona: "SALA" });
       e.target.reset();
       await fetchMesas();
     } catch (e) {
@@ -75,67 +90,59 @@ export default function AdminMesas() {
     }
   };
 
-  const onGuardarTodo = async () => {
-    setCargando(true);
-    setMensaje("");
-    setError("");
-    try {
-      await actualizarMesa(mesaSeleccionada.id, editForm);
-      setMensaje("✅ Mesa actualizada correctamente");
-      setIsModalOpen(false);
-      await fetchMesas();
-    } catch (e) { 
-      setError(e.message); 
-    } finally { 
-      setCargando(false); 
-    }
-  };
-
-  const onEliminar = async () => {
-    if (!window.confirm(`¿Estás seguro de eliminar la mesa "${mesaSeleccionada.codigo}"?`)) return;
-    setCargando(true);
-    try {
-      await eliminarMesa(mesaSeleccionada.id);
-      setIsModalOpen(false);
-      setMesaSeleccionada(null);
-      await fetchMesas();
-      setMensaje("✅ Mesa eliminada");
-    } catch (e) { setError(e.message); } finally { setCargando(false); }
-  };
-
   return (
     <div className="platos-container">
       <section className="platos-main full-width">
-        <h2 className="admin-title-graffiti">Gestión de Mesas</h2>
+        <h2 className="admin-title-graffiti">
+            {mesaEditando ? `Editando Mesa: ${mesaEditando.codigo}` : "Gestión de Mesas"}
+        </h2>
 
         {mensaje && <p className="mensaje-exito">{mensaje}</p>}
         {error && <p className="mensaje-error">{error}</p>}
 
-        {/* Formulario de creación horizontal */}
-        <form onSubmit={onCrear} className="platos-form-horizontal">
+        {/* Formulario dual: Crea o Edita */}
+        <form onSubmit={handleSubmit} className="platos-form-horizontal">
           <div className="form-group">
+            <label style={{color: '#888', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>Código</label>
             <input 
               name="codigo" 
               placeholder="Código (ej: T-01)" 
-              key={mesas.length}
-              defaultValue={getNextMesaCode()}
+              value={formData.codigo || (mesaEditando ? "" : getNextMesaCode())}
+              onChange={handleChange}
               required 
             />
           </div>
           <div className="form-group">
-            <input name="capacidad" type="number" placeholder="Capacidad" required />
+            <label style={{color: '#888', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>Capacidad</label>
+            <input 
+                name="capacidad" 
+                type="number" 
+                placeholder="Capacidad" 
+                value={formData.capacidad}
+                onChange={handleChange}
+                required 
+            />
           </div>
           <div className="form-group">
-            <select name="zona">
+            <label style={{color: '#888', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>Zona</label>
+            <select name="zona" value={formData.zona} onChange={handleChange}>
               <option value="SALA">Sala</option>
               <option value="TERRAZA">Terraza</option>
               <option value="BARRA">Barra</option>
               <option value="PRIVADO">Privado</option>
             </select>
           </div>
-          <button type="submit" disabled={cargando} className="btn-add">
-            {cargando ? "AÑADIENDO..." : "+ AÑADIR MESA"}
-          </button>
+          
+          <div style={{display: 'flex', gap: '10px'}}>
+              <button type="submit" disabled={cargando} className="btn-add">
+                {cargando ? "PROCESANDO..." : (mesaEditando ? "GUARDAR" : "+ AÑADIR")}
+              </button>
+              {mesaEditando && (
+                  <button type="button" onClick={cancelarEdicion} className="btn-delete-link" style={{border: '1px solid #444'}}>
+                      CANCELAR
+                  </button>
+              )}
+          </div>
         </form>
 
         <div className="tabla-header">
@@ -156,14 +163,24 @@ export default function AdminMesas() {
             </thead>
             <tbody>
               {mesas.map((m) => (
-                <tr key={m.id}>
+                <tr key={m.id} style={{background: mesaEditando?.id === m.id ? 'rgba(184, 134, 11, 0.1)' : ''}}>
                   <td><strong>{m.codigo}</strong></td>
                   <td>{m.capacidad} pers.</td>
                   <td><span className={`badge ${m.zona.toLowerCase()}`}>{m.zona}</span></td>
                   <td>{m.estado}</td>
                   <td>{m.activo ? "✅" : "❌"}</td>
-                  <td>
-                    <button onClick={() => seleccionarParaEditar(m)} className="btn-edit-table">Editar</button>
+                  <td style={{display: 'flex', gap: '8px'}}>
+                    <button onClick={() => prepararEdicion(m)} className="btn-edit-table" style={{fontSize: '0.8rem'}}>Editar</button>
+                    <button onClick={async () => {
+                      if (!window.confirm(`¿Estás seguro de eliminar la mesa "${m.codigo}"?`)) return;
+                      setCargando(true);
+                      try {
+                        await eliminarMesa(m.id);
+                        await fetchMesas();
+                        setMensaje("✅ Mesa eliminada");
+                        if(mesaEditando?.id === m.id) cancelarEdicion();
+                      } catch (e) { setError(e.message); } finally { setCargando(false); }
+                    }} className="btn-delete-link">Borrar</button>
                   </td>
                 </tr>
               ))}
@@ -171,56 +188,6 @@ export default function AdminMesas() {
           </table>
         </div>
       </section>
-
-      {/* MODAL DE EDICIÓN */}
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        title={`Editar Mesa: ${mesaSeleccionada?.codigo}`}
-      >
-        <div className="edit-modal-content">
-          <div className="edit-inputs">
-            <div className="input-row">
-                <div className="input-col">
-                    <label>Código de Mesa</label>
-                    <input name="codigo" value={editForm.codigo} onChange={handleEditChange} placeholder="Código" />
-                </div>
-                <div className="input-col">
-                    <label>Capacidad</label>
-                    <input name="capacidad" value={editForm.capacidad} onChange={handleEditChange} type="number" />
-                </div>
-            </div>
-
-            <label>Zona</label>
-            <select name="zona" value={editForm.zona} onChange={handleEditChange}>
-              <option value="SALA">Sala</option>
-              <option value="TERRAZA">Terraza</option>
-              <option value="BARRA">Barra</option>
-              <option value="PRIVADO">Privado</option>
-            </select>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
-                <input 
-                    type="checkbox" 
-                    name="activo" 
-                    checked={editForm.activo} 
-                    onChange={handleEditChange} 
-                    style={{ width: 'auto' }}
-                />
-                <label style={{ margin: 0 }}>Mesa Activa (Disponible para reservas)</label>
-            </div>
-
-            <div className="modal-actions">
-                <button onClick={onGuardarTodo} className="btn-gold" disabled={cargando}>
-                    {cargando ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
-                </button>
-                <button onClick={onEliminar} className="btn-delete-link" disabled={cargando}>
-                    Eliminar Mesa
-                </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

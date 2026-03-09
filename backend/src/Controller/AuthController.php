@@ -55,4 +55,33 @@ final class AuthController extends AbstractController
             ]
         ], 201);
     }
+    #[Route('/login', name: 'app_login', methods: ['POST'])]
+    public function login(
+        Request $request,
+        UserPasswordHasherInterface $hasher,
+        UsuarioRepository $usuarioRepo
+    ): JsonResponse {
+        $data = $request->toArray();
+
+        if (!isset($data['email'], $data['contrasena'])) {
+            return $this->json(['error' => 'Email y contraseña requeridos'], 400);
+        }
+
+        $usuario = $usuarioRepo->findOneBy(['email' => $data['email']]);
+
+        if (!$usuario || !$hasher->isPasswordValid($usuario, $data['contrasena'])) {
+            return $this->json(['error' => 'Credenciales inválidas'], 401);
+        }
+
+        return $this->json([
+            'ok' => true,
+            'mensaje' => 'Login exitoso',
+            'usuario' => [
+                'id' => $usuario->getId(),
+                'nombre' => $usuario->getNombre(),
+                'email' => $usuario->getEmail(),
+                'rol' => $usuario->getRol()->value
+            ]
+        ]);
+    }
 }

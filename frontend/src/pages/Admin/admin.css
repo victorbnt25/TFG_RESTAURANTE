@@ -291,20 +291,23 @@ button, .btn-gold {
 }
 
 .btn-delete-link {
-    background: transparent;
-    color: #8c1d18;
-    font-size: 1rem;
-    text-decoration: underline;
-    border: none;
+    background: #1a0a0a;
+    color: #ff4d4d;
+    font-size: 0.85rem;
+    border: 1px solid #4d1a1a;
     cursor: pointer;
-    padding: 5px;
+    padding: 6px 12px;
     width: auto;
-    margin: 0 auto;
+    border-radius: 4px;
+    font-family: var(--font-fitz);
+    text-transform: uppercase;
+    transition: 0.2s;
 }
 
 .btn-delete-link:hover {
-    color: #ff4d4d;
-    background: transparent;
+    background: #8c1d18;
+    color: #fff;
+    border-color: #8c1d18;
 }
 
 .mensaje-exito { 
