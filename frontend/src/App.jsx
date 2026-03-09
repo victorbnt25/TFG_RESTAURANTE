@@ -10,12 +10,14 @@ import Reservas from "./pages/Reservas/reservas.jsx";
 import Contacto from "./pages/Contacto/contacto.jsx";
 import Loader from "./componentes/Loader/loader.jsx";
 import Nosotros from "./pages/Nosotros/nosotros.jsx";
+import Registrarse from "./pages/Registrarse/registrarse.jsx";
 import "./App.css";
 
 // IMPORTS ADMINISTRACIÓN
 import AdminLayout from "./pages/Admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import AdminPlatos from "./pages/Admin/AdminPlatos.jsx";
+import AdminMesas from "./pages/Admin/AdminMesas.jsx";
 import RutaProtegida from "./componentes/auth/RutaProtegida.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 
@@ -48,6 +50,7 @@ function App() {
           <Route path="/reservas" element={<Reservas />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/registrarse" element={<Registrarse />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -55,6 +58,7 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="platos" element={<AdminPlatos />} />
+              <Route path="mesas" element={<AdminMesas />} />
             </Route>
           </Route>
         </Routes>

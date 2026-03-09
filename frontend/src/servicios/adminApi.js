@@ -60,3 +60,43 @@ export async function subirFotoPlato(platoId, archivo) {
     // establece automáticamente el boundary necesario.
   });
 }
+
+// Mesas
+
+/**
+ * Obtiene la lista completa de mesas
+ */
+export function listarMesas() {
+  return request("/api/mesas");
+}
+
+/**
+ * Crea una nueva mesa
+ */
+export function crearMesa(datos) {
+  return request("/api/mesas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos),
+  });
+}
+
+/**
+ * Actualiza una mesa existente
+ */
+export function actualizarMesa(id, datos) {
+  return request(`/api/mesas/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos),
+  });
+}
+
+/**
+ * Elimina una mesa
+ */
+export function eliminarMesa(id) {
+  return request(`/api/mesas/${id}`, {
+    method: "DELETE",
+  });
+}

@@ -28,6 +28,12 @@ export default function AdminLayout() {
             Dashboard
           </Link>
          
+          <Link 
+            to="/admin/mesas" 
+            className={`admin-nav-link ${location.pathname === "/admin/mesas" ? "active" : ""}`}
+          >
+            Mesas
+          </Link>
         </nav>
 
         <button 

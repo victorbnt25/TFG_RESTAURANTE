@@ -55,27 +55,16 @@
 }
 
 /* =========================================
-   CONTENEDOR DE PLATOS (2 COLUMNAS)
+   CONTENEDOR DE PLATOS (FULL WIDTH)
    ========================================= */
 .platos-container {
     display: flex;
+    flex-direction: column;
     gap: 30px;
-    align-items: flex-start;
 }
 
-.platos-main {
-    flex: 2;
-}
-
-.platos-aside {
-    flex: 1;
-    min-width: 380px;
-    background: #111;
-    padding: 25px;
-    border-radius: 12px;
-    border: 1px solid #222;
-    position: sticky;
-    top: 20px;
+.platos-main.full-width {
+    width: 100%;
 }
 
 /* =========================================
@@ -155,14 +144,46 @@
 /* =========================================
    FORMULARIOS E INPUTS
    ========================================= */
-.platos-form, .edit-inputs {
+.platos-form-horizontal {
+    display: flex;
+    gap: 15px;
+    background: #111;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    align-items: flex-end;
+    border: 1px solid #222;
+}
+
+.form-group {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    background: #0f0f0f;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    gap: 5px;
+}
+
+.edit-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-inputs label {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: -5px;
+}
+
+.input-row {
+    display: flex;
+    gap: 15px;
+}
+
+.input-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 input, textarea, select {
@@ -180,27 +201,50 @@ input, textarea, select {
    ========================================= */
 .img-preview-container img {
     width: 100%;
+    max-height: 250px;
+    object-fit: cover;
     display: block;
     border-radius: 8px;
     border: 2px solid var(--color-primary);
     margin-bottom: 15px;
 }
 
+.img-preview-container.big {
+    margin-bottom: 20px;
+}
+
 .img-mini {
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 1px solid #333;
+}
+
+.no-img-mini {
+    width: 50px;
+    height: 50px;
+    background: #181818;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    color: #444;
 }
 
 .custom-file-upload {
     display: block;
-    padding: 12px;
+    padding: 10px;
     border: 1px dashed var(--color-primary);
     color: var(--color-primary);
     text-align: center;
     cursor: pointer;
     font-family: var(--font-fitz);
     text-transform: uppercase;
-    margin-bottom: 10px;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.custom-file-upload:hover {
+    background: rgba(255, 204, 0, 0.05);
 }
 
 .input-file-hidden { display: none; }
@@ -209,28 +253,94 @@ button, .btn-gold {
     background: var(--color-primary);
     color: #000;
     font-family: var(--font-fitz);
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: bold;
     border: none;
     padding: 12px;
     cursor: pointer;
     text-transform: uppercase;
-    width: 100%;
+    border-radius: 6px;
     transition: 0.2s;
 }
 
-button:hover { filter: brightness(1.2); }
-
-.btn-delete {
-    background: #8c1d18;
-    color: white;
-    font-size: 1.2rem;
-    margin-top: 15px;
+.btn-add {
+    width: auto;
+    padding: 12px 25px;
+    height: 44px;
 }
 
-.btn-delete:hover { background: #b3241d; }
+.btn-edit-table {
+    width: auto;
+    padding: 6px 15px;
+    font-size: 0.9rem;
+    background: #222;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+}
 
-.mensaje-exito { color: #28a745; margin-bottom: 15px; font-weight: bold; }
-.mensaje-error { color: #dc3545; margin-bottom: 15px; font-weight: bold; }
+.btn-edit-table:hover {
+    background: var(--color-primary);
+    color: #000;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-delete-link {
+    background: transparent;
+    color: #8c1d18;
+    font-size: 1rem;
+    text-decoration: underline;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    width: auto;
+    margin: 0 auto;
+}
+
+.btn-delete-link:hover {
+    color: #ff4d4d;
+    background: transparent;
+}
+
+.mensaje-exito { 
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745; 
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #28a745;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.mensaje-error { 
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545; 
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #dc3545;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.filtros-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+}
+
 .placeholder-text { text-align: center; color: var(--text-secondary); padding: 50px 20px; }
-.no-photo { padding: 40px; background: #181818; text-align: center; color: #444; border: 1px dashed #333; }
+
+.no-photo { 
+    padding: 60px 40px; 
+    background: #181818; 
+    text-align: center; 
+    color: #444; 
+    border: 2px dashed #222;
+    border-radius: 8px;
+}

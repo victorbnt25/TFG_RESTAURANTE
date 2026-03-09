@@ -80,9 +80,18 @@ function Reservas() {
       </div>
 
       {/* FORMULARIO DE RESERVA */}
-      <form className="formulario-reservas" onSubmit={procesarReserva}>
+      <form className="form-standard" onSubmit={procesarReserva}>
+        {/* Banner de inicio de sesión */}
+        <div className="banner-info">
+          <span>
+            ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a> o <a href="/registro">créate una cuenta ya</a>
+          </span>
+          <span>
+             y obtén un <strong>10% de descuento</strong> en la carta.
+          </span>
+        </div>
 
-        <div>
+        <div className="form-group">
           <label>Introduce tu nombre</label>
           <input
             type="text"
@@ -92,7 +101,7 @@ function Reservas() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Introduce tu correo</label>
           <input
             type="email"
@@ -102,7 +111,7 @@ function Reservas() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="fecha">Introduce la fecha</label>
           <input
             id="fecha"
@@ -113,7 +122,7 @@ function Reservas() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Introduce la hora</label>
           <select value={hora} onChange={(e) => setHora(e.target.value)} required>
 
@@ -142,17 +151,27 @@ function Reservas() {
           </select>
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Introduce el número de personas</label>
-          <input
-            type="number"
-            value={numeroPersonas}
-            onChange={(e) => setNumeroPersonas(e.target.value)}
+          <select 
+            value={numeroPersonas} 
+            onChange={(e) => setNumeroPersonas(e.target.value)} 
             required
-          />
+          >
+            {[1, 2, 3, 4, 5, 6].map(num => (
+              <option key={num} value={num}>{num} {num === 1 ? 'persona' : 'personas'}</option>
+            ))}
+          </select>
+          <div className="callout-info">
+             <i className="fas fa-users"></i>
+             <div>
+               <strong>ATENCIÓN PARA GRUPOS</strong>
+               <p>Las reservas online están limitadas a un máximo de 6 personas. Para grupos más grandes, por favor contacte directamente con nosotros al <a href="tel:+34900000000">900 000 000</a> para una gestión personalizada.</p>
+             </div>
+          </div>
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Introduce la zona</label>
           <select value={zona} onChange={(e) => setZona(e.target.value)}>
             <option value="">Selecciona una zona (Opcional)</option>
@@ -163,7 +182,7 @@ function Reservas() {
           </select>
         </div>
 
-        <div className="formulario-fila-completa">
+        <div className="form-full-width form-group">
           <label>Introduce las observaciones</label>
           <textarea
             value={observaciones}
@@ -173,19 +192,19 @@ function Reservas() {
 
         {/* Mensaje de error (en rojo) */}
         {mensajeError && (
-          <div className="formulario-fila-completa" style={{ color: "red", fontWeight: "bold" }}>
-            {mensajeError}
+          <div className="form-full-width" style={{ color: "red", fontWeight: "bold" }}>
+             <p>{mensajeError}</p>
           </div>
         )}
 
         {/* Mensaje de éxito (en verde) */}
         {mensajeExito && (
-          <div className="formulario-fila-completa" style={{ color: "green", fontWeight: "bold" }}>
-            {mensajeExito}
+          <div className="form-full-width" style={{ color: "green", fontWeight: "bold" }}>
+             <p>{mensajeExito}</p>
           </div>
         )}
 
-        <button type="submit">Confirmar Reserva</button>
+        <button type="submit" className="form-button">Confirmar Reserva</button>
       </form>
 
     </section>

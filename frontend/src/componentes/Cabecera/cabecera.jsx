@@ -37,7 +37,7 @@ function Cabecera() {
           <button className="boton-acceso">Acceder</button>
           <div className="menu-desplegable-acceso">
             <a href="/login" className="opcion-acceso">Iniciar sesión</a>
-            <a href="/registro" className="opcion-acceso">Registrarse</a>
+            <a href="/registrarse" className="opcion-acceso">Registrarse</a>
           </div>
         </div>
       </nav>

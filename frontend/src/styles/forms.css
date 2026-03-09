@@ -1,0 +1,151 @@
+/* 
+   ESTILOS DE FORMULARIO GENÉRICOS
+   Reutilizables en Reservas, Login, Registro, etc.
+*/
+
+.form-standard {
+    background-color: var(--color-secondary);
+    padding: clamp(30px, 4vw, 60px);
+    max-width: 1100px;
+    margin: clamp(40px, 8vw, 60px) auto 80px;
+    border-radius: 16px;
+    border: 3px solid var(--color-primary);
+    box-shadow: 0 5px 10px var(--color-primary);
+
+    /* Grid de 2 columnas por defecto */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Campos del formulario */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--color-primary);
+    letter-spacing: 1px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-primary);
+    background-color: #1a1a1a;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* Elementos que ocupan las 2 columnas */
+.form-full-width {
+    grid-column: 1 / -1;
+}
+
+/* Botón principal del formulario */
+.form-button {
+    grid-column: 1 / -1;
+    background-color: var(--color-primary);
+    color: #111;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    transition: transform 0.2s ease;
+}
+
+.form-button:hover {
+    transform: scale(1.02);
+}
+
+/* Banners e información */
+.banner-info {
+    grid-column: 1 / -1;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    padding: 15px 20px;
+    background-color: #1a1a1a;
+    border: 1px dashed var(--color-primary);
+    color: #ddd;
+    border-radius: 8px;
+    font-size: 1.5rem;
+}
+
+.banner-info span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.banner-info a,
+.banner-info strong {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* Callouts / Avisos destacados */
+.callout-info {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed var(--color-primary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #fff;
+}
+
+.callout-info i {
+    font-size: 2rem;
+    color: var(--color-primary);
+}
+
+.callout-info strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    color: var(--color-primary);
+}
+
+.callout-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .form-standard {
+        grid-template-columns: 1fr;
+    }
+    .form-full-width, .form-button {
+        grid-column: 1;
+    }
+    .callout-info {
+        flex-direction: column;
+        text-align: center;
+    }
+}

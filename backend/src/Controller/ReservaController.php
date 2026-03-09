@@ -29,8 +29,8 @@ final class ReservaController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function list(ReservaRepository $repo): JsonResponse
     {
-        // Traemos todas las reservas (SELECT * FROM reservas)
-        $reservas = $repo->findAll();
+        // Traemos todas las reservas usando JOIN para evitar cargar mesas/usuarios de uno en uno
+        $reservas = $repo->findAllWithRelations();
 
         // Las convertimos a array para devolverlas como JSON
         $data = [];
@@ -74,6 +74,11 @@ final class ReservaController extends AbstractController
         // Juntamos fecha + hora en un objeto DateTime
         $fechaHora   = new \DateTimeImmutable($data['fecha'] . ' ' . $data['hora']);
         $numPersonas = (int) $data['numero_personas'];
+
+        // Límite de personas configurado (1-6 para reservas online)
+        if ($numPersonas > 6) {
+            return $this->json(['error' => 'Para reservas de más de 6 personas, por favor llame directamente al restaurante.'], 400);
+        }
 
         // Buscamos una mesa que tenga capacidad suficiente
         $mesa = $mesaRepo->findOneBy(['activo' => true], ['capacidad' => 'ASC']);
