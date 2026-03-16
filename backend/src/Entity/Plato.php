@@ -48,7 +48,7 @@ class Plato
     private Categoria $categoria;
 
     /** @var Collection<int, Alergeno> */
-    #[ORM\ManyToMany(targetEntity: Alergeno::class, inversedBy: 'platos')]
+    #[ORM\ManyToMany(targetEntity: Alergeno::class)]
     #[ORM\JoinTable(name: 'platos_alergenos')]
     #[ORM\JoinColumn(name: 'plato_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'alergeno_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
