@@ -1,31 +1,105 @@
 export const API_URL = "http://localhost:8000";
 
 export async function request(ruta, opciones = {}) {
-  // Aseguramos que la ruta empiece por /index.php/api si no lo trae
-  const url = `${API_URL}${ruta.startsWith('/index.php') ? ruta : '/index.php' + ruta}`;
+  const url = `${API_URL}${ruta.startsWith("/index.php") ? ruta : "/index.php" + ruta}`;
 
-  // Si estamos enviando FormData (archivos), eliminamos Content-Type
-  // para que el navegador genere el suyo con el boundary correcto
-  if (opciones.body instanceof FormData) {
-    if (opciones.headers) {
-      delete opciones.headers["Content-Type"];
-    }
+  const opcionesFinales = { ...opciones };
+
+  if (!opcionesFinales.headers) {
+    opcionesFinales.headers = {};
   }
 
-  const res = await fetch(url, opciones);
+  if (!(opcionesFinales.body instanceof FormData)) {
+    opcionesFinales.headers["Content-Type"] = "application/json";
+  }
 
-  let data = null;
+  const respuesta = await fetch(url, opcionesFinales);
+
+  let datos = null;
+
   try {
-    // Intentamos parsear como JSON, si es otra cosa (blob, text) fallará
-    data = await res.json();
-  } catch (e) {
-    /* Respuesta vacía o no JSON */
+    datos = await respuesta.json();
+  } catch (error) {
+    datos = null;
   }
 
-  if (!res.ok) {
-    const msg = data?.error || data?.message || "Error en la petición";
-    throw new Error(msg);
+  if (!respuesta.ok) {
+    const mensaje =
+      datos?.error ||
+      datos?.mensaje ||
+      datos?.message ||
+      "Error en la petición";
+
+    throw new Error(mensaje);
   }
 
-  return data;
+  return datos;
 }
+
+export async function obtenerCategorias() {
+  return await request("/api/categorias");
+}
+
+export async function obtenerPlatos(idCategoria = null) {
+  let ruta = "/api/platos";
+
+  if (idCategoria) {
+    ruta += `?categoria=${idCategoria}`;
+  }
+
+  return await request(ruta);
+}
+
+export async function obtenerDetallePlato(idPlato) {
+  return await request(`/api/platos/${idPlato}`);
+}
+
+export async function crearReserva(datosReserva) {
+  return await request("/api/reservas", {
+    method: "POST",
+    body: JSON.stringify(datosReserva),
+  });
+}
+
+export async function registrarUsuario(datosUsuario) {
+  return await request("/api/register", {
+    method: "POST",
+    body: JSON.stringify(datosUsuario),
+  });
+}
+
+export async function iniciarSesion(datosLogin) {
+  return await request("/api/login", {
+    method: "POST",
+    body: JSON.stringify(datosLogin),
+  });
+}
+
+export async function enviarContacto(datosContacto) {
+  return await request("/api/contacto", {
+    method: "POST",
+    body: JSON.stringify(datosContacto),
+  });
+}
+
+/*
+CAMBIOS REALIZADOS EN ESTE ARCHIVO
+
+1. Se mantiene una función base llamada request() para centralizar todas las peticiones al backend.
+2. Se configura la URL base apuntando a Symfony en http://localhost:8000.
+3. Se añade automáticamente /index.php a las rutas para evitar problemas con Symfony.
+4. Se controla el Content-Type:
+   - Si se envía JSON, se usa application/json.
+   - Si se envía FormData, no se fuerza Content-Type.
+5. Se mejora el control de errores:
+   - Si la respuesta no es correcta, se intenta leer el mensaje devuelto por la API.
+   - Si no existe mensaje, se lanza un error genérico.
+6. Se crean funciones específicas para:
+   - carta
+   - reservas
+   - registro de usuario
+   - login
+   - contacto
+7. Con esto el frontend ya queda preparado para consumir la API real de Symfony
+   sin repetir llamadas request() directamente en cada página.
+*/

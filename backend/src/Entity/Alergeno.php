@@ -2,43 +2,71 @@
 
 namespace App\Entity;
 
-use App\Entity\Traits\TimestampsTrait;
-use App\Enum\AlergenoEnum;
 use App\Repository\AlergenoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AlergenoRepository::class)]
-#[ORM\Table(name: 'alergenos')]
-#[ORM\UniqueConstraint(name: 'uniq_alergenos_nombre', columns: ['nombre'])]
-#[ORM\HasLifecycleCallbacks]
 class Alergeno
 {
-    use TimestampsTrait;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', enumType: AlergenoEnum::class)]
-    private AlergenoEnum $nombre;
+    #[ORM\Column(length: 100)]
+    private ?string $nombre = null;
 
-    /** @var Collection<int, Plato> */
-    #[ORM\ManyToMany(targetEntity: Plato::class, mappedBy: 'alergenos')]
-    private Collection $platos;
+    #[ORM\ManyToMany(targetEntity: Ingrediente::class, mappedBy: 'alergenos')]
+    private Collection $ingredientes;
 
     public function __construct()
     {
-        $this->platos = new ArrayCollection();
+        $this->ingredientes = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getNombre(): AlergenoEnum { return $this->nombre; }
-    public function setNombre(AlergenoEnum $nombre): self { $this->nombre = $nombre; return $this; }
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
 
-    /** @return Collection<int, Plato> */
-    public function getPlatos(): Collection { return $this->platos; }
+    public function setNombre(string $nombre): static
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ingrediente>
+     */
+    public function getIngredientes(): Collection
+    {
+        return $this->ingredientes;
+    }
+
+    public function addIngrediente(Ingrediente $ingrediente): static
+    {
+        if (!$this->ingredientes->contains($ingrediente)) {
+            $this->ingredientes->add($ingrediente);
+            $ingrediente->addAlergeno($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIngrediente(Ingrediente $ingrediente): static
+    {
+        if ($this->ingredientes->removeElement($ingrediente)) {
+            $ingrediente->removeAlergeno($this);
+        }
+
+        return $this;
+    }
 }

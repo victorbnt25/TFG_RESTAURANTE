@@ -13,7 +13,7 @@ class AlergenoFixtures extends Fixture
     {
         foreach (AlergenoEnum::cases() as $alergenoEnum) {
             $alergeno = new Alergeno();
-            $alergeno->setNombre($alergenoEnum);
+            $alergeno->setNombre($alergenoEnum->value);
             $manager->persist($alergeno);
         }
 

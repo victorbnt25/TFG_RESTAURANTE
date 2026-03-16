@@ -2,168 +2,264 @@
 
 namespace App\Controller;
 
-// Importamos lo que necesitamos
-use App\Entity\Reserva;                    // La entidad Reserva (la tabla 'reservas')
-use App\Entity\Usuario;                    // La entidad Usuario (la tabla 'usuarios')
-use App\Enum\CanalReservaEnum;             // Enum: WEB, TELEFONO, PRESENCIAL
-use App\Enum\EstadoReservaEnum;            // Enum: PENDIENTE, CONFIRMADA, CANCELADA...
-use App\Enum\TurnoServicioEnum;            // Enum: COMIDA, CENA
-use App\Enum\ZonaMesaEnum;                 // Enum: SALA, TERRAZA, BARRA, PRIVADO
-use App\Repository\ReservaRepository;      // Para buscar reservas en la BBDD
-use App\Repository\MesaRepository;         // Para buscar mesas en la BBDD
-use App\Repository\UsuarioRepository;      // Para buscar usuarios en la BBDD
-use Doctrine\ORM\EntityManagerInterface;   // Para guardar cosas en la BBDD
+use App\Entity\Reserva;
+use App\Entity\Usuario;
+use App\Enum\EstadoMesaEnum;
+use App\Enum\EstadoReservaEnum;
+use App\Enum\ZonaMesaEnum;
+use App\Repository\MesaRepository;
+use App\Repository\ReservaRepository;
+use App\Repository\UsuarioRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-// Todas las rutas de este controller empiezan por /api/reservas
 #[Route('/api/reservas')]
-final class ReservaController extends AbstractController
+class ReservaController extends AbstractController
 {
-    // ============================================================
-    // LISTAR TODAS LAS RESERVAS
-    // URL: GET /api/reservas
-    // ============================================================
     #[Route('', methods: ['GET'])]
     public function list(ReservaRepository $repo): JsonResponse
     {
-        // Traemos todas las reservas usando JOIN para evitar cargar mesas/usuarios de uno en uno
-        $reservas = $repo->findAllWithRelations();
-
-        // Las convertimos a array para devolverlas como JSON
+        $reservas = $repo->findBy([], ['fechaHoraReserva' => 'ASC']);
         $data = [];
-        foreach ($reservas as $r) {
+
+        foreach ($reservas as $reserva) {
             $data[] = [
-                'id'              => $r->getId(),
-                'nombre_cliente'  => $r->getUsuario()->getNombre(),
-                'mesa'            => $r->getMesa()->getCodigo(),
-                'zona'            => $r->getMesa()->getZona()->value,
-                'fecha_hora'      => $r->getFechaHoraReserva()->format('Y-m-d H:i'),
-                'numero_personas' => $r->getNumeroPersonas(),
-                'estado'          => $r->getEstado()->value,
+                'id' => $reserva->getId(),
+                'nombre' => $reserva->getUsuario()?->getNombre(),
+                'email' => $reserva->getUsuario()?->getEmail(),
+                'fechaHoraReserva' => $reserva->getFechaHoraReserva()?->format('Y-m-d H:i:s'),
+                'numeroPersonas' => $reserva->getNumeroPersonas(),
+                'estado' => $reserva->getEstado()?->value,
+                'turno' => $reserva->getTurno()?->value,
+                'canal' => $reserva->getCanal()?->value,
+                'zona' => $reserva->getMesa()?->getZona()?->value,
+                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'observaciones' => $reserva->getObservaciones(),
             ];
         }
 
         return $this->json($data);
     }
 
-    
-    // CREAR UNA RESERVA
-    // URL: POST /api/reservas
-    // El frontend envía un JSON con: fecha, hora, numero_personas,
-    // nombre, email, y opcionalmente zona y observaciones
     #[Route('', methods: ['POST'])]
     public function create(
         Request $request,
         EntityManagerInterface $em,
-        MesaRepository $mesaRepo,
-        UsuarioRepository $usuarioRepo,
-        UserPasswordHasherInterface $hasher
+        MesaRepository $mesaRepository,
+        ReservaRepository $reservaRepository,
+        UsuarioRepository $usuarioRepository,
+        UserPasswordHasherInterface $passwordHasher
     ): JsonResponse {
-
-        // Leemos el JSON que envía el frontend
         $data = $request->toArray();
 
-        // Comprobamos que vienen los campos obligatorios
-        if (!isset($data['fecha'], $data['hora'], $data['numero_personas'], $data['nombre'], $data['email'])) {
-            return $this->json(['error' => 'Faltan campos obligatorios'], 400);
+        if (
+            empty($data['nombre']) ||
+            empty($data['email']) ||
+            empty($data['fecha']) ||
+            empty($data['hora']) ||
+            empty($data['numero_personas'])
+        ) {
+            return $this->json([
+                'error' => 'Faltan campos obligatorios'
+            ], 400);
         }
 
-        // Juntamos fecha + hora en un objeto DateTime
-        $fechaHora   = new \DateTimeImmutable($data['fecha'] . ' ' . $data['hora']);
-        $numPersonas = (int) $data['numero_personas'];
+        $nombre = trim((string) $data['nombre']);
+        $email = mb_strtolower(trim((string) $data['email']));
+        $fecha = trim((string) $data['fecha']);
+        $hora = trim((string) $data['hora']);
+        $numeroPersonas = (int) $data['numero_personas'];
+        $observaciones = isset($data['observaciones']) && trim((string) $data['observaciones']) !== ''
+            ? trim((string) $data['observaciones'])
+            : null;
 
-        // Límite de personas configurado (1-6 para reservas online)
-        if ($numPersonas > 6) {
-            return $this->json(['error' => 'Para reservas de más de 6 personas, por favor llame directamente al restaurante.'], 400);
+        $zonaTexto = isset($data['zona']) && trim((string) $data['zona']) !== ''
+            ? trim((string) $data['zona'])
+            : null;
+
+        if ($numeroPersonas <= 0) {
+            return $this->json([
+                'error' => 'El número de personas debe ser mayor que 0'
+            ], 400);
         }
 
-        // Buscamos una mesa que tenga capacidad suficiente
-        $mesa = $mesaRepo->findOneBy(['activo' => true], ['capacidad' => 'ASC']);
-        if (!$mesa) {
-            return $this->json(['error' => 'No hay mesas disponibles'], 409);
+        $fechaHora = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $fecha . ' ' . $hora);
+
+        if (!$fechaHora) {
+            return $this->json([
+                'error' => 'Fecha u hora no válidas'
+            ], 400);
         }
 
-        // Buscamos si el usuario ya existe por su email
-        $usuario = $usuarioRepo->findOneBy(['email' => $data['email']]);
+        $zonaEnum = null;
+        if ($zonaTexto) {
+            try {
+                $zonaEnum = ZonaMesaEnum::from($zonaTexto);
+            } catch (\ValueError $e) {
+                return $this->json([
+                    'error' => 'La zona indicada no es válida'
+                ], 400);
+            }
+        }
 
-        // Si no existe, creamos uno nuevo
+        // Buscar o crear usuario automáticamente
+        $usuario = $usuarioRepository->findOneBy(['email' => $email]);
+
         if (!$usuario) {
             $usuario = new Usuario();
-            $usuario->setNombre($data['nombre']);
-            $usuario->setEmail($data['email']);
-            // Ahora usamos el hasher oficial de Symfony para que sea 100% seguro y consistente
-            $hashedPassword = $hasher->hashPassword($usuario, 'temporal');
-            $usuario->setContrasena($hashedPassword);
+            $usuario->setNombre($nombre);
+            $usuario->setEmail($email);
+
+            $contrasenaTemporal = bin2hex(random_bytes(12));
+            $hash = $passwordHasher->hashPassword($usuario, $contrasenaTemporal);
+            $usuario->setContrasena($hash);
+
             $em->persist($usuario);
         }
 
-        // Creamos la reserva
-        $reserva = new Reserva();
-        $reserva->setUsuario($usuario);
-        $reserva->setMesa($mesa);
-        $reserva->setFechaHoraReserva($fechaHora);
-        $reserva->setNumeroPersonas($numPersonas);
-        $reserva->setEstado(EstadoReservaEnum::CONFIRMADA);
-        $reserva->setCanal(CanalReservaEnum::WEB);
+        $criteriosMesa = [
+            'activo' => true,
+            'estado' => EstadoMesaEnum::DISPONIBLE,
+        ];
 
-        // Si envió observaciones, las guardamos
-        if (isset($data['observaciones'])) {
-            $reserva->setObservaciones($data['observaciones']);
+        if ($zonaEnum) {
+            $criteriosMesa['zona'] = $zonaEnum;
         }
 
-        // Guardamos en la base de datos
+        $mesas = $mesaRepository->findBy($criteriosMesa, ['capacidad' => 'ASC']);
+
+        if (!$mesas) {
+            return $this->json([
+                'error' => 'No hay mesas activas disponibles para esa zona'
+            ], 404);
+        }
+
+        $mesaAsignada = null;
+
+        foreach ($mesas as $mesa) {
+            if ($mesa->getCapacidad() < $numeroPersonas) {
+                continue;
+            }
+
+            $hayConflicto = false;
+            $reservasMesa = $reservaRepository->findBy(['mesa' => $mesa]);
+
+            foreach ($reservasMesa as $reservaExistente) {
+                if ($reservaExistente->getEstado() === EstadoReservaEnum::CANCELADA) {
+                    continue;
+                }
+
+                $fechaExistente = $reservaExistente->getFechaHoraReserva();
+                $diferenciaSegundos = abs($fechaExistente->getTimestamp() - $fechaHora->getTimestamp());
+
+                // Ventana aproximada de 2 horas
+                if ($diferenciaSegundos < 7200) {
+                    $hayConflicto = true;
+                    break;
+                }
+            }
+
+            if (!$hayConflicto) {
+                $mesaAsignada = $mesa;
+                break;
+            }
+        }
+
+        if (!$mesaAsignada) {
+            return $this->json([
+                'error' => 'No hay mesas disponibles para esa fecha, hora y zona'
+            ], 409);
+        }
+
+        $reserva = new Reserva();
+        $reserva->setUsuario($usuario);
+        $reserva->setMesa($mesaAsignada);
+        $reserva->setFechaHoraReserva($fechaHora);
+        $reserva->setNumeroPersonas($numeroPersonas);
+        $reserva->setObservaciones($observaciones);
+        $reserva->setEstado(EstadoReservaEnum::PENDIENTE);
+
         $em->persist($reserva);
         $em->flush();
 
-        // Respondemos al frontend
         return $this->json([
-            'ok'      => true,
-            'mensaje' => 'Reserva creada',
-            'id'      => $reserva->getId(),
+            'ok' => true,
+            'mensaje' => 'Reserva creada correctamente',
+            'reserva' => [
+                'id' => $reserva->getId(),
+                'nombre' => $reserva->getUsuario()?->getNombre(),
+                'email' => $reserva->getUsuario()?->getEmail(),
+                'fechaHoraReserva' => $reserva->getFechaHoraReserva()?->format('Y-m-d H:i:s'),
+                'numeroPersonas' => $reserva->getNumeroPersonas(),
+                'estado' => $reserva->getEstado()?->value,
+                'canal' => $reserva->getCanal()?->value,
+                'zona' => $reserva->getMesa()?->getZona()?->value,
+                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'observaciones' => $reserva->getObservaciones(),
+            ]
         ], 201);
     }
 
-    // ============================================================
-    // CANCELAR UNA RESERVA
-    // URL: PUT /api/reservas/5/cancelar
-    // ============================================================
     #[Route('/{id}/cancelar', methods: ['PUT'])]
-    public function cancelar(int $id, ReservaRepository $repo, EntityManagerInterface $em): JsonResponse
-    {
-        // Buscamos la reserva por ID
+    public function cancelar(
+        int $id,
+        ReservaRepository $repo,
+        EntityManagerInterface $em
+    ): JsonResponse {
         $reserva = $repo->find($id);
+
         if (!$reserva) {
             return $this->json(['error' => 'Reserva no encontrada'], 404);
         }
 
-        // Cambiamos el estado a CANCELADA y guardamos
         $reserva->setEstado(EstadoReservaEnum::CANCELADA);
         $em->flush();
 
-        return $this->json(['ok' => true, 'mensaje' => 'Reserva cancelada']);
+        return $this->json([
+            'ok' => true,
+            'mensaje' => 'Reserva cancelada correctamente'
+        ]);
     }
 
-    // ============================================================
-    // ELIMINAR UNA RESERVA
-    // URL: DELETE /api/reservas/5
-    // ============================================================
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, ReservaRepository $repo, EntityManagerInterface $em): JsonResponse
-    {
-        // Buscamos la reserva por ID
+    public function delete(
+        int $id,
+        ReservaRepository $repo,
+        EntityManagerInterface $em
+    ): JsonResponse {
         $reserva = $repo->find($id);
+
         if (!$reserva) {
             return $this->json(['error' => 'Reserva no encontrada'], 404);
         }
 
-        // La eliminamos de la base de datos
         $em->remove($reserva);
         $em->flush();
 
-        return $this->json(['ok' => true, 'mensaje' => 'Reserva eliminada']);
+        return $this->json([
+            'ok' => true,
+            'mensaje' => 'Reserva eliminada correctamente'
+        ]);
     }
 }
+
+/*
+CAMBIOS REALIZADOS EN ESTE ARCHIVO
+
+1. Se adapta el controller a las entidades reales del proyecto.
+2. La reserva usa obligatoriamente un Usuario, por lo que:
+   - si el email ya existe, se reutiliza ese usuario
+   - si no existe, se crea un usuario automáticamente
+3. Se usa getFechaHoraReserva() y setFechaHoraReserva() en lugar de getFechaHora().
+4. Se usa getCodigo() de Mesa en lugar de getNumero().
+5. Se filtran mesas activas y en estado DISPONIBLE.
+6. Si el usuario elige zona, se filtran las mesas por esa zona.
+7. Se asigna la mesa válida con menor capacidad suficiente.
+8. Se evita conflicto de reservas usando una ventana aproximada de 2 horas.
+9. Se mantienen los endpoints para listar, cancelar y eliminar reservas.
+10. Con este cambio el backend de reservas queda alineado con el modelo real de datos.
+*/

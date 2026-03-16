@@ -43,12 +43,20 @@ class Plato
     #[ORM\Column(name: 'imagen_url', type: 'string', length: 500, nullable: true)]
     private ?string $imagenUrl = null;
 
+    #[ORM\ManyToOne(targetEntity: Categoria::class, inversedBy: 'platos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Categoria $categoria;
+
     /** @var Collection<int, Alergeno> */
     #[ORM\ManyToMany(targetEntity: Alergeno::class, inversedBy: 'platos')]
     #[ORM\JoinTable(name: 'platos_alergenos')]
     #[ORM\JoinColumn(name: 'plato_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'alergeno_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Collection $alergenos;
+
+    /** @var Collection<int, Ingrediente> */
+    #[ORM\ManyToMany(targetEntity: Ingrediente::class, mappedBy: 'platos')]
+    private Collection $ingredientes;
 
     /** @var Collection<int, LineaPedido> */
     #[ORM\OneToMany(mappedBy: 'plato', targetEntity: LineaPedido::class)]
@@ -58,6 +66,7 @@ class Plato
     {
         $this->alergenos = new ArrayCollection();
         $this->lineasPedido = new ArrayCollection();
+        $this->ingredientes = new ArrayCollection();
         $this->tipo = TipoPlatoEnum::PRINCIPAL;
         $this->disponibilidad = DisponibilidadPlatoEnum::DISPONIBLE;
     }
@@ -85,6 +94,9 @@ class Plato
     public function getImagenUrl(): ?string { return $this->imagenUrl; }
     public function setImagenUrl(?string $url): self { $this->imagenUrl = $url; return $this; }
 
+    public function getCategoria(): Categoria { return $this->categoria; }
+    public function setCategoria(Categoria $categoria): self { $this->categoria = $categoria; return $this; }
+
     /** @return Collection<int, Alergeno> */
     public function getAlergenos(): Collection { return $this->alergenos; }
 
@@ -99,6 +111,26 @@ class Plato
     public function removeAlergeno(Alergeno $alergeno): self
     {
         $this->alergenos->removeElement($alergeno);
+        return $this;
+    }
+
+    /** @return Collection<int, Ingrediente> */
+    public function getIngredientes(): Collection { return $this->ingredientes; }
+
+    public function addIngrediente(Ingrediente $ingrediente): self
+    {
+        if (!$this->ingredientes->contains($ingrediente)) {
+            $this->ingredientes->add($ingrediente);
+            $ingrediente->addPlato($this);
+        }
+        return $this;
+    }
+
+    public function removeIngrediente(Ingrediente $ingrediente): self
+    {
+        if ($this->ingredientes->removeElement($ingrediente)) {
+            $ingrediente->removePlato($this);
+        }
         return $this;
     }
 }

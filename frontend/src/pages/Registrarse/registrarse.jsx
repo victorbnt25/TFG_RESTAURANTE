@@ -1,35 +1,30 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { request } from "../../servicios/api";
+import { useNavigate, Link } from "react-router-dom";
+import { registrarUsuario } from "../../servicios/api";
 import "./registrarse.css";
 
 function Registrarse() {
   const navigate = useNavigate();
 
-  // 1. Estados para los campos del formulario
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [confirmarPassword, setConfirmarPassword] = useState("");
 
-  // 2. Estados para feedback del usuario
   const [mensajeExito, setMensajeExito] = useState(null);
   const [mensajeError, setMensajeError] = useState(null);
   const [cargando, setCargando] = useState(false);
 
-  // 3. Función para procesar el registro
   const manejarRegistro = async (evento) => {
     evento.preventDefault();
     setMensajeError(null);
     setMensajeExito(null);
 
-    // Validación básica: Contraseñas coinciden
     if (password !== confirmarPassword) {
       setMensajeError("Las contraseñas no coinciden. Revisa que ambas sean iguales.");
       return;
     }
 
-    // Validación básica: Longitud de contraseña
     if (password.length < 6) {
       setMensajeError("La contraseña debe tener al menos 6 caracteres.");
       return;
@@ -38,32 +33,22 @@ function Registrarse() {
     setCargando(true);
 
     try {
-      const datosRegistro = {
-        nombre: nombre,
-        email: correo,
-        contrasena: password
-      };
-
-      // Llamada al backend (usamos /api/register que crearemos a continuación)
-      await request("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datosRegistro),
+      await registrarUsuario({
+        nombre: nombre.trim(),
+        email: correo.trim(),
+        contrasena: password,
       });
 
       setMensajeExito("¡Cuenta creada con éxito! Redirigiendo al login...");
-      
-      // Limpiamos los campos
+
       setNombre("");
       setCorreo("");
       setPassword("");
       setConfirmarPassword("");
 
-      // Redirigimos al login después de 2 segundos
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-
     } catch (errorPeticion) {
       setMensajeError(errorPeticion.message || "Error al intentar registrar el usuario.");
     } finally {
@@ -73,7 +58,6 @@ function Registrarse() {
 
   return (
     <section className="registrarse">
-      {/* TÍTULO CON ANIMACIÓN (Heredado de tu CSS) */}
       <div className="registrarse-content">
         <h1 className="registrarse-title">
           <span className="white small"><strong>REGÍSTRATE </strong></span>
@@ -83,17 +67,18 @@ function Registrarse() {
         </h1>
       </div>
 
-      {/* FORMULARIO UTILIZANDO LAS CLASES GENÉRICAS DE GUIA_ESTILOS.md */}
       <form className="form-standard" onSubmit={manejarRegistro}>
-        
         <div className="banner-info">
-            <span>Únete a la familia de <strong>Sons of Burger</strong>.</span>
-            <span>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></span>
+          <span>Únete a la familia de <strong>Sons of Burger</strong>.</span>
+          <span>
+            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+          </span>
         </div>
 
         <div className="form-group">
-          <label>Nombre Completo</label>
+          <label htmlFor="nombre">Nombre Completo</label>
           <input
+            id="nombre"
             type="text"
             placeholder="Ej: Juan Pérez"
             value={nombre}
@@ -103,8 +88,9 @@ function Registrarse() {
         </div>
 
         <div className="form-group">
-          <label>Correo Electrónico</label>
+          <label htmlFor="correo">Correo Electrónico</label>
           <input
+            id="correo"
             type="email"
             placeholder="usuario@ejemplo.com"
             value={correo}
@@ -114,8 +100,9 @@ function Registrarse() {
         </div>
 
         <div className="form-group form-full-width">
-          <label>Contraseña</label>
+          <label htmlFor="password">Contraseña</label>
           <input
+            id="password"
             type="password"
             placeholder="Mínimo 6 caracteres"
             value={password}
@@ -125,8 +112,9 @@ function Registrarse() {
         </div>
 
         <div className="form-group form-full-width">
-          <label>Confirmar Contraseña</label>
+          <label htmlFor="confirmarPassword">Confirmar Contraseña</label>
           <input
+            id="confirmarPassword"
             type="password"
             placeholder="Repite tu contraseña"
             value={confirmarPassword}
@@ -135,15 +123,34 @@ function Registrarse() {
           />
         </div>
 
-        {/* FEEDBACK */}
         {mensajeError && (
-          <div className="form-full-width" style={{ color: "#ff4d4d", fontWeight: "bold", background: "rgba(255,0,0,0.1)", padding: "10px", borderRadius: "8px", border: "1px solid red" }}>
+          <div
+            className="form-full-width"
+            style={{
+              color: "#ff4d4d",
+              fontWeight: "bold",
+              background: "rgba(255,0,0,0.1)",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid red",
+            }}
+          >
             <p>⚠ {mensajeError}</p>
           </div>
         )}
 
         {mensajeExito && (
-          <div className="form-full-width" style={{ color: "var(--color-primary)", fontWeight: "bold", background: "rgba(184, 134, 11, 0.1)", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-primary)" }}>
+          <div
+            className="form-full-width"
+            style={{
+              color: "var(--color-primary)",
+              fontWeight: "bold",
+              background: "rgba(184, 134, 11, 0.1)",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid var(--color-primary)",
+            }}
+          >
             <p>✅ {mensajeExito}</p>
           </div>
         )}
@@ -151,10 +158,29 @@ function Registrarse() {
         <button type="submit" className="form-button" disabled={cargando}>
           {cargando ? "PROCESANDO..." : "REGISTRARME AHORA"}
         </button>
-
       </form>
     </section>
   );
 }
 
 export default Registrarse;
+
+/*
+CAMBIOS REALIZADOS EN ESTE ARCHIVO
+
+1. Se conecta la página de registro con la función registrarUsuario() del archivo api.js.
+2. Se mantienen las validaciones básicas:
+   - contraseñas iguales
+   - longitud mínima de 6 caracteres
+3. Se envían al backend los campos:
+   - nombre
+   - email
+   - contrasena
+4. Si el registro es correcto:
+   - se muestra mensaje de éxito
+   - se limpian los campos
+   - se redirige al login
+5. Se mantiene el manejo de errores y estado de carga.
+6. Se sustituye el enlace <a> por <Link> para mantener navegación SPA en React Router.
+7. Con este cambio el registro queda más limpio y coherente con el resto del frontend.
+*/

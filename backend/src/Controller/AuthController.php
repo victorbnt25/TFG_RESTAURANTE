@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Usuario;
+use App\Enum\RolUsuarioEnum;
 use App\Repository\UsuarioRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,37 +13,63 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api')]
-final class AuthController extends AbstractController
+class AuthController extends AbstractController
 {
-    #[Route('/register', name: 'app_register', methods: ['POST'])]
+    #[Route('/register', name: 'api_register', methods: ['POST'])]
     public function register(
         Request $request,
-        UserPasswordHasherInterface $hasher,
         EntityManagerInterface $em,
-        UsuarioRepository $usuarioRepo
+        UsuarioRepository $usuarioRepository,
+        UserPasswordHasherInterface $passwordHasher
     ): JsonResponse {
         $data = $request->toArray();
 
-        // 1. Validar campos obligatorios
-        if (!isset($data['nombre'], $data['email'], $data['contrasena'])) {
-            return $this->json(['error' => 'Faltan campos obligatorios'], 400);
+        if (
+            empty($data['nombre']) ||
+            empty($data['email']) ||
+            empty($data['contrasena'])
+        ) {
+            return $this->json([
+                'error' => 'Faltan campos obligatorios'
+            ], 400);
         }
 
-        // 2. Verificar si el email ya existe
-        if ($usuarioRepo->findOneBy(['email' => $data['email']])) {
-            return $this->json(['error' => 'Este correo ya está registrado en el sistema'], 409);
+        $nombre = trim((string) $data['nombre']);
+        $email = mb_strtolower(trim((string) $data['email']));
+        $contrasena = (string) $data['contrasena'];
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->json([
+                'error' => 'El email no es válido'
+            ], 400);
         }
 
-        // 3. Crear el nuevo usuario
+        if (mb_strlen($contrasena) < 6) {
+            return $this->json([
+                'error' => 'La contraseña debe tener al menos 6 caracteres'
+            ], 400);
+        }
+
+        $usuarioExistente = $usuarioRepository->findOneBy(['email' => $email]);
+
+        if ($usuarioExistente) {
+            return $this->json([
+                'error' => 'Ya existe un usuario con ese email'
+            ], 409);
+        }
+
         $usuario = new Usuario();
-        $usuario->setNombre($data['nombre']);
-        $usuario->setEmail($data['email']);
-        
-        // Hashear la contraseña de forma segura
-        $hashedPassword = $hasher->hashPassword($usuario, $data['contrasena']);
-        $usuario->setContrasena($hashedPassword);
+        $usuario->setNombre($nombre);
+        $usuario->setEmail($email);
 
-        // 4. Guardar en la base de datos
+        // IMPORTANTE:
+        // El rol SIEMPRE será CLIENTE en el registro público.
+        // No se acepta ningún rol enviado desde frontend.
+        $usuario->setRol(RolUsuarioEnum::CLIENTE);
+
+        $hash = $passwordHasher->hashPassword($usuario, $contrasena);
+        $usuario->setContrasena($hash);
+
         $em->persist($usuario);
         $em->flush();
 
@@ -50,38 +77,75 @@ final class AuthController extends AbstractController
             'ok' => true,
             'mensaje' => 'Usuario registrado correctamente',
             'usuario' => [
+                'id' => $usuario->getId(),
                 'nombre' => $usuario->getNombre(),
-                'email' => $usuario->getEmail()
+                'email' => $usuario->getEmail(),
+                'rol' => $usuario->getRol()?->value,
             ]
         ], 201);
     }
-    #[Route('/login', name: 'app_login', methods: ['POST'])]
+
+    #[Route('/login', name: 'api_login', methods: ['POST'])]
     public function login(
         Request $request,
-        UserPasswordHasherInterface $hasher,
-        UsuarioRepository $usuarioRepo
+        UsuarioRepository $usuarioRepository,
+        UserPasswordHasherInterface $passwordHasher
     ): JsonResponse {
         $data = $request->toArray();
 
-        if (!isset($data['email'], $data['contrasena'])) {
-            return $this->json(['error' => 'Email y contraseña requeridos'], 400);
+        if (
+            empty($data['email']) ||
+            empty($data['contrasena'])
+        ) {
+            return $this->json([
+                'error' => 'Email y contraseña son obligatorios'
+            ], 400);
         }
 
-        $usuario = $usuarioRepo->findOneBy(['email' => $data['email']]);
+        $email = mb_strtolower(trim((string) $data['email']));
+        $contrasena = (string) $data['contrasena'];
 
-        if (!$usuario || !$hasher->isPasswordValid($usuario, $data['contrasena'])) {
-            return $this->json(['error' => 'Credenciales inválidas'], 401);
+        $usuario = $usuarioRepository->findOneBy(['email' => $email]);
+
+        if (!$usuario) {
+            return $this->json([
+                'error' => 'Credenciales incorrectas'
+            ], 401);
+        }
+
+        if (!$passwordHasher->isPasswordValid($usuario, $contrasena)) {
+            return $this->json([
+                'error' => 'Credenciales incorrectas'
+            ], 401);
         }
 
         return $this->json([
             'ok' => true,
-            'mensaje' => 'Login exitoso',
+            'mensaje' => 'Login correcto',
             'usuario' => [
                 'id' => $usuario->getId(),
                 'nombre' => $usuario->getNombre(),
                 'email' => $usuario->getEmail(),
-                'rol' => $usuario->getRol()->value
+                'rol' => $usuario->getRol()?->value,
+                'estado' => $usuario->getEstado()?->value,
             ]
         ]);
     }
 }
+
+/*
+CAMBIOS REALIZADOS EN ESTE ARCHIVO
+
+1. El registro público crea siempre usuarios con rol CLIENTE.
+2. No se acepta el rol enviado desde el frontend.
+3. Se validan:
+   - nombre
+   - email
+   - contraseña
+4. Se comprueba que no exista ya un usuario con el mismo email.
+5. La contraseña se guarda hasheada con el password hasher de Symfony.
+6. El login valida email y contraseña y devuelve los datos básicos del usuario.
+7. Con este cambio se separa correctamente:
+   - usuarios normales desde el frontend
+   - administradores desde fixtures o base de datos
+*/

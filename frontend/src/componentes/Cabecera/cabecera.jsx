@@ -1,29 +1,33 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./cabecera.css";
 import Logo from "../../assets/media/logoBlanco.png";
 
 function Cabecera() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Comprobar si hay sesión
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const usuarioGuardado = localStorage.getItem("usuario");
+  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
 
   const cerrarSesion = () => {
     localStorage.removeItem("usuario");
+    navigate("/");
     window.location.reload();
   };
 
   return (
     <header className="cabecera">
-      {/* IZQUIERDA: LOGO */}
       <div className="cabecera-izquierda">
-        <img src={Logo} alt="Logo Sons of Burger" className="logo" />
+        <Link to="/">
+          <img src={Logo} alt="Logo Sons of Burger" className="logo" />
+        </Link>
 
-        {/* Botón hamburguesa (solo móvil) */}
         <button
           className={`hamburguesa ${menuOpen ? "abierto" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Abrir menú"
+          type="button"
         >
           <span />
           <span />
@@ -31,31 +35,54 @@ function Cabecera() {
         </button>
       </div>
 
-      {/* MENÚ PRINCIPAL */}
       <nav className={`menu-principal ${menuOpen ? "activo" : ""}`}>
-        <a href="/">Inicio</a>
-        <a href="/carta">Carta</a>
-        <a href="/reservas">Reservas</a>
-        <a href="/contacto">Contacto</a>
+        <Link to="/">Inicio</Link>
+        <Link to="/carta">Carta</Link>
+        <Link to="/reservas">Reservas</Link>
+        <Link to="/contacto">Contacto</Link>
       </nav>
 
-      {/* ACCESO USUARIO / PERFIL */}
       <nav className="acceso-usuario">
         <div className="contenedor-acceso">
-          <button className="boton-acceso">
-            {usuario ? `HOLA, ${usuario.nombre.split(' ')[0].toUpperCase()}` : "Acceder"}
+          <button className="boton-acceso" type="button">
+            {usuario
+              ? `HOLA, ${usuario.nombre.split(" ")[0].toUpperCase()}`
+              : "Acceder"}
           </button>
-          
+
           <div className="menu-desplegable-acceso">
             {usuario ? (
               <>
-                {usuario.rol === "ADMIN" && <a href="/admin" className="opcion-acceso">Panel Admin</a>}
-                <button onClick={cerrarSesion} className="opcion-acceso" style={{ background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}>Cerrar sesión</button>
+                {usuario.rol === "ADMIN" && (
+                  <Link to="/admin" className="opcion-acceso">
+                    Panel Admin
+                  </Link>
+                )}
+
+                <button
+                  onClick={cerrarSesion}
+                  className="opcion-acceso"
+                  type="button"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                >
+                  Cerrar sesión
+                </button>
               </>
             ) : (
               <>
-                <a href="/login" className="opcion-acceso">Iniciar sesión</a>
-                <a href="/registrarse" className="opcion-acceso">Registrarse</a>
+                <Link to="/login" className="opcion-acceso">
+                  Iniciar sesión
+                </Link>
+
+                <Link to="/registrarse" className="opcion-acceso">
+                  Registrarse
+                </Link>
               </>
             )}
           </div>
@@ -66,3 +93,16 @@ function Cabecera() {
 }
 
 export default Cabecera;
+
+/*
+CAMBIOS REALIZADOS EN ESTE ARCHIVO
+
+1. Se mantiene la lógica visual de la cabecera ya existente.
+2. Se mejora la lectura del usuario desde localStorage para evitar errores si no hay sesión.
+3. Se sustituyen los enlaces <a> por <Link> para trabajar correctamente con React Router.
+4. Se mantiene el saludo personalizado mostrando el primer nombre del usuario.
+5. Si el usuario tiene rol ADMIN, se muestra acceso al panel de administración.
+6. Se mantiene el menú desplegable de acceso con login, registro o cierre de sesión.
+7. Se añade useNavigate para redirigir al inicio al cerrar sesión.
+8. Con este cambio la cabecera refleja correctamente el estado de autenticación del usuario.
+*/
