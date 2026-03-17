@@ -12,9 +12,9 @@ function Login() {
   const [cargando, setCargando] = useState(false);
 
   const manejarLogin = async (evento) => {
-    evento.preventDefault();
+    evento.preventDefault(); // Que no se recargue la página al darle al botón
     setMensajeError(null);
-    setCargando(true);
+    setCargando(true); // Ponemos el estado de carga para que no le den dos veces
 
     try {
       const response = await iniciarSesion({
@@ -22,8 +22,10 @@ function Login() {
         contrasena: password,
       });
 
+      // Si todo va bien, guardamos al usuario en el navegador para que no se pierda al refrescar
       localStorage.setItem("usuario", JSON.stringify(response.usuario));
 
+      // Si es el jefe, lo mandamos al panel de admin, si no al inicio normal
       if (response.usuario.rol === "ADMIN") {
         navigate("/admin");
       } else {
@@ -126,19 +128,4 @@ function Login() {
 }
 
 export default Login;
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se conecta la página de login con la función iniciarSesion() del archivo api.js.
-2. Se envían al backend los campos:
-   - email
-   - contrasena
-3. Si el login es correcto, se guarda el usuario en localStorage.
-4. Se redirige:
-   - a /admin si el rol es ADMIN
-   - a / si es un usuario normal
-5. Se mantiene el manejo de errores y estado de carga.
-6. Se sustituyen enlaces <a> por <Link> para evitar recargas innecesarias en React Router.
-7. Con este cambio el login queda más limpio y alineado con la arquitectura del resto del frontend.
-*/
+

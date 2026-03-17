@@ -53,37 +53,4 @@ class UsuarioAdminFixtures extends Fixture
         $manager->flush();
     }
 }
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se crea un fixture específico para los usuarios administradores del proyecto.
-2. Se insertan dos cuentas fijas:
-   - Victor
-   - Ruben
-3. Ambos usuarios se guardan con rol ADMIN.
-4. La contraseña se guarda hasheada usando el password hasher de Symfony.
-5. Se comprueba si el email ya existe para no duplicar usuarios.
-6. Este fixture permite disponer siempre de cuentas administradoras para acceder al panel.
-7. Los datos se guardan en la base de datos igual que el resto de fixtures del proyecto.
-
-
-
-Lo que haría yo
-
-Crearía una cuenta tipo:
-
-sonsofburger.tfg@gmail.com
-
-o sonsofburger.reservas@gmail.com
-
-Y esa cuenta la usaría para:
-
-confirmaciones de reserva
-
-avisos internos
-
-recordatorios
-
-pruebas de n8n
-*/
+

@@ -1,14 +1,17 @@
 export const API_URL = "http://localhost:8000";
 
 export async function request(ruta, opciones = {}) {
+  // Le pegamos el /index.php a la ruta porque si no Symfony se ralla en local
   const url = `${API_URL}${ruta.startsWith("/index.php") ? ruta : "/index.php" + ruta}`;
 
   const opcionesFinales = { ...opciones };
 
+  // Si no nos pasan cabeceras, creamos el objeto vacío para no petar
   if (!opcionesFinales.headers) {
     opcionesFinales.headers = {};
   }
 
+  // Si no es un formulario con archivos, le decimos al server que le mandamos JSON
   if (!(opcionesFinales.body instanceof FormData)) {
     opcionesFinales.headers["Content-Type"] = "application/json";
   }
@@ -17,6 +20,7 @@ export async function request(ruta, opciones = {}) {
 
   let datos = null;
 
+  // Intentamos convertir la respuesta a un objeto de JS
   try {
     datos = await respuesta.json();
   } catch (error) {
@@ -24,18 +28,21 @@ export async function request(ruta, opciones = {}) {
   }
 
   if (!respuesta.ok) {
+    // Miramos si la API nos ha dado algún mensaje de error que podamos enseñar
     const mensaje =
       datos?.error ||
       datos?.mensaje ||
       datos?.message ||
       "Error en la petición";
 
+    // Si la respuesta no es un 200, lanzamos el error que nos mande el servidor
     throw new Error(mensaje);
   }
 
   return datos;
 }
 
+// Función para pillar todas las categorías para los filtros de la carta
 export async function obtenerCategorias() {
   return await request("/api/categorias");
 }
@@ -54,6 +61,7 @@ export async function obtenerDetallePlato(idPlato) {
   return await request(`/api/platos/${idPlato}`);
 }
 
+// Esta es la función que manda la reserva nueva al servidor
 export async function crearReserva(datosReserva) {
   return await request("/api/reservas", {
     method: "POST",
@@ -81,25 +89,4 @@ export async function enviarContacto(datosContacto) {
     body: JSON.stringify(datosContacto),
   });
 }
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se mantiene una función base llamada request() para centralizar todas las peticiones al backend.
-2. Se configura la URL base apuntando a Symfony en http://localhost:8000.
-3. Se añade automáticamente /index.php a las rutas para evitar problemas con Symfony.
-4. Se controla el Content-Type:
-   - Si se envía JSON, se usa application/json.
-   - Si se envía FormData, no se fuerza Content-Type.
-5. Se mejora el control de errores:
-   - Si la respuesta no es correcta, se intenta leer el mensaje devuelto por la API.
-   - Si no existe mensaje, se lanza un error genérico.
-6. Se crean funciones específicas para:
-   - carta
-   - reservas
-   - registro de usuario
-   - login
-   - contacto
-7. Con esto el frontend ya queda preparado para consumir la API real de Symfony
-   sin repetir llamadas request() directamente en cada página.
-*/
+

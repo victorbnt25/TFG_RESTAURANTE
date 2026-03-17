@@ -23,10 +23,11 @@ class ReservaController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function list(ReservaRepository $repo): JsonResponse
     {
+        // Pillamos todas las reservas de la base de datos y las ordenamos por fecha
         $reservas = $repo->findBy([], ['fechaHoraReserva' => 'ASC']);
         $data = [];
 
-        foreach ($reservas as $reserva) {
+        // Recorremos cada reserva para prepararla para el JSON
             $data[] = [
                 'id' => $reserva->getId(),
                 'nombre' => $reserva->getUsuario()?->getNombre(),
@@ -54,6 +55,7 @@ class ReservaController extends AbstractController
         UsuarioRepository $usuarioRepository,
         UserPasswordHasherInterface $passwordHasher
     ): JsonResponse {
+        // Transformamos lo que nos llega del frontend en un array
         $data = $request->toArray();
 
         if (
@@ -63,11 +65,13 @@ class ReservaController extends AbstractController
             empty($data['hora']) ||
             empty($data['numero_personas'])
         ) {
+            // Si falta algo básico, paramos y avisamos al usuario
             return $this->json([
-                'error' => 'Faltan campos obligatorios'
+                'error' => 'Pilla todos los campos, que falta alguno'
             ], 400);
         }
 
+        // Limpiamos los textos y convertimos lo que haga falta
         $nombre = trim((string) $data['nombre']);
         $email = mb_strtolower(trim((string) $data['email']));
         $fecha = trim((string) $data['fecha']);
@@ -87,9 +91,10 @@ class ReservaController extends AbstractController
             ], 400);
         }
 
+        // Juntamos fecha y hora en un solo objeto para poder guardarlo
         $fechaHora = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $fecha . ' ' . $hora);
 
-        if (!$fechaHora) {
+        // Si el formato que nos han mandado está mal, saltamos aquí
             return $this->json([
                 'error' => 'Fecha u hora no válidas'
             ], 400);
@@ -106,7 +111,8 @@ class ReservaController extends AbstractController
             }
         }
 
-        // Buscar o crear usuario automáticamente
+        // Aquí miramos si el cliente ya existe por el email
+        // Si no está, lo creamos del tirón para que pueda reservar
         $usuario = $usuarioRepository->findOneBy(['email' => $email]);
 
         if (!$usuario) {
@@ -114,13 +120,16 @@ class ReservaController extends AbstractController
             $usuario->setNombre($nombre);
             $usuario->setEmail($email);
 
+            // Si es nuevo, le generamos una contraseña al azar para cumplir con la entidad
             $contrasenaTemporal = bin2hex(random_bytes(12));
             $hash = $passwordHasher->hashPassword($usuario, $contrasenaTemporal);
             $usuario->setContrasena($hash);
 
+            // Lo metemos en el EntityManager para guardarlo luego
             $em->persist($usuario);
         }
 
+        // Filtramos solo mesas que estén activas y que no tengan averías o algo así
         $criteriosMesa = [
             'activo' => true,
             'estado' => EstadoMesaEnum::DISPONIBLE,
@@ -138,13 +147,16 @@ class ReservaController extends AbstractController
             ], 404);
         }
 
+        // Ahora toca buscar una mesa libre que sirva para este grupo
         $mesaAsignada = null;
 
         foreach ($mesas as $mesa) {
+            // Si la mesa es pequeña para el grupo, pasamos a la siguiente
             if ($mesa->getCapacidad() < $numeroPersonas) {
                 continue;
             }
 
+            // Miramos si esta mesa ya tiene dueño en ese horario
             $hayConflicto = false;
             $reservasMesa = $reservaRepository->findBy(['mesa' => $mesa]);
 
@@ -183,6 +195,7 @@ class ReservaController extends AbstractController
         $reserva->setObservaciones($observaciones);
         $reserva->setEstado(EstadoReservaEnum::PENDIENTE);
 
+        // Guardamos todo de golpe con el flush
         $em->persist($reserva);
         $em->flush();
 
@@ -246,20 +259,4 @@ class ReservaController extends AbstractController
         ]);
     }
 }
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se adapta el controller a las entidades reales del proyecto.
-2. La reserva usa obligatoriamente un Usuario, por lo que:
-   - si el email ya existe, se reutiliza ese usuario
-   - si no existe, se crea un usuario automáticamente
-3. Se usa getFechaHoraReserva() y setFechaHoraReserva() en lugar de getFechaHora().
-4. Se usa getCodigo() de Mesa en lugar de getNumero().
-5. Se filtran mesas activas y en estado DISPONIBLE.
-6. Si el usuario elige zona, se filtran las mesas por esa zona.
-7. Se asigna la mesa válida con menor capacidad suficiente.
-8. Se evita conflicto de reservas usando una ventana aproximada de 2 horas.
-9. Se mantienen los endpoints para listar, cancelar y eliminar reservas.
-10. Con este cambio el backend de reservas queda alineado con el modelo real de datos.
-*/
+

@@ -165,28 +165,3 @@ function Contacto() {
 }
 
 export default Contacto;
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se sustituye la página vacía por una página de contacto funcional.
-2. Se reutilizan las clases globales del proyecto para mantener la misma estética:
-   - container
-   - title
-   - text
-   - form-standard
-   - form-group
-   - form-full-width
-   - form-button
-   - banner-info
-3. Se añaden los campos:
-   - nombre
-   - email
-   - teléfono
-   - mensaje
-4. Se conecta el formulario con la función enviarContacto() del archivo api.js.
-5. Se muestran mensajes de éxito y error según la respuesta del backend.
-6. Se limpia el formulario cuando el envío se realiza correctamente.
-7. Se añade un bloque lateral con información de contacto del restaurante.
-8. Con este cambio la página Contacto queda integrada visual y funcionalmente con el resto del proyecto.
-*/

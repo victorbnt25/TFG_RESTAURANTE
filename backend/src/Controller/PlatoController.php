@@ -18,8 +18,10 @@ class PlatoController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function list(Request $request, PlatoRepository $repo): JsonResponse
     {
+        // Sacamos la categoría de la URL si el usuario ha filtrado en la carta
         $idCategoria = $request->query->get('categoria');
 
+        // Por defecto solo queremos platos que no estén borrados o desactivados
         $criterios = [
             'activo' => true,
         ];
@@ -28,6 +30,7 @@ class PlatoController extends AbstractController
             $criterios['categoria'] = $idCategoria;
         }
 
+        // Buscamos los platos con esos filtros y los ordenamos alfabéticamente
         $platos = $repo->findBy($criterios, ['nombre' => 'ASC']);
         $data = [];
 
@@ -54,6 +57,7 @@ class PlatoController extends AbstractController
     #[Route('/{id}', methods: ['GET'])]
     public function detail(int $id, PlatoRepository $repo): JsonResponse
     {
+        // Buscamos el plato por su ID que nos llega en la URL
         $plato = $repo->find($id);
 
         if (!$plato) {
@@ -63,6 +67,8 @@ class PlatoController extends AbstractController
         $ingredientes = [];
         $alergenosUnicos = [];
 
+        // Vamos a sacar los alérgenos de cada ingrediente del plato
+        // Así no tenemos que meterlos a mano uno por uno
         foreach ($plato->getIngredientes() as $ingrediente) {
             if ($ingrediente->isActivo()) {
                 $ingredientes[] = [
@@ -109,6 +115,7 @@ class PlatoController extends AbstractController
             return $this->json(['error' => 'Nombre y precio obligatorios'], 400);
         }
 
+        // Creamos un plato vacío y le vamos llenando los huecos
         $plato = new Plato();
         $plato->setNombre($data['nombre']);
         $plato->setPrecio((string)$data['precio']);
@@ -166,6 +173,7 @@ class PlatoController extends AbstractController
     #[Route('/{id}/foto', methods: ['POST'])]
     public function subirFoto(Plato $plato, Request $request, EntityManagerInterface $em): JsonResponse
     {
+        // Buscamos el campo 'foto' en lo que se ha subido
         $archivo = $request->files->get('foto');
         if (!$archivo) {
             return $this->json(['error' => 'No hay archivo'], 400);
@@ -173,6 +181,7 @@ class PlatoController extends AbstractController
 
         $rutaCarpeta = $this->getParameter('kernel.project_dir') . '/public/uploads';
 
+        // Si el plato ya tenía foto, borramos la vieja para no llenar el server de basura
         if ($plato->getImagenUrl()) {
             $vieja = $this->getParameter('kernel.project_dir') . '/public' . $plato->getImagenUrl();
             if (file_exists($vieja)) {
@@ -183,6 +192,7 @@ class PlatoController extends AbstractController
         $nombreArchivo = uniqid('plato_') . '.webp';
         $archivo->move($rutaCarpeta, $nombreArchivo);
 
+        // Le ponemos la ruta nueva al plato y guardamos en la DB
         $plato->setImagenUrl('/uploads/' . $nombreArchivo);
         $em->flush();
 
@@ -211,29 +221,4 @@ class PlatoController extends AbstractController
     }
 }
 
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se mejora el endpoint GET /api/platos para devolver información más completa.
-2. Se añade filtro opcional por categoría mediante:
-   /api/platos?categoria=ID
-3. Se incluye en la respuesta de cada plato:
-   - id
-   - nombre
-   - descripción
-   - precio
-   - tipo
-   - disponibilidad
-   - imagen
-   - categoría
-4. Se añade el endpoint GET /api/platos/{id} para obtener el detalle de un plato.
-5. En el detalle se devuelve también:
-   - ingredientes
-   - alérgenos
-6. Los alérgenos se obtienen a partir de los ingredientes activos del plato.
-7. Se mantiene el resto de funcionalidades ya existentes del CRUD de platos
-   para no romper la parte de administración.
-8. Con este cambio la página Carta del frontend ya puede trabajar con datos reales
-   y mostrar tanto el listado como el detalle de cada plato.
-*/
+

@@ -164,23 +164,4 @@ function Registrarse() {
 }
 
 export default Registrarse;
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se conecta la página de registro con la función registrarUsuario() del archivo api.js.
-2. Se mantienen las validaciones básicas:
-   - contraseñas iguales
-   - longitud mínima de 6 caracteres
-3. Se envían al backend los campos:
-   - nombre
-   - email
-   - contrasena
-4. Si el registro es correcto:
-   - se muestra mensaje de éxito
-   - se limpian los campos
-   - se redirige al login
-5. Se mantiene el manejo de errores y estado de carga.
-6. Se sustituye el enlace <a> por <Link> para mantener navegación SPA en React Router.
-7. Con este cambio el registro queda más limpio y coherente con el resto del frontend.
-*/
+

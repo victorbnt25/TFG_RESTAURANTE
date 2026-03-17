@@ -56,19 +56,4 @@ class ContactoController extends AbstractController
         ], 201);
     }
 }
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se crea el endpoint POST /api/contacto.
-2. Se validan los campos obligatorios:
-   - nombre
-   - email
-   - mensaje
-3. El teléfono queda como campo opcional.
-4. Se valida el formato del email.
-5. Se valida una longitud mínima del mensaje.
-6. De momento el endpoint devuelve una confirmación en JSON.
-7. Este controller deja preparada la base para integrar más adelante
-   el envío real de correos con Symfony Mailer o con n8n.
-*/
+

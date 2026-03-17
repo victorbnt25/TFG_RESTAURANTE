@@ -77,20 +77,4 @@
         grid-template-columns: 1fr;
     }
 }
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se añaden estilos mínimos específicos para la página Contacto.
-2. No se redefine el sistema visual del proyecto, solo se complementa.
-3. Se crea un layout en dos columnas:
-   - formulario
-   - información de contacto
-4. Se mantiene la estética general del proyecto usando:
-   - colores oscuros
-   - acentos dorados
-   - bordes suaves
-5. Se añaden estilos para los mensajes de éxito y error.
-6. Se incluye versión responsive para móvil y tablet.
-7. Con este CSS la página Contacto mantiene coherencia visual con el resto de la aplicación.
-*/
+
