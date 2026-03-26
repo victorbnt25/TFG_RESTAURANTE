@@ -32,10 +32,16 @@
     text-decoration: none;
     color: #ffffff;
     padding: 12px;
-    border-radius: 6px;
+    border-radius: 10px;
     font-family: var(--font-fitz);
     font-size: 1.3rem;
-    transition: 0.3s;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    display: block;
+}
+
+.admin-nav-link:visited {
+    color: #ffffff;
 }
 
 .admin-nav-link:hover {
@@ -44,8 +50,19 @@
 }
 
 .admin-nav-link.active {
-    background: var(--color-primary);
-    color: #000;
+    background: linear-gradient(
+        135deg,
+        rgba(231, 126, 35, 0.25),
+        rgba(231, 126, 35, 0.10)
+    );
+    color: #ffffff !important;
+    border: 1px solid rgba(231, 126, 35, 0.45);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.admin-nav-link.active:visited {
+    color: #ffffff !important;
 }
 
 .admin-content {
@@ -118,6 +135,7 @@
     padding: 15px;
     border-bottom: 1px solid #222;
     color: #fff;
+    vertical-align: top;
 }
 
 .row-selected {
@@ -136,10 +154,10 @@
     display: inline-block;
 }
 
-.badge.principal { color: #ffcc00; border: 1px solid #ffcc00; } /* Hamburguesas */
-.badge.entrante { color: #00ccff; border: 1px solid #00ccff; }  /* Entrantes */
-.badge.postre { color: #ff00ff; border: 1px solid #ff00ff; }    /* Postres */
-.badge.bebida { color: #00ff88; border: 1px solid #00ff88; }    /* Bebidas */
+.badge.principal { color: #ffcc00; border: 1px solid #ffcc00; }
+.badge.entrante { color: #00ccff; border: 1px solid #00ccff; }
+.badge.postre { color: #ff00ff; border: 1px solid #ff00ff; }
+.badge.bebida { color: #00ff88; border: 1px solid #00ff88; }
 
 /* =========================================
    FORMULARIOS E INPUTS
@@ -247,7 +265,9 @@ input, textarea, select {
     background: rgba(255, 204, 0, 0.05);
 }
 
-.input-file-hidden { display: none; }
+.input-file-hidden { 
+    display: none; 
+}
 
 button, .btn-gold {
     background: var(--color-primary);
@@ -337,7 +357,11 @@ button, .btn-gold {
     color: #888;
 }
 
-.placeholder-text { text-align: center; color: var(--text-secondary); padding: 50px 20px; }
+.placeholder-text { 
+    text-align: center; 
+    color: var(--text-secondary); 
+    padding: 50px 20px; 
+}
 
 .no-photo { 
     padding: 60px 40px; 
@@ -346,4 +370,191 @@ button, .btn-gold {
     color: #444; 
     border: 2px dashed #222;
     border-radius: 8px;
+}
+
+/* =========================
+   PEDIDOS PRO
+========================= */
+
+.admin-pedidos-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.admin-pedidos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-subtitle-text {
+  color: #b3b3b3;
+  margin-top: 6px;
+}
+
+.admin-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.admin-kpi-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2e2e2e;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.admin-kpi-label {
+  display: block;
+  color: #9e9e9e;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-kpi-value {
+  font-size: 1.8rem;
+  color: #ffffff;
+}
+
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-busqueda-box {
+  min-width: 280px;
+  flex: 1;
+  max-width: 420px;
+}
+
+.admin-busqueda-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #111;
+  color: #fff;
+  outline: none;
+}
+
+.admin-busqueda-input:focus {
+  border-color: #e77e23;
+  box-shadow: 0 0 0 3px rgba(231, 126, 35, 0.15);
+}
+
+.badge-estado {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.badge-abierto {
+  background: rgba(231, 126, 35, 0.12);
+  color: #ffb267;
+  border-color: rgba(231, 126, 35, 0.35);
+}
+
+.badge-preparacion {
+  background: rgba(0, 153, 255, 0.12);
+  color: #7bc4ff;
+  border-color: rgba(0, 153, 255, 0.35);
+}
+
+.badge-servido {
+  background: rgba(40, 167, 69, 0.12);
+  color: #72df8a;
+  border-color: rgba(40, 167, 69, 0.35);
+}
+
+.badge-cerrado {
+  background: rgba(108, 117, 125, 0.14);
+  color: #c3c9cf;
+  border-color: rgba(108, 117, 125, 0.35);
+}
+
+.badge-cancelado {
+  background: rgba(176, 42, 55, 0.14);
+  color: #ff8d97;
+  border-color: rgba(176, 42, 55, 0.35);
+}
+
+.pedido-lineas-box {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2d2d2d;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pedido-linea-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #d8d8d8;
+  font-size: 0.92rem;
+}
+
+.pedido-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-estado {
+  border: none;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.btn-estado:hover {
+  transform: translateY(-1px);
+}
+
+.btn-estado:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-estado-preparar {
+  background: #0d6efd;
+  color: white;
+}
+
+.btn-estado-servido {
+  background: #198754;
+  color: white;
+}
+
+.btn-estado-cerrar {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-estado-cancelar {
+  background: #b02a37;
+  color: white;
 }

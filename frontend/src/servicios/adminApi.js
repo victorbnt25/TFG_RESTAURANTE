@@ -99,4 +99,19 @@ export function eliminarMesa(id) {
   return request(`/api/mesas/${id}`, {
     method: "DELETE",
   });
+  
 }
+
+// Reservas 
+
+export async function listarPedidos() {
+  return await request("/index.php/api/pedidos");
+}
+
+export async function cambiarEstadoPedido(id, estado) {
+  return await request(`/index.php/api/pedidos/${id}/estado`, {
+    method: "PUT",
+    body: JSON.stringify({ estado }),
+  });
+}
+

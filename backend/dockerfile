@@ -1,10 +1,18 @@
 FROM php:8.2-apache
 
-#  Añadir Composer
+# Añadir Composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-# Habilitar mod_rewrite (Symfony lo necesita)
-RUN a2enmod rewrite
+# Instalar dependencias del sistema y extensiones PHP necesarias
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    libzip-dev \
+    default-mysql-client \
+    && docker-php-ext-install pdo pdo_mysql zip \
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
 # Apuntar Apache al directorio public de Symfony
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public

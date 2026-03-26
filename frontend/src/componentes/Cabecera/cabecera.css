@@ -295,4 +295,113 @@ CABECERA RESPONSIVE
     font-size: 1.4rem;
     transform: none;
   }
+  
+  
+}
+/* =========================
+   CARRITO DESTACADO
+========================= */
+.enlace-carrito {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 18px;
+  margin-left: 6px;
+  border: 1px solid rgba(231, 126, 35, 0.6);
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(231, 126, 35, 0.18) 0%,
+    rgba(231, 126, 35, 0.08) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(231, 126, 35, 0.08) inset,
+    0 8px 20px rgba(0, 0, 0, 0.18);
+  text-decoration: none;
+  transform: none !important;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.enlace-carrito::after {
+  display: none !important;
+}
+
+.enlace-carrito:hover {
+  color: #ffffff !important;
+  border-color: var(--color-primary);
+  background: linear-gradient(
+    180deg,
+    rgba(231, 126, 35, 0.26) 0%,
+    rgba(231, 126, 35, 0.14) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(231, 126, 35, 0.14) inset,
+    0 12px 24px rgba(0, 0, 0, 0.24);
+  transform: translateY(-1px) !important;
+}
+
+.enlace-carrito-texto {
+  font-size: 1.2rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.enlace-carrito-cantidad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 6px 16px rgba(231, 126, 35, 0.35);
+}
+
+.enlace-carrito.animar {
+  animation: carritoPop 0.28s ease;
+}
+
+@keyframes carritoPop {
+  0% {
+    transform: scale(1) !important;
+  }
+  50% {
+    transform: scale(1.06) !important;
+  }
+  100% {
+    transform: scale(1) !important;
+  }
+}
+
+/* =========================
+   AJUSTE RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .enlace-carrito {
+    margin-left: 0;
+    padding: 12px 20px;
+    min-width: 180px;
+  }
+
+  .enlace-carrito-texto {
+    font-size: 1.3rem;
+  }
+
+  .enlace-carrito-cantidad {
+    min-width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
 }

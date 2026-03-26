@@ -81,6 +81,12 @@ export async function enviarContacto(datosContacto) {
     body: JSON.stringify(datosContacto),
   });
 }
+export async function crearPedido(datosPedido) {
+  return await request("/api/pedidos", {
+    method: "POST",
+    body: JSON.stringify(datosPedido),
+  });
+}
 
 /*
 CAMBIOS REALIZADOS EN ESTE ARCHIVO

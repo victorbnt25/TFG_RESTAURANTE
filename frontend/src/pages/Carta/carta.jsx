@@ -5,8 +5,11 @@ import {
   obtenerPlatos,
   obtenerDetallePlato,
 } from "../../servicios/api";
+import { useCarrito } from "../../context/CarritoContext";
 
 function Carta() {
+  const { agregarAlCarrito } = useCarrito();
+
   const [categorias, setCategorias] = useState([]);
   const [platos, setPlatos] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
@@ -72,9 +75,7 @@ function Carta() {
     const rutaImagen =
       plato?.imagenUrl || plato?.imagen_url || plato?.foto_url || "";
 
-    if (!rutaImagen) {
-      return "";
-    }
+    if (!rutaImagen) return "";
 
     return `${API_URL}${rutaImagen}`;
   }
@@ -156,13 +157,23 @@ function Carta() {
 
                   <strong>{Number(plato.precio).toFixed(2)} €</strong>
 
-                  <div style={{ marginTop: "12px" }}>
+                  {/* BOTONES */}
+                  <div style={{ marginTop: "12px", display: "flex", gap: "10px" }}>
                     <button
                       className="btn-carta"
                       onClick={() => abrirDetalle(plato.id)}
                       type="button"
                     >
                       Ver detalle
+                    </button>
+
+                    <button
+                      className="btn-carta"
+                      style={{ backgroundColor: "#28a745" }}
+                      onClick={() => agregarAlCarrito(plato)}
+                      type="button"
+                    >
+                      Añadir al carrito
                     </button>
                   </div>
                 </article>
@@ -223,6 +234,15 @@ function Carta() {
             )}
           </ul>
 
+          {/* BOTÓN TAMBIÉN EN DETALLE */}
+          <button
+            className="btn-carta"
+            style={{ backgroundColor: "#28a745", marginTop: "10px" }}
+            onClick={() => agregarAlCarrito(platoSeleccionado)}
+          >
+            Añadir al carrito
+          </button>
+
           <button
             className="btn-carta"
             onClick={cerrarDetalle}
@@ -238,41 +258,3 @@ function Carta() {
 }
 
 export default Carta;
-
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se conecta la página Carta con la API real del backend.
-2. Se sustituye la lógica anterior basada en carga simple de platos por una estructura más completa.
-3. Se añaden estados para gestionar:
-   - categorías
-   - platos
-   - categoría seleccionada
-   - plato seleccionado
-   - visibilidad de la carta
-   - carga de datos
-   - carga del detalle
-   - errores
-4. Al cargar el componente:
-   - se obtienen las categorías desde /api/categorias
-   - se obtienen los platos desde /api/platos
-5. Se añade filtro por categoría usando el select y la ruta:
-   /api/platos?categoria=ID
-6. Se añade la función abrirDetalle(idPlato) para obtener la información completa
-   de un plato desde /api/platos/{id}.
-7. Se añade la función cerrarDetalle() para limpiar el plato seleccionado.
-8. Se crea una función obtenerRutaImagen() para soportar distintos nombres de campo
-   de imagen devueltos por el backend:
-   - imagenUrl
-   - imagen_url
-   - foto_url
-9. Se muestra:
-   - listado de platos
-   - categoría de cada plato
-   - precio
-   - imagen
-   - detalle del plato con ingredientes y alérgenos
-10. Con este cambio la página Carta ya queda preparada para trabajar con datos reales
-    del backend y no solo con información local del frontend.
-*/

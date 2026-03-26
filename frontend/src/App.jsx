@@ -22,6 +22,12 @@ import AdminMesas from "./pages/Admin/AdminMesas.jsx";
 import RutaProtegida from "./componentes/auth/RutaProtegida.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 
+// CONTEXTO CARRITO
+import Carrito from "./pages/Carrito/carrito.jsx";
+
+import AdminPedidos from "./pages/Admin/AdminPedidos.jsx";
+
+
 function App() {
   const location = useLocation();
   const [loading, setLoading] = useState(() => !sessionStorage.getItem("appLoaded"));
@@ -53,14 +59,20 @@ function App() {
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/registrarse" element={<Registrarse />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/carrito" element={<Carrito />} />
 
-          <Route path="/admin/login" element={<AdminLogin />} />
-
+          
+          
           <Route element={<RutaProtegida />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="platos" element={<AdminPlatos />} />
-              <Route path="mesas" element={<AdminMesas />} />
+           <Route element={<RutaProtegida />}>
+  <Route path="/admin/login" element={<AdminLogin />} />
+
+  <Route path="/admin" element={<AdminLayout />}>
+    <Route index element={<AdminDashboard />} />
+    <Route path="platos" element={<AdminPlatos />} />
+    <Route path="mesas" element={<AdminMesas />} />
+    <Route path="pedidos" element={<AdminPedidos />} /> 
+  </Route>
             </Route>
           </Route>
         </Routes>

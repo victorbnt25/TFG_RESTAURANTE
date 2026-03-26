@@ -5,11 +5,14 @@ import './index.css'
 import App from './App.jsx'
 import "./styles/theme.css";
 import "./styles/forms.css";
+import { CarritoProvider } from "./context/CarritoContext.jsx";
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+   <StrictMode>
     <BrowserRouter>
-  <App/>
-  </BrowserRouter>
+      <CarritoProvider>
+        <App/>
+      </CarritoProvider>
+    </BrowserRouter>
   </StrictMode>,
 )
