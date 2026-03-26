@@ -113,3 +113,16 @@ function Cabecera() {
 }
 
 export default Cabecera;
+
+/*
+CAMBIOS REALIZADOS EN ESTE ARCHIVO
+
+1. Se mantiene la lógica visual de la cabecera ya existente.
+2. Se mejora la lectura del usuario desde localStorage para evitar errores si no hay sesión.
+3. Se sustituyen los enlaces <a> por <Link> para trabajar correctamente con React Router.
+4. Se mantiene el saludo personalizado mostrando el primer nombre del usuario.
+5. Si el usuario tiene rol ADMIN, se muestra acceso al panel de administración.
+6. Se mantiene el menú desplegable de acceso con login, registro o cierre de sesión.
+7. Se añade useNavigate para redirigir al inicio al cerrar sesión.
+8. Con este cambio la cabecera refleja correctamente el estado de autenticación del usuario.
+*/

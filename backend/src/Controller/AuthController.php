@@ -132,20 +132,4 @@ class AuthController extends AbstractController
         ]);
     }
 }
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. El registro público crea siempre usuarios con rol CLIENTE.
-2. No se acepta el rol enviado desde el frontend.
-3. Se validan:
-   - nombre
-   - email
-   - contraseña
-4. Se comprueba que no exista ya un usuario con el mismo email.
-5. La contraseña se guarda hasheada con el password hasher de Symfony.
-6. El login valida email y contraseña y devuelve los datos básicos del usuario.
-7. Con este cambio se separa correctamente:
-   - usuarios normales desde el frontend
-   - administradores desde fixtures o base de datos
-*/
+

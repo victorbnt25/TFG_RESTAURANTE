@@ -11,6 +11,7 @@ import "./reservas.css";
 
 function Reservas() {
   const [formulario, setFormulario] = useState({
+    // Este es el estado del formulario, donde se guarda lo que escribe el usuario
     nombre: "",
     correo: "",
     fecha: "",
@@ -20,38 +21,47 @@ function Reservas() {
     observaciones: "",
   });
 
+  // Aquí guardamos si todo ha ido bien o si ha saltado algún error
+
   const [mensajeExito, setMensajeExito] = useState("");
   const [mensajeError, setMensajeError] = useState("");
   const [enviando, setEnviando] = useState(false);
 
+  // Esta función se encarga de actualizar el estado cada vez que el usuario escribe
   function manejarCambio(evento) {
     const { name, value } = evento.target;
 
     setFormulario((anterior) => ({
-      ...anterior,
-      [name]: value,
+      ...anterior, // Copiamos lo que ya había
+      [name]: value, // Y solo cambiamos el campo que ha tocado
     }));
   }
 
+  // Aquí es donde mandamos los datos al backend cuando le dan al botón
   async function procesarReserva(evento) {
-    evento.preventDefault();
+    evento.preventDefault(); // Evitamos que la página se recargue sola
 
     setMensajeExito("");
     setMensajeError("");
-    setEnviando(true);
+    setEnviando(true); // Bloqueamos el botón para que no pulsen mil veces
 
     try {
+      // Preparamos los datos tal cual los espera la API de Symfony
       const datosReserva = {
         nombre: formulario.nombre.trim(),
         email: formulario.correo.trim(),
         fecha: formulario.fecha,
         hora: formulario.hora,
-        numero_personas: parseInt(formulario.numeroPersonas, 10),
+        numero_personas: parseInt(formulario.numeroPersonas, 10), // Lo pasamos a número
         zona: formulario.zona || null,
         observaciones: formulario.observaciones.trim() || null,
       };
 
+      // Llamamos al servicio para que mande la reserva al backend
+      // Usamos el await para esperar a que el servidor nos diga algo
       await crearReserva(datosReserva);
+
+      // Si llegamos aquí es que ha funcionado, limpiamos el formulario
 
       setMensajeExito("Reserva enviada correctamente.");
       setFormulario({
@@ -184,30 +194,4 @@ function Reservas() {
 }
 
 export default Reservas;
-
-/*
-CAMBIOS REALIZADOS EN ESTE ARCHIVO
-
-1. Se conecta la página de Reservas con la API real del backend.
-2. Se sustituye el uso directo de request() por la función crearReserva() del archivo api.js.
-3. Se mantiene el formulario con los campos:
-   - nombre
-   - correo
-   - fecha
-   - hora
-   - número de personas
-   - zona
-   - observaciones
-4. Antes de enviar, los datos se transforman al formato esperado por el backend:
-   - correo -> email
-   - numeroPersonas -> numero_personas
-   - conversión del número de personas a entero
-5. Se añade control de estados:
-   - enviando
-   - mensaje de éxito
-   - mensaje de error
-6. Si la reserva se crea correctamente, se limpia el formulario.
-7. Si ocurre un error, se muestra el mensaje recibido desde la API.
-8. Con este cambio la página de reservas ya queda preparada para trabajar
-   con el backend real de Symfony.
-*/
+

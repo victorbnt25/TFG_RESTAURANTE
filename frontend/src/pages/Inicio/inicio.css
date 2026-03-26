@@ -1,15 +1,11 @@
-/* =========================
-   SECCIÓN INICIO
-========================= */
+/* SECCIÓN INICIO */
 .inicio {
   
   padding: 80px 0 40px;
 
 }
 
-/* =========================
-   GRID PRINCIPAL (PARECE 1 BLOQUE)
-========================= */
+/* GRID PRINCIPAL */
 .inicio-overlay {
   display: grid;
   grid-template-columns: 1fr 1fr;
