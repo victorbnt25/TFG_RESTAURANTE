@@ -53,16 +53,14 @@ function Cabecera() {
         <Link to="/reservas">Reservas</Link>
         <Link to="/contacto">Contacto</Link>
 
-        <Link
-          to="/carrito"
-          className={`enlace-carrito ${animarCarrito ? "animar" : ""}`}
-        >
-          <span className="enlace-carrito-texto">Carrito:</span>
-          <span className="enlace-carrito-cantidad">{totalProductos}</span>
-        </Link>
+        {usuario && usuario.rol === "ADMIN" && (
+          <Link to="/admin" className="enlace-admin">
+            Panel Admin
+          </Link>
+        )}
       </nav>
 
-      <nav className="acceso-usuario">
+      <nav className="acceso-usuario" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <div className="contenedor-acceso">
           <button className="boton-acceso" type="button">
             {usuario
@@ -73,11 +71,9 @@ function Cabecera() {
           <div className="menu-desplegable-acceso">
             {usuario ? (
               <>
-                {usuario.rol === "ADMIN" && (
-                  <Link to="/admin" className="opcion-acceso">
-                    Panel Admin
-                  </Link>
-                )}
+                <Link to="/mis-reservas" className="opcion-acceso">
+                  Mis Reservas
+                </Link>
 
                 <button
                   onClick={cerrarSesion}
@@ -107,6 +103,29 @@ function Cabecera() {
             )}
           </div>
         </div>
+
+        <Link
+          to="/carrito"
+          className={`enlace-carrito-svg ${animarCarrito ? "animar" : ""}`}
+        >
+          <svg 
+            width="26" 
+            height="26" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          {totalProductos > 0 && (
+            <span className="carrito-badge">{totalProductos}</span>
+          )}
+        </Link>
       </nav>
     </header>
   );

@@ -69,6 +69,16 @@ export async function crearReserva(datosReserva) {
   });
 }
 
+export async function obtenerMisReservas(email) {
+  return await request(`/api/reservas/usuario/${encodeURIComponent(email)}`);
+}
+
+export async function cancelarReserva(id) {
+  return await request(`/api/reservas/${id}/cancelar`, {
+    method: "PUT",
+  });
+}
+
 export async function registrarUsuario(datosUsuario) {
   return await request("/api/register", {
     method: "POST",

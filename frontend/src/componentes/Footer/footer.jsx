@@ -1,4 +1,5 @@
 import "./footer.css";
+import { Link } from "react-router-dom";
 import instagramLogo from "../../assets/media/logoInstagram.svg";
 import tiktokLogo from "../../assets/media/tiktokLogo.svg";
 import Logo from "../../assets/media/logoNegro.png";
@@ -16,9 +17,9 @@ function Footer() {
         {/* ENLACES */}
         <div className="footer-links">
           <h2>¿Tienes alguna duda?</h2>
-          <p><a href="/nosotros">Nosotros</a></p>
-          <p><a href="/contacto">Contacto</a></p>
-          <p><a href="/privacidad">Política de privacidad</a></p>
+          <p><Link to="/nosotros">Nosotros</Link></p>
+          <p><Link to="/contacto">Contacto</Link></p>
+          <p><Link to="/privacidad">Política de privacidad</Link></p>
         </div>
 
         {/* REDES SOCIALES */}

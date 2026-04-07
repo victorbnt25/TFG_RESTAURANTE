@@ -104,6 +104,10 @@ export function eliminarMesa(id) {
 
 // Reservas 
 
+export function listarReservas() {
+  return request("/api/reservas");
+}
+
 export async function listarPedidos() {
   return await request("/index.php/api/pedidos");
 }
@@ -115,3 +119,16 @@ export async function cambiarEstadoPedido(id, estado) {
   });
 }
 
+// Configuración
+
+export function obtenerPoliticaPrivacidad() {
+  return request("/api/public/politica");
+}
+
+export function guardarPoliticaPrivacidad(politica) {
+  return request("/api/admin/politica", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ politica }),
+  });
+}

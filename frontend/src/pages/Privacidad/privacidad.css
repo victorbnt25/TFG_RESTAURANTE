@@ -1,0 +1,41 @@
+.privacidad-page {
+  padding-top: 80px;
+  padding-bottom: 80px;
+  min-height: 70vh;
+}
+
+.privacidad-content {
+  background: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  max-width: 900px;
+  margin: 40px auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.texto-legal {
+  white-space: pre-wrap; /* Mantiene los saltos de línea del texto plano */
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #ddd;
+}
+
+.loading-text, .error-text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #888;
+}
+
+.error-text {
+  color: #ff4d4d;
+}
+
+@media (max-width: 768px) {
+  .privacidad-content {
+    padding: 25px;
+    margin: 20px 15px;
+  }
+}

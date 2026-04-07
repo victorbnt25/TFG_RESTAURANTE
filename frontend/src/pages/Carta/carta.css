@@ -1,0 +1,436 @@
+/* =========================
+   CONTENEDOR PRINCIPAL CARTA
+========================= */
+.carta {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  font-size: 3rem;
+  font-family: 'Bebas Neue', sans-serif;
+  color: var(--color-primary, #ff9800);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* =========================
+   FILTROS POR CATEGORÍAS (PILLS)
+========================= */
+.carta-filtros {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 40px !important;
+}
+
+.pill-categoria {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.pill-categoria:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.pill-categoria.activa {
+  background: var(--color-primary, #ff9800);
+  color: #000;
+  border-color: var(--color-primary, #ff9800);
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+  font-weight: bold;
+}
+
+/* =========================
+   GRID DE PLATOS
+========================= */
+.carta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  padding-bottom: 40px;
+}
+
+/* =========================
+   TARJETAS (CARDS) DE PLATOS
+========================= */
+.carta-card {
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.carta-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 152, 0, 0.2);
+  border-color: rgba(255, 152, 0, 0.3);
+}
+
+/* Contenedor de la Imagen */
+.img-container {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+
+.carta-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.carta-card:hover .carta-card-img {
+  transform: scale(1.08); /* Zoom al hacer hover */
+}
+
+/* Contenido de la Tarjeta */
+.card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.card-desc {
+  font-size: 0.95rem;
+  color: #aaa;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  flex: 1; /* Permite que el precio empuje los botones abajo */
+}
+
+/* Precio destacado */
+.card-price {
+  font-size: 1.5rem;
+  color: var(--color-primary, #ff9800);
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Botones dentro de la tarjeta */
+.card-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-detalle, .btn-add {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn-detalle {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.btn-detalle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-add {
+  background: var(--color-primary, #ff9800);
+  color: #000;
+}
+
+.btn-add:hover {
+  background: #e68a00;
+  transform: scale(1.03);
+}
+
+/* =========================
+   DETALLE DEL PLATO OVERLAY
+========================= */
+.detalle-plato {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 152, 0, 0.4);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+
+.detalle-img {
+  width: 100%;
+  max-width: 500px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.detalle-title {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.detalle-desc {
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.detalle-price {
+  font-size: 1.8rem;
+  color: var(--color-primary, #ff9800);
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.detalle-lista {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.detalle-lista h3 {
+  color: var(--color-primary, #ff9800);
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.detalle-lista ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detalle-lista li {
+  background: rgba(255,255,255,0.05);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+.btn-close {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #aaa;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* =========================
+   BARRA FLOTANTE DE CARRITO
+========================= */
+.barra-flotante-carrito {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 152, 0, 0.5);
+  border-radius: 999px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 152, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  z-index: 2000;
+  animation: floatUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.resumen-flotante {
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.btn-ir-carrito {
+  background: var(--color-primary, #ff9800);
+  color: #000;
+  border: none;
+  font-weight: bold;
+  padding: 12px 25px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn-ir-carrito:hover {
+  background: #e68a00;
+  transform: scale(1.05);
+}
+
+/* =========================
+   POPUP MINI CARRITO
+========================= */
+.mini-carrito-popup {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  left: 0;
+  right: 0;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 152, 0, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  max-height: 350px;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mini-carrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.mini-carrito-header h3 {
+  color: var(--color-primary, #ff9800);
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.btn-cerrar-mini {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.mini-carrito-items {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-right: 5px;
+}
+
+.mini-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.mini-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-item-nombre {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.mini-item-precio {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.mini-item-controles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.mini-item-controles button {
+  background: none;
+  border: none;
+  color: var(--color-primary, #ff9800);
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-item-controles span {
+  color: #fff;
+  font-weight: bold;
+  min-width: 15px;
+  text-align: center;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes floatUp {
+  0% { transform: translate(-50%, 100px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}

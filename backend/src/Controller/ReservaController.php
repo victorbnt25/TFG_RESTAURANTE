@@ -28,6 +28,7 @@ class ReservaController extends AbstractController
         $data = [];
 
         // Recorremos cada reserva para prepararla para el JSON
+        foreach ($reservas as $reserva) {
             $data[] = [
                 'id' => $reserva->getId(),
                 'nombre' => $reserva->getUsuario()?->getNombre(),
@@ -40,6 +41,30 @@ class ReservaController extends AbstractController
                 'zona' => $reserva->getMesa()?->getZona()?->value,
                 'mesa' => $reserva->getMesa()?->getCodigo(),
                 'observaciones' => $reserva->getObservaciones(),
+            ];
+        }
+
+        return $this->json($data);
+    }
+
+    #[Route('/usuario/{email}', methods: ['GET'])]
+    public function getByUsuario(string $email, ReservaRepository $repo, UsuarioRepository $userRepo): JsonResponse
+    {
+        $usuario = $userRepo->findOneBy(['email' => $email]);
+        if (!$usuario) {
+            return $this->json([]);
+        }
+
+        $reservas = $repo->findBy(['usuario' => $usuario], ['fechaHoraReserva' => 'DESC']);
+        $data = [];
+
+        foreach ($reservas as $reserva) {
+            $data[] = [
+                'id' => $reserva->getId(),
+                'fechaHoraReserva' => $reserva->getFechaHoraReserva()?->format('Y-m-d H:i:s'),
+                'numeroPersonas' => $reserva->getNumeroPersonas(),
+                'estado' => $reserva->getEstado()?->value,
+                'mesa' => $reserva->getMesa()?->getCodigo(),
             ];
         }
 
@@ -95,6 +120,7 @@ class ReservaController extends AbstractController
         $fechaHora = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $fecha . ' ' . $hora);
 
         // Si el formato que nos han mandado está mal, saltamos aquí
+        if (!$fechaHora) {
             return $this->json([
                 'error' => 'Fecha u hora no válidas'
             ], 400);

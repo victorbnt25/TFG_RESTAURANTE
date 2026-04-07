@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL, crearPedido } from "../../servicios/api";
 import { useCarrito } from "../../context/CarritoContext";
+import "./carrito.css"; // Nuevos estilos premium
 
 function Carrito() {
   const navigate = useNavigate();
@@ -39,12 +40,10 @@ function Carrito() {
       const respuesta = await crearPedido({ productos });
 
       setMensajePedido(
-        `🎉 Pedido realizado con éxito. Pedido #${respuesta.pedido.id} creado correctamente por un total de ${respuesta.pedido.total} €.`
+        `🎉 Pedido #${respuesta.pedido.id} tramitado correctamente por un total de ${respuesta.pedido.total} €.`
       );
 
       vaciarCarrito();
-
-      
     } catch (error) {
       setErrorPedido(error.message || "No se pudo tramitar el pedido.");
     } finally {
@@ -53,170 +52,115 @@ function Carrito() {
   }
 
   return (
-    <section
-      className="container"
-      style={{ paddingTop: "40px", paddingBottom: "40px" }}
-    >
-      <h1 className="title">Tu pedido</h1>
+    <section className="container carrito-page">
+      <h1 className="title" style={{ color: "#fff", marginBottom: "10px" }}>TU PEDIDO</h1>
 
-    {mensajePedido && (
-  <div style={{ marginTop: "20px" }}>
-    <p
-      style={{
-        color: "#28a745",
-        fontWeight: "bold",
-        fontSize: "1.2rem",
-        marginBottom: "15px",
-      }}
-    >
-      {mensajePedido}
-    </p>
-
-    <button
-      className="btn-carta"
-      style={{ backgroundColor: "#e77e23" }}
-      onClick={() => navigate("/")}
-    >
-      Volver al inicio
-    </button>
-  </div>
-)}
+      {mensajePedido && (
+        <div style={{ marginTop: "20px", marginBottom: "30px", background: "rgba(40,167,69,0.1)", padding: "20px", borderRadius: "12px", border: "1px solid #28a745" }}>
+          <p style={{ color: "#28a745", fontWeight: "bold", fontSize: "1.2rem", marginBottom: "15px" }}>
+            {mensajePedido}
+          </p>
+          <button className="btn-tramitar" onClick={() => navigate("/")} style={{ width: "auto", padding: "10px 20px" }}>
+            Volver al inicio
+          </button>
+        </div>
+      )}
 
       {errorPedido && (
-        <p
-          style={{
-            color: "#dc3545",
-            marginTop: "20px",
-            fontWeight: "bold",
-            fontSize: "1.05rem",
-          }}
-        >
+        <p style={{ color: "#ff4d4d", padding: "15px", background: "rgba(220,53,69,0.1)", borderRadius: "8px", border: "1px solid #ff4d4d" }}>
           {errorPedido}
         </p>
       )}
 
-      {carrito.length === 0 ? (
-        <div style={{ marginTop: "40px" }}>
-          <p className="text">Tu carrito está vacío.</p>
-
-          <Link to="/carta" className="btn-carta" style={{ marginTop: "20px" }}>
-            Ir a la carta
+      {carrito.length === 0 && !mensajePedido ? (
+        <div className="carrito-vacio">
+          <p>Aún no has añadido ningún plato delicioso a tu pedido.</p>
+          <Link to="/carta" className="btn-tramitar" style={{ display: "inline-block", width: "auto", padding: "12px 30px" }}>
+            Ver la carta
           </Link>
         </div>
       ) : (
-        <div style={{ display: "grid", gap: "30px", marginTop: "30px" }}>
-          <div style={{ display: "grid", gap: "20px" }}>
-            {carrito.map((item) => (
-              <article
-                key={item.id}
-                style={{
-                  display: "flex",
-                  gap: "20px",
-                  alignItems: "center",
-                  border: "1px solid #333",
-                  borderRadius: "12px",
-                  padding: "16px",
-                  background: "#111",
-                }}
-              >
-                {item.imagen_url && (
-                  <img
-                    src={obtenerRutaImagen(item.imagen_url)}
-                    alt={item.nombre}
-                    style={{
-                      width: "120px",
-                      height: "120px",
-                      objectFit: "cover",
-                      borderRadius: "10px",
-                    }}
-                  />
-                )}
+        carrito.length > 0 && (
+          <div className="carrito-layout">
+            
+            {/* IZQUIERDA: LISTA DE PRODUCTOS */}
+            <div className="carrito-items">
+              {carrito.map((item) => (
+                <article key={item.id} className="carrito-item">
+                  
+                  {item.imagen_url || item.imagenUrl || item.foto_url ? (
+                    <img 
+                      src={obtenerRutaImagen(item.imagen_url || item.imagenUrl || item.foto_url)} 
+                      alt={item.nombre} 
+                      className="carrito-img" 
+                    />
+                  ) : (
+                    <div className="carrito-img-placeholder" />
+                  )}
 
-                <div style={{ flex: 1 }}>
-                  <h3>{item.nombre}</h3>
-                  <p>{Number(item.precio).toFixed(2)} €</p>
-                  <p>Subtotal: {(item.precio * item.cantidad).toFixed(2)} €</p>
-                  <p>Cantidad: {item.cantidad}</p>
-                </div>
-
-                <div
-                  style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
-                >
-                  <button
-                    onClick={() => disminuirCantidad(item.id)}
-                    className="btn-carta"
-                    type="button"
-                  >
-                    -
-                  </button>
-
-                  <button
-                    onClick={() => aumentarCantidad(item.id)}
-                    className="btn-carta"
-                    type="button"
-                  >
-                    +
-                  </button>
-
-                  <button
-                    onClick={() => eliminarDelCarrito(item.id)}
-                    className="btn-carta"
-                    type="button"
-                    style={{ backgroundColor: "#b02a37" }}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div
-            style={{
-              border: "1px solid #333",
-              borderRadius: "12px",
-              padding: "20px",
-              background: "#0d0d0d",
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-            }}
-          >
-            <h2>Resumen del pedido</h2>
-
-            <p>Total unidades: {totalProductos}</p>
-            <p>Productos distintos: {carrito.length}</p>
-
-            <h2 style={{ color: "#e77e23" }}>
-              Total: {totalPrecio.toFixed(2)} €
-            </h2>
-
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              <Link to="/carta" className="btn-carta">
-                Seguir comprando
-              </Link>
-
-              <button
-                className="btn-carta"
-                style={{ backgroundColor: "#28a745" }}
-                onClick={tramitarPedido}
-                disabled={enviandoPedido}
-                type="button"
-              >
-                {enviandoPedido ? "Tramitando..." : "Tramitar pedido"}
-              </button>
-
-              <button
-                className="btn-carta"
-                onClick={vaciarCarrito}
-                style={{ backgroundColor: "#6c757d" }}
-                type="button"
-              >
-                Vaciar carrito
-              </button>
+                  <div className="carrito-detalles">
+                    <h3>{item.nombre}</h3>
+                    <p className="carrito-precio-uni">{Number(item.precio).toFixed(2)} € / ud.</p>
+                    <p className="carrito-subtotal">Subtotal: {(item.precio * item.cantidad).toFixed(2)} €</p>
+                    
+                    <div className="carrito-controles">
+                      <div className="control-cantidad">
+                        <button className="btn-qty" onClick={() => disminuirCantidad(item.id)}>-</button>
+                        <span className="label-qty">{item.cantidad}</span>
+                        <button className="btn-qty" onClick={() => aumentarCantidad(item.id)}>+</button>
+                      </div>
+                      
+                      <button className="btn-remove" onClick={() => eliminarDelCarrito(item.id)}>
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
+
+            {/* DERECHA: RESUMEN LATERAL (STICKY) */}
+            <div className="carrito-sidebar-wrapper">
+              <aside className="carrito-resumen">
+                <h2>Resumen del pago</h2>
+                
+                <div className="resumen-linea">
+                  <span>Productos ({totalProductos})</span>
+                  <span>{totalPrecio.toFixed(2)} €</span>
+                </div>
+                
+                <div className="resumen-linea">
+                  <span>Gastos de gestión</span>
+                  <span style={{color: "#28a745"}}>Gratis</span>
+                </div>
+
+                <div className="resumen-total">
+                  <span>Total</span>
+                  <span>{totalPrecio.toFixed(2)} €</span>
+                </div>
+
+                <div className="carrito-botones">
+                  <button 
+                    className="btn-tramitar" 
+                    onClick={tramitarPedido} 
+                    disabled={enviandoPedido}
+                  >
+                    {enviandoPedido ? "Tramitando..." : "Finalizar Pedido"}
+                  </button>
+
+                  <Link to="/carta" className="btn-seguir">
+                    Añadir más cosas
+                  </Link>
+                  
+                  <button className="btn-vaciar" onClick={vaciarCarrito}>
+                    Vaciar todo mi carrito
+                  </button>
+                </div>
+              </aside>
+            </div>
+
           </div>
-        </div>
+        )
       )}
     </section>
   );

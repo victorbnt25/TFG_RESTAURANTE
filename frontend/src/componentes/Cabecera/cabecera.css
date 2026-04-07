@@ -299,109 +299,83 @@ CABECERA RESPONSIVE
   
 }
 /* =========================
-   CARRITO DESTACADO
+   CARRITO SVG ELEGANTE
 ========================= */
-.enlace-carrito {
+.enlace-carrito-svg {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 10px 18px;
-  margin-left: 6px;
-  border: 1px solid rgba(231, 126, 35, 0.6);
-  border-radius: 999px;
-  background: linear-gradient(
-    180deg,
-    rgba(231, 126, 35, 0.18) 0%,
-    rgba(231, 126, 35, 0.08) 100%
-  );
-  box-shadow:
-    0 0 0 1px rgba(231, 126, 35, 0.08) inset,
-    0 8px 20px rgba(0, 0, 0, 0.18);
+  margin-left: auto; /* Empuja el carrito a la extrema derecha */
+  color: var(--text-primary);
   text-decoration: none;
-  transform: none !important;
-  transition:
-    background 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.2s ease;
+  transition: color 0.25s ease, transform 0.2s ease;
+  padding: 5px;
 }
 
-.enlace-carrito::after {
+.enlace-carrito-svg::after {
   display: none !important;
 }
 
-.enlace-carrito:hover {
-  color: #ffffff !important;
-  border-color: var(--color-primary);
-  background: linear-gradient(
-    180deg,
-    rgba(231, 126, 35, 0.26) 0%,
-    rgba(231, 126, 35, 0.14) 100%
-  );
-  box-shadow:
-    0 0 0 1px rgba(231, 126, 35, 0.14) inset,
-    0 12px 24px rgba(0, 0, 0, 0.24);
-  transform: translateY(-1px) !important;
+.enlace-carrito-svg:hover {
+  color: #ff9800; /* Color primario un poco más vibrante */
+  transform: translateY(-2px);
 }
 
-.enlace-carrito-texto {
-  font-size: 1.2rem;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
+.carrito-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  background-color: #ff3b30;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(255, 59, 48, 0.4);
   line-height: 1;
-  color: var(--text-primary);
 }
 
-.enlace-carrito-cantidad {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: var(--color-primary);
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 800;
-  line-height: 1;
-  box-shadow: 0 6px 16px rgba(231, 126, 35, 0.35);
+.enlace-carrito-svg.animar {
+  animation: carritoPopSVG 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.enlace-carrito.animar {
-  animation: carritoPop 0.28s ease;
+/* 
+   BOTON PANEL ADMIN DIRECTO
+*/
+.enlace-admin {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(192, 57, 43, 0.8) 100%);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 1.1rem !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+  margin-left: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-@keyframes carritoPop {
-  0% {
-    transform: scale(1) !important;
-  }
-  50% {
-    transform: scale(1.06) !important;
-  }
-  100% {
-    transform: scale(1) !important;
-  }
+.enlace-admin::after {
+  display: none !important;
+}
+
+.enlace-admin:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 14px rgba(192, 57, 43, 0.5);
+}
+
+@keyframes carritoPopSVG {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 /* =========================
    AJUSTE RESPONSIVE
 ========================= */
 @media (max-width: 900px) {
-  .enlace-carrito {
+  .enlace-carrito-svg {
     margin-left: 0;
-    padding: 12px 20px;
-    min-width: 180px;
+    margin-top: 10px;
   }
-
-  .enlace-carrito-texto {
-    font-size: 1.3rem;
-  }
-
-  .enlace-carrito-cantidad {
-    min-width: 42px;
-    height: 42px;
-    font-size: 1rem;
-  }
-}
+}

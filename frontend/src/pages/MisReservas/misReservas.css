@@ -1,0 +1,142 @@
+.mis-reservas-page {
+  padding-top: 40px;
+  padding-bottom: 60px;
+  min-height: 70vh;
+}
+
+.sin-reservas {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.sin-reservas p {
+  color: #888;
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.btn-reservar-ahora {
+  background: var(--color-primary, #ff9800);
+  color: #000;
+  border: none;
+  font-weight: bold;
+  padding: 12px 30px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.btn-reservar-ahora:hover {
+  transform: translateY(-2px);
+  background: #e68a00;
+}
+
+.reservas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.reserva-card {
+  background: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 25px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reserva-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.reserva-card.cancelada {
+  opacity: 0.6;
+  border-color: rgba(255, 77, 77, 0.3);
+}
+
+.reserva-card.cancelada:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.reserva-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  padding-bottom: 12px;
+}
+
+.reserva-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.estado-badge {
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+}
+
+.estado-badge.pendiente {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+.estado-badge.confirmada {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.estado-badge.cancelada {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.5);
+}
+
+.reserva-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+
+.reserva-body strong {
+  color: #fff;
+}
+
+.reserva-footer {
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.btn-cancelar {
+  background: transparent;
+  color: #ff4d4d;
+  border: 1px solid #ff4d4d;
+  border-radius: 6px;
+  padding: 8px 15px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+}
+
+.btn-cancelar:hover {
+  background: #ff4d4d;
+  color: #fff;
+}

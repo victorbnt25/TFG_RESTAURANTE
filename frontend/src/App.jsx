@@ -12,6 +12,9 @@ import Loader from "./componentes/Loader/loader.jsx";
 import Nosotros from "./pages/Nosotros/nosotros.jsx";
 import Registrarse from "./pages/Registrarse/registrarse.jsx";
 import Login from "./pages/Login/login.jsx";
+import Privacidad from "./pages/Privacidad/privacidad.jsx";
+import MisReservas from "./pages/MisReservas/misReservas.jsx";
+import ScrollToTop from "./componentes/ScrollToTop.jsx";
 import "./App.css";
 
 // IMPORTS ADMINISTRACIÓN
@@ -19,6 +22,7 @@ import AdminLayout from "./pages/Admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import AdminPlatos from "./pages/Admin/AdminPlatos.jsx";
 import AdminMesas from "./pages/Admin/AdminMesas.jsx";
+import AdminPolitica from "./pages/Admin/AdminPolitica.jsx";
 import RutaProtegida from "./componentes/auth/RutaProtegida.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
 
@@ -30,24 +34,11 @@ import AdminPedidos from "./pages/Admin/AdminPedidos.jsx";
 
 function App() {
   const location = useLocation();
-  const [loading, setLoading] = useState(() => !sessionStorage.getItem("appLoaded"));
-
-  useEffect(() => {
-    if (loading) {
-      const timer = setTimeout(() => {
-        sessionStorage.setItem("appLoaded", "true");
-        setLoading(false);
-      }, 1800);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
-
-  if (loading) return <Loader />;
-
   const esRutaAdmin = location.pathname.startsWith("/admin");
 
   return (
     <div className="layout">
+      <ScrollToTop />
       {!esRutaAdmin && <Cabecera />}
 
       <main className={esRutaAdmin ? "" : "contenido"}>
@@ -60,6 +51,8 @@ function App() {
           <Route path="/registrarse" element={<Registrarse />} />
           <Route path="/login" element={<Login />} />
           <Route path="/carrito" element={<Carrito />} />
+          <Route path="/privacidad" element={<Privacidad />} />
+          <Route path="/mis-reservas" element={<MisReservas />} />
 
           
           
@@ -72,6 +65,7 @@ function App() {
     <Route path="platos" element={<AdminPlatos />} />
     <Route path="mesas" element={<AdminMesas />} />
     <Route path="pedidos" element={<AdminPedidos />} /> 
+    <Route path="politica" element={<AdminPolitica />} />
   </Route>
             </Route>
           </Route>
