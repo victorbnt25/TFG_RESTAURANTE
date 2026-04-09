@@ -39,7 +39,7 @@ class Mesa
     private bool $activo = true;
 
     /** @var Collection<int, Reserva> */
-    #[ORM\OneToMany(mappedBy: 'mesa', targetEntity: Reserva::class)]
+    #[ORM\ManyToMany(targetEntity: Reserva::class, mappedBy: "mesas")]
     private Collection $reservas;
 
     public function __construct()

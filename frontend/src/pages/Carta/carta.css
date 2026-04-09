@@ -434,3 +434,125 @@
   0% { transform: translate(-50%, 100px); opacity: 0; }
   100% { transform: translate(-50%, 0); opacity: 1; }
 }
+
+/* =========================
+   MODAL DE SELECCIÓN GUARNICIÓN
+========================= */
+.modal-guarnicion-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-guarnicion-content {
+  background: #1a1a1a;
+  border: 2px solid var(--color-primary, #ff9800);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  box-shadow: 0 0 50px rgba(255, 152, 0, 0.2);
+  text-align: center;
+  animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--color-primary, #ff9800);
+  margin-bottom: 5px;
+}
+
+.modal-subtitle {
+  color: #ccc;
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.guarniciones-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.guarnicion-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.guarnicion-card:hover {
+  background: rgba(255, 152, 0, 0.1);
+  border-color: var(--color-primary, #ff9800);
+  transform: translateY(-5px);
+}
+
+.guarnicion-card.none {
+  border-style: dashed;
+}
+
+.guarnicion-card.none .guarnicion-icon {
+  font-size: 2rem;
+}
+
+.guarnicion-img-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+}
+
+.guarnicion-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.guarnicion-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.guarnicion-extra {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.btn-cancel-modal {
+  background: transparent;
+  border: none;
+  color: #888;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+@keyframes scaleIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 600px) {
+  .modal-guarnicion-content { padding: 20px; }
+  .modal-title { font-size: 1.8rem; }
+  .guarniciones-options { grid-template-columns: repeat(2, 1fr); }
+}

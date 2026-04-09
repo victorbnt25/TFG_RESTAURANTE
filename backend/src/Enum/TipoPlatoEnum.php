@@ -10,4 +10,5 @@ enum TipoPlatoEnum: string
     case BEBIDA = 'BEBIDA';
     case MENU = 'MENU';
     case EXTRA = 'EXTRA';
+    case GUARNICION = 'GUARNICION';
 }

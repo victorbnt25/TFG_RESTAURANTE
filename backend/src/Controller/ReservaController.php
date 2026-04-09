@@ -29,6 +29,10 @@ class ReservaController extends AbstractController
 
         // Recorremos cada reserva para prepararla para el JSON
         foreach ($reservas as $reserva) {
+            $mesas = $reserva->getMesas();
+            $codigosMesas = array_map(fn($m) => $m->getCodigo(), $mesas->toArray());
+            $zona = !empty($codigosMesas) ? $mesas->first()->getZona()->value : '---';
+
             $data[] = [
                 'id' => $reserva->getId(),
                 'nombre' => $reserva->getUsuario()?->getNombre(),
@@ -38,8 +42,8 @@ class ReservaController extends AbstractController
                 'estado' => $reserva->getEstado()?->value,
                 'turno' => $reserva->getTurno()?->value,
                 'canal' => $reserva->getCanal()?->value,
-                'zona' => $reserva->getMesa()?->getZona()?->value,
-                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'zona' => $zona,
+                'mesa' => implode(", ", $codigosMesas),
                 'telefono' => $reserva->getUsuario()?->getTelefono(),
                 'observaciones' => $reserva->getObservaciones(),
             ];
@@ -60,12 +64,15 @@ class ReservaController extends AbstractController
         $data = [];
 
         foreach ($reservas as $reserva) {
+            $mesas = $reserva->getMesas();
+            $codigosMesas = array_map(fn($m) => $m->getCodigo(), $mesas->toArray());
+
             $data[] = [
                 'id' => $reserva->getId(),
                 'fechaHoraReserva' => $reserva->getFechaHoraReserva()?->format('Y-m-d H:i:s'),
                 'numeroPersonas' => $reserva->getNumeroPersonas(),
                 'estado' => $reserva->getEstado()?->value,
-                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'mesa' => implode(", ", $codigosMesas),
                 'telefono' => $usuario->getTelefono(),
             ];
         }
@@ -201,50 +208,47 @@ class ReservaController extends AbstractController
             ], 404);
         }
 
-        // Ahora toca buscar una mesa libre que sirva para este grupo
-        $mesaAsignada = null;
+        // --- LÓGICA DE ASIGNACIÓN MULTI-MESA ---
+        $mesasAsignadas = [];
+        $capacidadAcumulada = 0;
 
         foreach ($mesas as $mesa) {
-            // Si la mesa es pequeña para el grupo, pasamos a la siguiente
-            if ($mesa->getCapacidad() < $numeroPersonas) {
-                continue;
-            }
-
-            // Miramos si esta mesa ya tiene dueño en ese horario
+            // Miramos si esta mesa ya tiene algún conflicto en ese horario
             $hayConflicto = false;
-            $reservasMesa = $reservaRepository->findBy(['mesa' => $mesa]);
+            $reservasDeEstaMesa = $mesa->getReservas();
 
-            foreach ($reservasMesa as $reservaExistente) {
-                if ($reservaExistente->getEstado() === EstadoReservaEnum::CANCELADA) {
-                    continue;
-                }
-
-                $fechaExistente = $reservaExistente->getFechaHoraReserva();
-                $diferenciaSegundos = abs($fechaExistente->getTimestamp() - $fechaHora->getTimestamp());
-
-                // Ventana aproximada de 90 minutos (5400 seg)
-                if ($diferenciaSegundos < 5400) {
+            foreach ($reservasDeEstaMesa as $resExistente) {
+                if ($resExistente->getEstado() === EstadoReservaEnum::CANCELADA) continue;
+                
+                $diff = abs($resExistente->getFechaHoraReserva()->getTimestamp() - $fechaHora->getTimestamp());
+                if ($diff < 5400) { // 90 min
                     $hayConflicto = true;
                     break;
                 }
             }
 
             if (!$hayConflicto) {
-                $mesaAsignada = $mesa;
-                break;
+                $mesasAsignadas[] = $mesa;
+                $capacidadAcumulada += $mesa->getCapacidad();
+
+                if ($capacidadAcumulada >= $numeroPersonas) {
+                    break;
+                }
             }
         }
 
-        if (!$mesaAsignada) {
-            error_log("CONFLICTO RESERVA: No hay mesas disponibles para " . $numeroPersonas . " personas en la fecha " . $fechaHora->format('Y-m-d H:i'));
+        if ($capacidadAcumulada < $numeroPersonas) {
+            error_log("CONFLICTO RESERVA: No hay capacidad suficiente (" . $capacidadAcumulada . "/" . $numeroPersonas . ") en zona " . ($zonaTexto ?: 'Todas') . " para " . $fechaHora->format('Y-m-d H:i'));
             return $this->json([
-                'error' => 'No tenemos mesas disponibles a la hora seleccionada'
+                'error' => 'No tenemos mesas disponibles para ese número de personas en el horario seleccionado'
             ], 409);
         }
 
         $reserva = new Reserva();
         $reserva->setUsuario($usuario);
-        $reserva->setMesa($mesaAsignada);
+        foreach ($mesasAsignadas as $m) {
+            $reserva->addMesa($m);
+        }
         $reserva->setFechaHoraReserva($fechaHora);
         $reserva->setNumeroPersonas($numeroPersonas);
         $reserva->setObservaciones($observaciones);
@@ -265,8 +269,8 @@ class ReservaController extends AbstractController
                 'numeroPersonas' => $reserva->getNumeroPersonas(),
                 'estado' => $reserva->getEstado()?->value,
                 'canal' => $reserva->getCanal()?->value,
-                'zona' => $reserva->getMesa()?->getZona()?->value,
-                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'zona' => !empty($mesasAsignadas) ? $mesasAsignadas[0]->getZona()->value : '---',
+                'mesa' => implode(", ", array_map(fn($m) => $m->getCodigo(), $mesasAsignadas)),
                 'telefono' => $reserva->getUsuario()?->getTelefono(),
                 'observaciones' => $reserva->getObservaciones(),
             ]
@@ -377,39 +381,46 @@ class ReservaController extends AbstractController
                 'estado' => EstadoMesaEnum::DISPONIBLE
             ], ['capacidad' => 'ASC']);
 
-            $mesaAsignada = null;
+            // --- LÓGICA DE ASIGNACIÓN MULTI-MESA (UPDATE) ---
+            $mesasAsignadas = [];
+            $capacidadAcumulada = 0;
+
             foreach ($mesas as $mesa) {
-                if ($mesa->getCapacidad() < $nuevoNumPersonas) continue;
-
                 $hayConflicto = false;
-                $reservasMesa = $reservaRepository->findBy(['mesa' => $mesa]);
+                $reservasDeEstaMesa = $mesa->getReservas();
 
-                foreach ($reservasMesa as $resExistente) {
+                foreach ($reservasDeEstaMesa as $resExistente) {
+                    // Ignoramos la propia reserva que estamos editando
                     if ($resExistente->getId() === $reserva->getId() || $resExistente->getEstado() === EstadoReservaEnum::CANCELADA) {
                         continue;
                     }
-
-                $diferencia = abs($resExistente->getFechaHoraReserva()->getTimestamp() - $nuevaFechaHora->getTimestamp());
-                // Ventana aproximada de 90 minutos (5400 seg)
-                if ($diferencia < 5400) { 
-                    $hayConflicto = true;
-                    break;
-                }
+                    
+                    $diff = abs($resExistente->getFechaHoraReserva()->getTimestamp() - $nuevaFechaHora->getTimestamp());
+                    if ($diff < 5400) { // 90 min
+                        $hayConflicto = true;
+                        break;
+                    }
                 }
 
                 if (!$hayConflicto) {
-                    $mesaAsignada = $mesa;
-                    break;
+                    $mesasAsignadas[] = $mesa;
+                    $capacidadAcumulada += $mesa->getCapacidad();
+                    if ($capacidadAcumulada >= $nuevoNumPersonas) break;
                 }
             }
 
-            if (!$mesaAsignada) {
-                return $this->json(['error' => 'No tenemos mesas disponibles a la hora seleccionada'], 409);
+            if ($capacidadAcumulada < $nuevoNumPersonas) {
+                return $this->json(['error' => 'No tenemos capacidad suficiente para ese número de personas en el horario seleccionado'], 409);
             }
 
             $reserva->setFechaHoraReserva($nuevaFechaHora);
             $reserva->setNumeroPersonas($nuevoNumPersonas);
-            $reserva->setMesa($mesaAsignada);
+            
+            // Actualizamos la colección de mesas
+            $reserva->getMesas()->clear();
+            foreach ($mesasAsignadas as $m) {
+                $reserva->addMesa($m);
+            }
         }
 
         if ($observaciones !== null) {
@@ -429,7 +440,7 @@ class ReservaController extends AbstractController
                 'id' => $reserva->getId(),
                 'fechaHoraReserva' => $reserva->getFechaHoraReserva()->format('Y-m-d H:i:s'),
                 'numeroPersonas' => $reserva->getNumeroPersonas(),
-                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'mesa' => implode(", ", array_map(fn($m) => $m->getCodigo(), $reserva->getMesas()->toArray())),
                 'observaciones' => $reserva->getObservaciones()
             ]
         ]);

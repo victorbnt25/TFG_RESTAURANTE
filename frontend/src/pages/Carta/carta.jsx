@@ -27,6 +27,11 @@ function Carta() {
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
   const [error, setError] = useState("");
   const [miniCarritoAbierto, setMiniCarritoAbierto] = useState(false);
+  
+  // Estados para Guarniciones
+  const [guarniciones, setGuarniciones] = useState([]);
+  const [mostrarModalGuarnicion, setMostrarModalGuarnicion] = useState(false);
+  const [burgerPendiente, setBurgerPendiente] = useState(null);
 
   useEffect(() => {
     cargarCategorias();
@@ -81,6 +86,48 @@ function Carta() {
   function cerrarDetalle() {
     setPlatoSeleccionado(null);
   }
+
+  async function cargarGuarniciones() {
+    try {
+      const todos = await obtenerPlatos();
+      // Filtramos por tipo GUARNICION (enviado desde el backend)
+      const filtrados = todos.filter(p => p.tipo === "GUARNICION");
+      setGuarniciones(filtrados);
+    } catch (e) {
+      console.error("Error cargando guarniciones", e);
+    }
+  }
+
+  const manejarClickAñadir = async (plato) => {
+    // Si es una Hamburguesa (Categoría ID 2)
+    if (plato.categoria?.id === 2) {
+      await cargarGuarniciones();
+      setBurgerPendiente(plato);
+      setMostrarModalGuarnicion(true);
+    } else {
+      agregarAlCarrito(plato);
+    }
+  };
+
+  const confirmarAñadirBurger = (guarnicion = null) => {
+    if (burgerPendiente) {
+      // Añadimos la burger
+      agregarAlCarrito(burgerPendiente);
+      
+      // Si eligió guarnición, la añadimos también
+      if (guarnicion) {
+        // La añadimos con precio 0 (incluida) o con su precio? 
+        // El usuario no especificó, por defecto pondré su precio pero se puede ajustar a 0
+        agregarAlCarrito({
+          ...guarnicion,
+          nombre: `Guarnición: ${guarnicion.nombre}`,
+          precio: 0 // Asumimos incluida en el precio de la burger por ahora
+        });
+      }
+    }
+    setMostrarModalGuarnicion(false);
+    setBurgerPendiente(null);
+  };
 
   function obtenerRutaImagen(plato) {
     const rutaImagen =
@@ -141,8 +188,8 @@ function Carta() {
             className="btn-add"
             style={{ padding: "15px", width: "100%", marginTop: "15px", fontSize: "1.1rem" }}
             onClick={() => {
-              agregarAlCarrito(platoSeleccionado);
-              cerrarDetalle(); // Opcional: Cerrar al añadir
+              manejarClickAñadir(platoSeleccionado);
+              cerrarDetalle();
             }}
           >
             Añadir al carrito
@@ -230,9 +277,9 @@ function Carta() {
                         Saber más
                       </button>
 
-                      <button
+                       <button
                         className="btn-add"
-                        onClick={() => agregarAlCarrito(plato)}
+                        onClick={() => manejarClickAñadir(plato)}
                       >
                         Añadir
                       </button>
@@ -244,6 +291,50 @@ function Carta() {
           </div>
         )}
       </section>
+
+       {/* MODAL DE GUARNICIÓN */}
+      {mostrarModalGuarnicion && (
+        <div className="modal-guarnicion-overlay">
+          <div className="modal-guarnicion-content">
+            <h2 className="modal-title">Elige tu guarnición</h2>
+            <p className="modal-subtitle">Acompaña tu <strong>{burgerPendiente?.nombre}</strong></p>
+            
+            <div className="guarniciones-options">
+              <div 
+                className="guarnicion-card none"
+                onClick={() => confirmarAñadirBurger(null)}
+              >
+                <div className="guarnicion-icon">🚫</div>
+                <span>Sin guarnición</span>
+              </div>
+
+              {guarniciones.map(g => (
+                <div 
+                  key={g.id} 
+                  className="guarnicion-card"
+                  onClick={() => confirmarAñadirBurger(g)}
+                >
+                  <div className="guarnicion-img-container">
+                    {g.imagen_url ? <img src={`${API_URL}${g.imagen_url}`} alt={g.nombre} /> : <div className="no-img">?</div>}
+                  </div>
+                  <span className="guarnicion-name">{g.nombre}</span>
+                  {Number(g.precio) > 0 && <span className="guarnicion-extra">+0.00€</span>}
+                </div>
+              ))}
+            </div>
+
+            <button 
+              className="btn-cancel-modal"
+              onClick={() => {
+                setMostrarModalGuarnicion(false);
+                setBurgerPendiente(null);
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* BARRA FLOTANTE VER CARRITO */}
       {totalProductos > 0 && (

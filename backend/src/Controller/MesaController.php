@@ -95,12 +95,15 @@ class MesaController extends AbstractController
             return $this->json(['error' => 'Mesa no encontrada'], 404);
         }
 
-        // Verificar si tiene reservas (Opcional: podrías impedir borrar si tiene reservas futuras)
+        // Verificar si tiene reservas (Impedimos el borrado si hay historial para no romper registros)
         if ($mesa->getReservas()->count() > 0) {
-            // Podrías elegir entre borrar en cascada (ya configurado en la entidad) o avisar
+            return $this->json([
+                'error' => 'No se puede borrar la mesa porque tiene reservas registradas. Puedes desactivarla (marcar como no activa) en lugar de borrarla.'
+            ], 400);
         }
 
         $em->remove($mesa);
+        // El primer flush asegura que la mesa ya no ocupe su código ('M-X') en la base de datos
         $em->flush();
 
         // ------------------------------------------------------------

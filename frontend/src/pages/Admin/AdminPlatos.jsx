@@ -111,6 +111,7 @@ export default function AdminPlatos() {
               <option value="ENTRANTE">Entrante</option>
               <option value="POSTRE">Postre</option>
               <option value="BEBIDA">Bebida</option>
+              <option value="GUARNICION">Guarnición</option>
             </select>
           </div>
           
@@ -149,6 +150,7 @@ export default function AdminPlatos() {
               <option value="ENTRANTE">Entrantes</option>
               <option value="POSTRE">Postres</option>
               <option value="BEBIDA">Bebidas</option>
+              <option value="GUARNICION">Guarniciones</option>
             </select>
           </div>
         </div>

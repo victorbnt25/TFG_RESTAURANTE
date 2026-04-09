@@ -69,7 +69,12 @@ tools = [
                     "telefono": {"type": "string", "description": "Número de teléfono del cliente para aviso"},
                     "fecha": {"type": "string", "description": "Fecha en formato YYYY-MM-DD"},
                     "hora": {"type": "string", "description": "Hora en formato HH:MM"},
-                    "numero_personas": {"type": "integer", "description": "Número de comensales"}
+                    "numero_personas": {"type": "integer", "description": "Número de comensales"},
+                    "zona": {
+                        "type": "string", 
+                        "description": "Zona preferida del restaurante",
+                        "enum": ["SALA", "TERRAZA", "BARRA", "PRIVADO"]
+                    }
                 },
                 "required": ["nombre", "email", "telefono", "fecha", "hora", "numero_personas"]
             }
@@ -127,6 +132,10 @@ async def handle_chat(request: ChatRequest):
         "- HORARIO: Martes a Domingos de 12:00 a 00:00. Lunes CERRADO 📌.\n"
         "- COCINA: Cierra a las 23:30. No permitas reservas después de esa hora 🍳.\n"
         "- DURACIÓN: Todas las reservas tienen una duración máxima de 90 minutos ⏱️.\n"
+        "- ZONAS: Tenemos SALA y TERRAZA principalmente. También hay BARRA y PRIVADO si lo preguntan.\n"
+        "- IMPORTANTE (ZONAS): Antes de confirmar cualquier reserva, PREGUNTA siempre qué zona prefieren (Sala o Terraza) 🏛️⛲. Si el usuario dice que le da igual, no envíes el parámetro 'zona'.\n"
+        "- IMPORTANTE (MENÚ): Si el usuario pide ver la carta o el menú, NO enumeres los platos uno a uno. En su lugar, dale este enlace: [Ver nuestra Carta Digital](http://localhost:5173/carta) 📖✨ e invítale a echar un vistazo.\n"
+        "- Solo usa la herramienta 'consultar_menu' si el usuario hace una pregunta muy específica (ej: '¿Tenéis platos para celíacos?' o '¿Qué postres hay?') 🕵️‍♂️.\n"
         "- No des consejos generales de vida (deporte, salud, viajes). Si el usuario saca temas ajenos, sé muy simpático pero redirige la conversación inmediatamente hacia el restaurante 🍽️.\n"
         "- Ejemplo: Si el usuario va a correr, dile que eso es genial y que le esperamos con una mesa lista para recuperar energías 🏃‍♂️💨 -> 🍔.\n"
         "- Sé proactivo: cada mensaje debe invitar a ver el menú o a reservar una mesa.\n"
@@ -135,7 +144,8 @@ async def handle_chat(request: ChatRequest):
         "REGLAS DE NEGOCIO:\n"
         "- Usa 'consultar_menu' para platos reales de la DB.\n"
         "- Usa 'crear_reserva' SOLO si el usuario está logueado.\n"
-        "- Si el usuario está logueado, inyecta su nombre, email y teléfono automáticamente en la herramienta."
+        "- Si el usuario está logueado, inyecta su nombre, email y teléfono automáticamente en la herramienta.\n"
+        "- Pregunta SIEMPRE por la zona antes de usar 'crear_reserva'."
     )
 
     # Reconstruir historial para OpenAI
@@ -152,6 +162,9 @@ async def handle_chat(request: ChatRequest):
     openai_messages.append({"role": "user", "content": request.message})
 
     try:
+        if not OPENAI_API_KEY or OPENAI_API_KEY.strip() == "":
+            return {"reply": "❌ Configuración incompleta: Falta la OpenAI API Key en el servidor. Por favor, añádela al archivo .env."}
+
         # 2. Llamada inicial a OpenAI para detectar intención
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -208,7 +221,14 @@ async def handle_chat(request: ChatRequest):
         return {"reply": response_message.content}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_str = str(e)
+        if "insufficient_quota" in error_str:
+            return {"reply": "⚠️ Lo siento, parece que el servicio de IA ha agotado su cuota mensual. Por favor, revisa tu cuenta de OpenAI 💳."}
+        elif "invalid_api_key" in error_str:
+            return {"reply": "🔑 La clave de API configurada no es válida. Por favor, verifícala en el archivo .env."}
+        
+        print(f"ERROR CHATBOT: {error_str}")
+        raise HTTPException(status_code=500, detail=f"Error en el asistente: {error_str}")
 
 if __name__ == "__main__":
     import uvicorn

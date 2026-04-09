@@ -33,10 +33,10 @@ export default function AdminDashboard() {
 
   // Estado para el Modal de Confirmación Genérico
   const [confirmConfig, setConfirmConfig] = useState({
-    isOpen: false,
     titulo: "",
     mensaje: "",
-    onConfirm: () => {},
+    targetId: null,
+    actionType: null, // "cancelar" o "eliminar"
     tipo: "normal"
   });
 
@@ -65,27 +65,22 @@ export default function AdminDashboard() {
 
   // ACCIONES
   // ACCIONES CON MODAL PERSONALIZADO
-  async function manejarCancelar() {
-    const id = confirmConfig.targetId;
-    try {
-      await cancelarReservaAdmin(id);
-      cerrarConfirm();
-      await cargarDatos();
-      mostrarExito("Reserva anulada correctamente.");
-    } catch (e) {
-      alert("Error al cancelar: " + e.message);
-    }
-  }
+  async function ejecutarConfirmacion() {
+    const { targetId, actionType } = confirmConfig;
+    if (!targetId || !actionType) return;
 
-  async function manejarEliminar() {
-    const id = confirmConfig.targetId;
     try {
-      await eliminarReservaAdmin(id);
+      if (actionType === "cancelar") {
+        await cancelarReservaAdmin(targetId);
+        mostrarExito("Reserva anulada correctamente.");
+      } else if (actionType === "eliminar") {
+        await eliminarReservaAdmin(targetId);
+        mostrarExito("Reserva eliminada de la base de datos.");
+      }
       cerrarConfirm();
       await cargarDatos();
-      mostrarExito("Reserva eliminada de la base de datos.");
     } catch (e) {
-      alert("Error al eliminar: " + e.message);
+      alert("Error en la operación: " + (e.message || "Error desconocido"));
     }
   }
 
@@ -95,8 +90,8 @@ export default function AdminDashboard() {
       isOpen: true,
       titulo: "Anular Reserva",
       mensaje: "¿Seguro que quieres marcar esta reserva como CANCELADA? El cliente podrá ver el nuevo estado.",
-      onConfirm: manejarCancelar,
       targetId: id,
+      actionType: "cancelar",
       tipo: "normal"
     });
   };
@@ -106,8 +101,8 @@ export default function AdminDashboard() {
       isOpen: true,
       titulo: "Eliminar Reserva",
       mensaje: "¡ATENCIÓN! Esta acción borrará la reserva DEFINITIVAMENTE. ¿Estás seguro?",
-      onConfirm: manejarEliminar,
       targetId: id,
+      actionType: "eliminar",
       tipo: "peligro"
     });
   };
@@ -221,6 +216,8 @@ export default function AdminDashboard() {
                 <th>Cliente</th>
                 <th>Teléfono</th>
                 <th>Personas</th>
+                <th>Zona</th>
+                <th>Mesa(s)</th>
                 <th>Fecha/Hora</th>
                 <th>Estado</th>
                 <th style={{textAlign: "center"}}>Acciones</th>
@@ -236,6 +233,8 @@ export default function AdminDashboard() {
                   </td>
                   <td>{r.telefono || "---"}</td>
                   <td style={{ textAlign: "center" }}>{r.numeroPersonas}</td>
+                  <td><span className="badge-zona">{r.zona}</span></td>
+                  <td style={{ fontWeight: "600", color: "#e77e23" }}>{r.mesa}</td>
                   <td>{new Date(r.fechaHoraReserva.replace(" ", "T")).toLocaleString("es-ES")}</td>
                   <td>
                     <span className={`badge-estado ${r.estado}`}>
@@ -360,7 +359,7 @@ export default function AdminDashboard() {
         titulo={confirmConfig.titulo}
         mensaje={confirmConfig.mensaje}
         tipo={confirmConfig.tipo}
-        onConfirm={confirmConfig.onConfirm}
+        onConfirm={ejecutarConfirmacion}
         onCancel={cerrarConfirm}
         textoConfirmar={confirmConfig.tipo === "peligro" ? "SÍ, ELIMINAR" : "SÍ, ANULAR"}
       />

@@ -7,6 +7,8 @@ use App\Enum\CanalReservaEnum;
 use App\Enum\EstadoReservaEnum;
 use App\Enum\TurnoServicioEnum;
 use App\Repository\ReservaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservaRepository::class)]
@@ -26,9 +28,9 @@ class Reserva
     #[ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?Usuario $usuario = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reservas')]
-    #[ORM\JoinColumn(name: 'mesa_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
-    private ?Mesa $mesa = null;
+    #[ORM\ManyToMany(targetEntity: Mesa::class, inversedBy: "reservas")]
+    #[ORM\JoinTable(name: 'reserva_mesa')]
+    private Collection $mesas;
 
     #[ORM\Column(name: 'fecha_hora_reserva', type: 'datetime_immutable')]
     private \DateTimeImmutable $fechaHoraReserva;
@@ -55,6 +57,7 @@ class Reserva
     {
         $this->estado = EstadoReservaEnum::PENDIENTE;
         $this->canal = CanalReservaEnum::WEB;
+        $this->mesas = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -62,8 +65,20 @@ class Reserva
     public function getUsuario(): ?Usuario { return $this->usuario; }
     public function setUsuario(?Usuario $usuario): self { $this->usuario = $usuario; return $this; }
 
-    public function getMesa(): ?Mesa { return $this->mesa; }
-    public function setMesa(?Mesa $mesa): self { $this->mesa = $mesa; return $this; }
+    /** @return Collection<int, Mesa> */
+    public function getMesas(): Collection { return $this->mesas; }
+    public function addMesa(Mesa $mesa): self
+    {
+        if (!$this->mesas->contains($mesa)) {
+            $this->mesas->add($mesa);
+        }
+        return $this;
+    }
+    public function removeMesa(Mesa $mesa): self
+    {
+        $this->mesas->removeElement($mesa);
+        return $this;
+    }
 
     public function getFechaHoraReserva(): \DateTimeImmutable { return $this->fechaHoraReserva; }
     public function setFechaHoraReserva(\DateTimeImmutable $fechaHora): self { $this->fechaHoraReserva = $fechaHora; return $this; }

@@ -134,6 +134,7 @@ class PlatoController extends AbstractController
             TipoPlatoEnum::ENTRANTE => 1,
             TipoPlatoEnum::POSTRE => 3,
             TipoPlatoEnum::BEBIDA => 4,
+            TipoPlatoEnum::GUARNICION => 1, // Por ahora mapeamos a Entrantes o similar si no hay cat específica
             default => 2 // Hamburguesas
         };
 
@@ -180,6 +181,7 @@ class PlatoController extends AbstractController
                 TipoPlatoEnum::ENTRANTE => 1,
                 TipoPlatoEnum::POSTRE => 3,
                 TipoPlatoEnum::BEBIDA => 4,
+                TipoPlatoEnum::GUARNICION => 1,
                 default => 2 // Hamburguesas
             };
             $categoria = $catRepo->find($idCat);

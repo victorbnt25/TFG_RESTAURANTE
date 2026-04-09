@@ -242,6 +242,17 @@
 .badge-estado.confirmada { background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid #28a745; }
 .badge-estado.cancelada { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; }
 
+.badge-zona {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    color: #aaa;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-transform: uppercase;
+}
+
 /* REUTILIZACIÓN DE ESTILOS EXISTENTES */
 .btn-gold {
     background: var(--color-primary);
