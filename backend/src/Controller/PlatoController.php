@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Plato;
+use App\Entity\Categoria;
 use App\Enum\DisponibilidadPlatoEnum;
 use App\Enum\TipoPlatoEnum;
 use App\Repository\PlatoRepository;
+use App\Repository\CategoriaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -108,7 +110,7 @@ class PlatoController extends AbstractController
     }
 
     #[Route('', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $em): JsonResponse
+    public function create(Request $request, EntityManagerInterface $em, CategoriaRepository $catRepo): JsonResponse
     {
         $data = $request->toArray();
         if (!isset($data['nombre'], $data['precio'])) {
@@ -122,8 +124,22 @@ class PlatoController extends AbstractController
         $plato->setDescripcion($data['descripcion'] ?? null);
         $plato->setActivo(true);
 
-        if (isset($data['tipo'])) {
-            $plato->setTipo(TipoPlatoEnum::from($data['tipo']));
+        // Mapeamos el tipo a una categoría real de la base de datos
+        // ID 1: Entrantes, ID 2: Hamburguesas, ID 3: Postres, ID 4: Bebidas
+        $tipoStr = $data['tipo'] ?? 'PRINCIPAL';
+        $tipoEnum = TipoPlatoEnum::from($tipoStr);
+        $plato->setTipo($tipoEnum);
+
+        $idCat = match($tipoEnum) {
+            TipoPlatoEnum::ENTRANTE => 1,
+            TipoPlatoEnum::POSTRE => 3,
+            TipoPlatoEnum::BEBIDA => 4,
+            default => 2 // Hamburguesas
+        };
+
+        $categoria = $catRepo->find($idCat);
+        if ($categoria) {
+            $plato->setCategoria($categoria);
         }
 
         if (isset($data['disponibilidad'])) {
@@ -137,7 +153,7 @@ class PlatoController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, Request $request, PlatoRepository $repo, EntityManagerInterface $em): JsonResponse
+    public function update(int $id, Request $request, PlatoRepository $repo, CategoriaRepository $catRepo, EntityManagerInterface $em): JsonResponse
     {
         $plato = $repo->find($id);
         if (!$plato) {
@@ -156,7 +172,20 @@ class PlatoController extends AbstractController
             $plato->setDescripcion($data['descripcion']);
         }
         if (isset($data['tipo'])) {
-            $plato->setTipo(TipoPlatoEnum::from($data['tipo']));
+            $tipoEnum = TipoPlatoEnum::from($data['tipo']);
+            $plato->setTipo($tipoEnum);
+
+            // Actualizamos también la categoría según el tipo
+            $idCat = match($tipoEnum) {
+                TipoPlatoEnum::ENTRANTE => 1,
+                TipoPlatoEnum::POSTRE => 3,
+                TipoPlatoEnum::BEBIDA => 4,
+                default => 2 // Hamburguesas
+            };
+            $categoria = $catRepo->find($idCat);
+            if ($categoria) {
+                $plato->setCategoria($categoria);
+            }
         }
         if (isset($data['disponibilidad'])) {
             $plato->setDisponibilidad(DisponibilidadPlatoEnum::from($data['disponibilidad']));
