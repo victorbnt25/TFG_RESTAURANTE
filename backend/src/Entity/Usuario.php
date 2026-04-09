@@ -40,6 +40,9 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', enumType: EstadoUsuarioEnum::class)]
     private EstadoUsuarioEnum $estado;
 
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private ?string $telefono = null;
+
     /** @var Collection<int, Reserva> */
     #[ORM\OneToMany(mappedBy: 'usuario', targetEntity: Reserva::class, orphanRemoval: true)]
     private Collection $reservas;
@@ -69,6 +72,9 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getEstado(): EstadoUsuarioEnum { return $this->estado; }
     public function setEstado(EstadoUsuarioEnum $estado): self { $this->estado = $estado; return $this; }
+
+    public function getTelefono(): ?string { return $this->telefono; }
+    public function setTelefono(?string $tel): self { $this->telefono = $tel; return $this; }
 
     public function getPassword(): string { return $this->contrasena; }
     public function setContrasena(string $hash): self { $this->contrasena = $hash; return $this; }

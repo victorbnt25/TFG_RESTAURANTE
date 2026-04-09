@@ -10,3 +10,13 @@ backend/vendor/
 
 # Logs
 *.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/

@@ -40,6 +40,7 @@ class ReservaController extends AbstractController
                 'canal' => $reserva->getCanal()?->value,
                 'zona' => $reserva->getMesa()?->getZona()?->value,
                 'mesa' => $reserva->getMesa()?->getCodigo(),
+                'telefono' => $reserva->getUsuario()?->getTelefono(),
                 'observaciones' => $reserva->getObservaciones(),
             ];
         }
@@ -47,7 +48,7 @@ class ReservaController extends AbstractController
         return $this->json($data);
     }
 
-    #[Route('/usuario/{email}', methods: ['GET'])]
+    #[Route('/usuario/{email}', methods: ['GET'], requirements: ['email' => '.+'])]
     public function getByUsuario(string $email, ReservaRepository $repo, UsuarioRepository $userRepo): JsonResponse
     {
         $usuario = $userRepo->findOneBy(['email' => $email]);
@@ -65,6 +66,7 @@ class ReservaController extends AbstractController
                 'numeroPersonas' => $reserva->getNumeroPersonas(),
                 'estado' => $reserva->getEstado()?->value,
                 'mesa' => $reserva->getMesa()?->getCodigo(),
+                'telefono' => $usuario->getTelefono(),
             ];
         }
 
@@ -99,6 +101,7 @@ class ReservaController extends AbstractController
         // Limpiamos los textos y convertimos lo que haga falta
         $nombre = trim((string) $data['nombre']);
         $email = mb_strtolower(trim((string) $data['email']));
+        $telefono = isset($data['telefono']) ? trim((string) $data['telefono']) : null;
         $fecha = trim((string) $data['fecha']);
         $hora = trim((string) $data['hora']);
         $numeroPersonas = (int) $data['numero_personas'];
@@ -126,6 +129,25 @@ class ReservaController extends AbstractController
             ], 400);
         }
 
+        // VALIDACIONES DE NEGOCIO (TFG)
+        $diaSemana = (int) $fechaHora->format('N'); // 1 (Lunes) a 7 (Domingo)
+        $horaFmt = $fechaHora->format('H:i');
+
+        // 1. Lunes cerrado
+        if ($diaSemana === 1) {
+            return $this->json(['error' => 'El restaurante permanece cerrado los lunes.'], 403);
+        }
+
+        // 2. Horario general (12:00 a 00:00)
+        if ($horaFmt < '12:00' || $horaFmt > '23:59') {
+            return $this->json(['error' => 'Nuestro horario es de 12:00 a 00:00.'], 403);
+        }
+
+        // 3. Cierre de cocina (23:30)
+        if ($horaFmt > '23:30') {
+            return $this->json(['error' => 'No se aceptan reservas después de las 23:30 por cierre de cocina.'], 403);
+        }
+
         $zonaEnum = null;
         if ($zonaTexto) {
             try {
@@ -145,6 +167,7 @@ class ReservaController extends AbstractController
             $usuario = new Usuario();
             $usuario->setNombre($nombre);
             $usuario->setEmail($email);
+            $usuario->setTelefono($telefono);
 
             // Si es nuevo, le generamos una contraseña al azar para cumplir con la entidad
             $contrasenaTemporal = bin2hex(random_bytes(12));
@@ -153,6 +176,11 @@ class ReservaController extends AbstractController
 
             // Lo metemos en el EntityManager para guardarlo luego
             $em->persist($usuario);
+        } else {
+            // Si el usuario ya existe, actualizamos su teléfono si nos pasan uno nuevo
+            if ($telefono) {
+                $usuario->setTelefono($telefono);
+            }
         }
 
         // Filtramos solo mesas que estén activas y que no tengan averías o algo así
@@ -194,8 +222,8 @@ class ReservaController extends AbstractController
                 $fechaExistente = $reservaExistente->getFechaHoraReserva();
                 $diferenciaSegundos = abs($fechaExistente->getTimestamp() - $fechaHora->getTimestamp());
 
-                // Ventana aproximada de 2 horas
-                if ($diferenciaSegundos < 7200) {
+                // Ventana aproximada de 90 minutos (5400 seg)
+                if ($diferenciaSegundos < 5400) {
                     $hayConflicto = true;
                     break;
                 }
@@ -208,8 +236,9 @@ class ReservaController extends AbstractController
         }
 
         if (!$mesaAsignada) {
+            error_log("CONFLICTO RESERVA: No hay mesas disponibles para " . $numeroPersonas . " personas en la fecha " . $fechaHora->format('Y-m-d H:i'));
             return $this->json([
-                'error' => 'No hay mesas disponibles para esa fecha, hora y zona'
+                'error' => 'No tenemos mesas disponibles a la hora seleccionada'
             ], 409);
         }
 
@@ -238,6 +267,7 @@ class ReservaController extends AbstractController
                 'canal' => $reserva->getCanal()?->value,
                 'zona' => $reserva->getMesa()?->getZona()?->value,
                 'mesa' => $reserva->getMesa()?->getCodigo(),
+                'telefono' => $reserva->getUsuario()?->getTelefono(),
                 'observaciones' => $reserva->getObservaciones(),
             ]
         ], 201);
@@ -282,6 +312,126 @@ class ReservaController extends AbstractController
         return $this->json([
             'ok' => true,
             'mensaje' => 'Reserva eliminada correctamente'
+        ]);
+    }
+    #[Route('/{id}', methods: ['PUT', 'PATCH'])]
+    public function update(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em,
+        MesaRepository $mesaRepository,
+        ReservaRepository $reservaRepository
+    ): JsonResponse {
+        $reserva = $reservaRepository->find($id);
+
+        if (!$reserva) {
+            return $this->json(['error' => 'Reserva no encontrada'], 404);
+        }
+
+        $data = $request->toArray();
+        
+        // Si la reserva ya está cancelada, no dejamos editarla por seguridad
+        if ($reserva->getEstado() === EstadoReservaEnum::CANCELADA) {
+            return $this->json(['error' => 'No se puede editar una reserva cancelada'], 400);
+        }
+
+        // Pillamos los datos opcionales
+        $fecha = $data['fecha'] ?? null;
+        $hora = $data['hora'] ?? null;
+        $numeroPersonas = isset($data['numero_personas']) ? (int) $data['numero_personas'] : null;
+        $telefono = $data['telefono'] ?? null;
+        $observaciones = $data['observaciones'] ?? null;
+
+        $cambiaAlgoCritico = ($fecha || $hora || $numeroPersonas);
+
+        // Si cambian fecha/hora/personas, tenemos que validar disponibilidad
+        if ($cambiaAlgoCritico) {
+            $nuevaFecha = $fecha ?: $reserva->getFechaHoraReserva()->format('Y-m-d');
+            $nuevaHora = $hora ?: $reserva->getFechaHoraReserva()->format('H:i');
+            $nuevoNumPersonas = $numeroPersonas ?: $reserva->getNumeroPersonas();
+
+            $nuevaFechaHora = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $nuevaFecha . ' ' . $nuevaHora);
+            if (!$nuevaFechaHora) {
+                return $this->json(['error' => 'Formato de fecha u hora inválido'], 400);
+            }
+
+            // VALIDACIONES DE NEGOCIO (TFG) - También en Update para que no se salten las reglas
+            $diaSemana = (int) $nuevaFechaHora->format('N');
+            $horaFmt = $nuevaFechaHora->format('H:i');
+
+            if ($diaSemana === 1) {
+                return $this->json(['error' => 'El restaurante permanece cerrado los lunes.'], 403);
+            }
+
+            if ($horaFmt < '12:00' || $horaFmt > '23:59') {
+                return $this->json(['error' => 'Nuestro horario es de 12:00 a 00:00.'], 403);
+            }
+
+            if ($horaFmt > '23:30') {
+                return $this->json(['error' => 'No se aceptan reservas después de las 23:30 por cierre de cocina.'], 403);
+            }
+
+            // Buscamos mesas disponibles
+            $mesas = $mesaRepository->findBy([
+                'activo' => true,
+                'estado' => EstadoMesaEnum::DISPONIBLE
+            ], ['capacidad' => 'ASC']);
+
+            $mesaAsignada = null;
+            foreach ($mesas as $mesa) {
+                if ($mesa->getCapacidad() < $nuevoNumPersonas) continue;
+
+                $hayConflicto = false;
+                $reservasMesa = $reservaRepository->findBy(['mesa' => $mesa]);
+
+                foreach ($reservasMesa as $resExistente) {
+                    if ($resExistente->getId() === $reserva->getId() || $resExistente->getEstado() === EstadoReservaEnum::CANCELADA) {
+                        continue;
+                    }
+
+                $diferencia = abs($resExistente->getFechaHoraReserva()->getTimestamp() - $nuevaFechaHora->getTimestamp());
+                // Ventana aproximada de 90 minutos (5400 seg)
+                if ($diferencia < 5400) { 
+                    $hayConflicto = true;
+                    break;
+                }
+                }
+
+                if (!$hayConflicto) {
+                    $mesaAsignada = $mesa;
+                    break;
+                }
+            }
+
+            if (!$mesaAsignada) {
+                return $this->json(['error' => 'No tenemos mesas disponibles a la hora seleccionada'], 409);
+            }
+
+            $reserva->setFechaHoraReserva($nuevaFechaHora);
+            $reserva->setNumeroPersonas($nuevoNumPersonas);
+            $reserva->setMesa($mesaAsignada);
+        }
+
+        if ($observaciones !== null) {
+            $reserva->setObservaciones($observaciones);
+        }
+
+        if ($telefono !== null) {
+            $reserva->getUsuario()?->setTelefono($telefono);
+        }
+
+        $em->flush();
+
+        return $this->json([
+            'ok' => true,
+            'mensaje' => 'Reserva actualizada correctamente',
+            'reserva' => [
+                'id' => $reserva->getId(),
+                'fechaHoraReserva' => $reserva->getFechaHoraReserva()->format('Y-m-d H:i:s'),
+                'numeroPersonas' => $reserva->getNumeroPersonas(),
+                'mesa' => $reserva->getMesa()?->getCodigo(),
+                'observaciones' => $reserva->getObservaciones()
+            ]
         ]);
     }
 }

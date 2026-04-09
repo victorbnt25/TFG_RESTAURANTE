@@ -15,6 +15,7 @@ import Login from "./pages/Login/login.jsx";
 import Privacidad from "./pages/Privacidad/privacidad.jsx";
 import MisReservas from "./pages/MisReservas/misReservas.jsx";
 import ScrollToTop from "./componentes/ScrollToTop.jsx";
+import Chatbot from "./componentes/Chatbot/Chatbot.jsx";
 import "./App.css";
 
 // IMPORTS ADMINISTRACIÓN
@@ -73,6 +74,7 @@ function App() {
       </main>
 
       {!esRutaAdmin && <Footer />}
+      {!esRutaAdmin && <Chatbot />}
     </div>
   );
 }

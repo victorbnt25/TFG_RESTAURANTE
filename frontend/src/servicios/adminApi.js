@@ -108,12 +108,38 @@ export function listarReservas() {
   return request("/api/reservas");
 }
 
+export function crearReservaAdmin(datos) {
+  return request("/api/reservas", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function actualizarReservaAdmin(id, datos) {
+  return request(`/api/reservas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function cancelarReservaAdmin(id) {
+  return request(`/api/reservas/${id}/cancelar`, {
+    method: "PUT",
+  });
+}
+
+export function eliminarReservaAdmin(id) {
+  return request(`/api/reservas/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export async function listarPedidos() {
-  return await request("/index.php/api/pedidos");
+  return await request("/api/pedidos");
 }
 
 export async function cambiarEstadoPedido(id, estado) {
-  return await request(`/index.php/api/pedidos/${id}/estado`, {
+  return await request(`/api/pedidos/${id}/estado`, {
     method: "PUT",
     body: JSON.stringify({ estado }),
   });

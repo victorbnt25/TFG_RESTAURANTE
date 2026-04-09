@@ -1,142 +1,238 @@
+/* ============================================================
+   MIS RESERVAS - DISEÑO PROFESIONAL Y SOBRIO
+   ============================================================ */
+
 .mis-reservas-page {
-  padding-top: 40px;
-  padding-bottom: 60px;
-  min-height: 70vh;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    min-height: 100vh;
+    background: #0a0a0a;
 }
 
-.sin-reservas {
-  text-align: center;
-  margin-top: 60px;
+.mis-reservas-page .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
 }
 
-.sin-reservas p {
-  color: #888;
-  font-size: 1.2rem;
-  margin-bottom: 30px;
+.mis-reservas-page .text {
+    text-align: center;
+    color: #888;
+    font-size: 1rem;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.btn-reservar-ahora {
-  background: var(--color-primary, #ff9800);
-  color: #000;
-  border: none;
-  font-weight: bold;
-  padding: 12px 30px;
-  border-radius: 8px;
-  text-decoration: none;
-  display: inline-block;
-  transition: transform 0.2s;
+/* HEADER ACCIONES */
+.reservas-header-acciones {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
 }
 
-.btn-reservar-ahora:hover {
-  transform: translateY(-2px);
-  background: #e68a00;
+.btn-nueva-reserva {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 12px 30px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 800;
+    font-family: var(--font-fitz);
+    transition: all 0.3s;
+    letter-spacing: 1px;
 }
 
+.btn-nueva-reserva:hover {
+    background: var(--color-primary);
+    color: black;
+}
+
+/* GRID DE RESERVAS */
 .reservas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 25px;
-  margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
 }
 
+/* TARJETA DE RESERVA */
 .reserva-card {
-  background: rgba(20, 20, 20, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 25px;
-  backdrop-filter: blur(10px);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  transition: transform 0.2s, box-shadow 0.2s;
+    background: #111;
+    border: 1px solid #222;
+    padding: 30px;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .reserva-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.reserva-card.cancelada {
-  opacity: 0.6;
-  border-color: rgba(255, 77, 77, 0.3);
-}
-
-.reserva-card.cancelada:hover {
-  transform: none;
-  box-shadow: none;
+    border-color: var(--color-primary);
 }
 
 .reserva-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #333;
-  padding-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+    padding-bottom: 15px;
 }
 
 .reserva-header h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: #fff;
+    color: #fff;
+    font-family: var(--font-fitz);
+    margin: 0;
+    font-size: 1.4rem;
 }
 
 .estado-badge {
-  font-size: 0.8rem;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 12px;
-  letter-spacing: 1px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 2px;
 }
 
-.estado-badge.pendiente {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  border: 1px solid rgba(255, 193, 7, 0.5);
-}
+.estado-badge.pendiente { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid #ffc107; }
+.estado-badge.confirmada { background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid #28a745; }
+.estado-badge.cancelada { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; }
 
-.estado-badge.confirmada {
-  background: rgba(40, 167, 69, 0.2);
-  color: #28a745;
-  border: 1px solid rgba(40, 167, 69, 0.5);
-}
-
-.estado-badge.cancelada {
-  background: rgba(220, 53, 69, 0.2);
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.5);
-}
-
-.reserva-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: #ccc;
-  font-size: 0.95rem;
+.reserva-body p {
+    margin: 10px 0;
+    color: #999;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #222;
+    padding-bottom: 5px;
 }
 
 .reserva-body strong {
-  color: #fff;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
 }
 
 .reserva-footer {
-  margin-top: auto;
-  padding-top: 15px;
-  border-top: 1px solid #333;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-editar, .btn-cancelar {
+    flex: 1;
+    padding: 10px;
+    font-family: var(--font-fitz);
+    font-weight: 800;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+.btn-editar {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.btn-editar:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .btn-cancelar {
-  background: transparent;
-  color: #ff4d4d;
-  border: 1px solid #ff4d4d;
-  border-radius: 6px;
-  padding: 8px 15px;
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: bold;
+    background: transparent;
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
 .btn-cancelar:hover {
-  background: #ff4d4d;
-  color: #fff;
+    background: #dc3545;
+    color: white;
+}
+
+/* MODAL EDICIÓN CLIENTE */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+}
+
+.modal-edicion {
+    background: #111;
+    border: 1px solid #333;
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 8px;
+}
+
+.modal-edicion h2 {
+    color: var(--color-primary);
+    font-family: var(--font-fitz);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.campo-edicion {
+    margin-bottom: 20px;
+}
+
+.campo-edicion label {
+    display: block;
+    color: #666;
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.campo-edicion input, .campo-edicion textarea {
+    width: 100%;
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.modal-acciones {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-guardar {
+    flex: 1;
+    background: var(--color-primary);
+    color: black;
+    border: none;
+    font-family: var(--font-fitz);
+    font-weight: 900;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.btn-cerrar {
+    flex: 1;
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
+    font-family: var(--font-fitz);
+    padding: 12px;
+    cursor: pointer;
 }

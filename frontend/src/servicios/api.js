@@ -1,8 +1,7 @@
 export const API_URL = "http://localhost:8000";
 
 export async function request(ruta, opciones = {}) {
-  // Le pegamos el /index.php a la ruta porque si no Symfony se ralla en local
-  const url = `${API_URL}${ruta.startsWith("/index.php") ? ruta : "/index.php" + ruta}`;
+  const url = `${API_URL}${ruta}`;
 
   const opcionesFinales = { ...opciones };
 
@@ -76,6 +75,13 @@ export async function obtenerMisReservas(email) {
 export async function cancelarReserva(id) {
   return await request(`/api/reservas/${id}/cancelar`, {
     method: "PUT",
+  });
+}
+
+export async function actualizarReserva(id, datosActualizados) {
+  return await request(`/api/reservas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(datosActualizados),
   });
 }
 

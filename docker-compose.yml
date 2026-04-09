@@ -22,6 +22,22 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  # --- NUEVO SERVICIO CHATBOT (PYTHON) ---
+  chatbot:
+    build: ./services/chatbot
+    container_name: tfg_chatbot
+    ports:
+      - "5000:5000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Importante: usamos 'backend' porque es el nombre del servicio en Docker
+      - SYMFONY_API_URL=http://backend/api 
+    depends_on:
+      - backend
+    volumes:
+      - ./services/chatbot:/app
+
+  # n8n lo mantengo por si lo usas para otras tareas (emails, avisos, etc.)
   n8n:
     image: n8nio/n8n
     container_name: tfg_n8n

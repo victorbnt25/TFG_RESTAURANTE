@@ -18,6 +18,7 @@ function Reservas() {
     hora: "",
     numeroPersonas: "",
     zona: "",
+    telefono: "",
     observaciones: "",
   });
 
@@ -50,6 +51,7 @@ function Reservas() {
       const datosReserva = {
         nombre: formulario.nombre.trim(),
         email: formulario.correo.trim(),
+        telefono: formulario.telefono.trim(),
         fecha: formulario.fecha,
         hora: formulario.hora,
         numero_personas: parseInt(formulario.numeroPersonas, 10), // Lo pasamos a número
@@ -67,6 +69,7 @@ function Reservas() {
       setFormulario({
         nombre: "",
         correo: "",
+        telefono: "",
         fecha: "",
         hora: "",
         numeroPersonas: "",
@@ -113,6 +116,19 @@ function Reservas() {
             name="correo"
             value={formulario.correo}
             onChange={manejarCambio}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="telefono">Teléfono de contacto</label>
+          <input
+            type="tel"
+            id="telefono"
+            name="telefono"
+            value={formulario.telefono}
+            onChange={manejarCambio}
+            placeholder="Ej: 600 000 000"
             required
           />
         </div>

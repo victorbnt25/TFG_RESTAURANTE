@@ -51,6 +51,11 @@ function Cabecera() {
         <Link to="/">Inicio</Link>
         <Link to="/carta">Carta</Link>
         <Link to="/reservas">Reservas</Link>
+        {usuario && (
+          <Link to="/mis-reservas" className="enlace-mis-reservas">
+            Mis Reservas
+          </Link>
+        )}
         <Link to="/contacto">Contacto</Link>
 
         {usuario && usuario.rol === "ADMIN" && (
@@ -71,10 +76,6 @@ function Cabecera() {
           <div className="menu-desplegable-acceso">
             {usuario ? (
               <>
-                <Link to="/mis-reservas" className="opcion-acceso">
-                  Mis Reservas
-                </Link>
-
                 <button
                   onClick={cerrarSesion}
                   className="opcion-acceso"
