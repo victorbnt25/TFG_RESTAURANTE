@@ -32,23 +32,23 @@ class PlatoController extends AbstractController
             $criterios['categoria'] = $idCategoria;
         }
 
-        // Buscamos los platos con esos filtros y los ordenamos alfabéticamente
-        $platos = $repo->findBy($criterios, ['nombre' => 'ASC']);
+        // Buscamos los platos con esos filtros de forma optimizada (evitando N+1)
+        $platos = $repo->findAllWithCategoria($criterios);
         $data = [];
 
         foreach ($platos as $plato) {
             $data[] = [
-                'id' => $plato->getId(),
-                'nombre' => $plato->getNombre(),
-                'precio' => $plato->getPrecio(),
-                'descripcion' => $plato->getDescripcion(),
-                'tipo' => $plato->getTipo()?->value,
-                'disponibilidad' => $plato->getDisponibilidad()?->value,
-                'activo' => $plato->isActivo(),
-                'imagen_url' => $plato->getImagenUrl(),
+                'id' => $plato['id'],
+                'nombre' => $plato['nombre'],
+                'precio' => $plato['precio'],
+                'descripcion' => $plato['descripcion'],
+                'tipo' => $plato['tipo'] instanceof \UnitEnum ? $plato['tipo']->value : $plato['tipo'],
+                'disponibilidad' => $plato['disponibilidad'] instanceof \UnitEnum ? $plato['disponibilidad']->value : $plato['disponibilidad'],
+                'activo' => (bool)$plato['activo'],
+                'imagen_url' => $plato['imagenUrl'],
                 'categoria' => [
-                    'id' => $plato->getCategoria()?->getId(),
-                    'nombre' => $plato->getCategoria()?->getNombre(),
+                    'id' => $plato['catId'],
+                    'nombre' => $plato['catNombre'],
                 ],
             ];
         }

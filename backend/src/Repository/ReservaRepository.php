@@ -15,18 +15,68 @@ class ReservaRepository extends ServiceEntityRepository
 
     /**
      * Devuelve todas las reservas uniendo las tablas relacionadas para evitar el problema N+1
-     * @return Reserva[] Returns an array of Reserva objects
+     * @return array Returns an array of Reserva data
      */
     public function findAllWithRelations(): array
     {
         return $this->createQueryBuilder('r')
+            ->select('r.id', 'r.fechaHoraReserva', 'r.numeroPersonas', 'r.estado', 'r.turno', 'r.canal', 'r.observaciones')
             ->leftJoin('r.usuario', 'u')
-            ->addSelect('u')
-            ->leftJoin('r.mesa', 'm')
-            ->addSelect('m')
+            ->addSelect('u.nombre as userName', 'u.email as userEmail', 'u.telefono as userPhone')
+            ->leftJoin('r.mesas', 'm')
+            ->addSelect('m.codigo as mesaCodigo', 'm.id as mesaId', 'm.zona as mesaZona')
+            ->orderBy('r.fechaHoraReserva', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
+     * @param \App\Entity\Usuario $usuario
+     * @return array
+     */
+    public function findByUsuarioWithRelations($usuario): array
+    {
+        return $this->createQueryBuilder('r')
+            ->select('r.id', 'r.fechaHoraReserva', 'r.numeroPersonas', 'r.estado')
+            ->leftJoin('r.mesas', 'm')
+            ->addSelect('m.codigo as mesaCodigo')
+            ->where('r.usuario = :usuario')
+            ->setParameter('usuario', $usuario)
             ->orderBy('r.fechaHoraReserva', 'DESC')
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
+    }
+
+    /**
+     * Busca reservas que se solapen en el tiempo para unas mesas específicas
+     * @param \DateTimeInterface $fechaHora
+     * @param int[] $mesaIds
+     * @param int|null $excludeReservaId
+     * @return Reserva[]
+     */
+    public function findOverlappingReservations(\DateTimeInterface $fechaHora, array $mesaIds, ?int $excludeReservaId = null): array
+    {
+        $interval = new \DateInterval('PT89M59S'); // Casi 90 minutos
+        $start = \DateTimeImmutable::createFromInterface($fechaHora)->sub($interval);
+        $end = \DateTimeImmutable::createFromInterface($fechaHora)->add($interval);
+
+        $qb = $this->createQueryBuilder('r')
+            ->join('r.mesas', 'm')
+            ->where('m.id IN (:mesaIds)')
+            ->andWhere('r.fechaHoraReserva > :start')
+            ->andWhere('r.fechaHoraReserva < :end')
+            ->andWhere('r.estado != :cancelada')
+            ->setParameter('mesaIds', $mesaIds)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('cancelada', \App\Enum\EstadoReservaEnum::CANCELADA);
+
+        if ($excludeReservaId) {
+            $qb->andWhere('r.id != :excludeId')
+               ->setParameter('excludeId', $excludeReservaId);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

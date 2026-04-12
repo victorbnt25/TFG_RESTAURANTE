@@ -6,6 +6,7 @@ import {
   obtenerDetallePlato,
 } from "../../servicios/api";
 import { useCarrito } from "../../context/CarritoContext";
+import { useData } from "../../context/DataContext";
 import "./carta.css"; // Importamos los nuevos estilos premium
 import { Link } from "react-router-dom";
 
@@ -19,13 +20,11 @@ function Carta() {
     totalPrecio 
   } = useCarrito();
 
-  const [categorias, setCategorias] = useState([]);
-  const [platos, setPlatos] = useState([]);
+  const { platos: todosLosPlatos, categorias } = useData();
+  const [platosFiltrados, setPlatosFiltrados] = useState(todosLosPlatos);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [platoSeleccionado, setPlatoSeleccionado] = useState(null);
-  const [cargando, setCargando] = useState(false);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
-  const [error, setError] = useState("");
   const [miniCarritoAbierto, setMiniCarritoAbierto] = useState(false);
   
   // Estados para Guarniciones
@@ -34,37 +33,20 @@ function Carta() {
   const [burgerPendiente, setBurgerPendiente] = useState(null);
 
   useEffect(() => {
-    cargarCategorias();
-    // Carga inicial automatica sin filtro
-    cargarPlatos("");
-  }, []);
+    aplicarFiltro();
+  }, [todosLosPlatos, categoriaSeleccionada]);
 
-  async function cargarCategorias() {
-    try {
-      const datos = await obtenerCategorias();
-      setCategorias(datos);
-    } catch (error) {
-      setError("No se pudieron cargar las categorías.");
+  function aplicarFiltro() {
+    if (!categoriaSeleccionada) {
+      setPlatosFiltrados(todosLosPlatos);
+    } else {
+      const filtrados = todosLosPlatos.filter(p => p.categoria?.id == categoriaSeleccionada || p.catId == categoriaSeleccionada);
+      setPlatosFiltrados(filtrados);
     }
   }
 
-  async function cargarPlatos(idCategoria = "") {
-    try {
-      setCargando(true);
-      setError("");
-
-      const datos = await obtenerPlatos(idCategoria || null);
-      setPlatos(datos);
-    } catch (error) {
-      setError("No se pudieron cargar los platos.");
-    } finally {
-      setCargando(false);
-    }
-  }
-
-  async function manejarCambioCategoria(idCategoria) {
+  function manejarCambioCategoria(idCategoria) {
     setCategoriaSeleccionada(idCategoria);
-    await cargarPlatos(idCategoria);
   }
 
   async function abrirDetalle(idPlato) {
@@ -89,9 +71,8 @@ function Carta() {
 
   async function cargarGuarniciones() {
     try {
-      const todos = await obtenerPlatos();
-      // Filtramos por tipo GUARNICION (enviado desde el backend)
-      const filtrados = todos.filter(p => p.tipo === "GUARNICION");
+      // Filtramos por tipo GUARNICION de los que ya tenemos cargados
+      const filtrados = todosLosPlatos.filter(p => p.tipo === "GUARNICION");
       setGuarniciones(filtrados);
     } catch (e) {
       console.error("Error cargando guarniciones", e);
@@ -214,7 +195,7 @@ function Carta() {
         calidad y pensados para una experiencia única.
       </p>
 
-      {error && <p className="mensaje-error">{error}</p>}
+      {/* No mostramos error aquí porque se gestiona globalmente si falla la carga inicial */}
 
       {/* PILLS CATEGORÍAS */}
       <div className="carta-filtros">
@@ -240,24 +221,24 @@ function Carta() {
 
       {/* GRID DE PLATOS AUTOMÁTICO */}
       <section className="carta-seccion">
-        {cargando ? (
-          <p style={{textAlign:"center", color:"#aaa"}}>Cargando deliciosos platos...</p>
-        ) : (
-          <div className="carta-grid">
-            {platos.length === 0 ? (
-              <p style={{textAlign:"center", gridColumn:"1/-1"}}>No hay platos disponibles en este momento.</p>
-            ) : (
-              platos.map((plato) => (
-                <article key={plato.id} className="carta-card">
-                  <div className="img-container">
+        <div className="carta-grid">
+          {platosFiltrados.length === 0 ? (
+            <p style={{textAlign:"center", gridColumn:"1/-1"}}>No hay platos disponibles en esta categoría.</p>
+          ) : (
+            platosFiltrados.map((plato) => (
+              <article key={plato.id} className="carta-card">
+                    <div className="img-container" style={{ aspectRatio: '16/9', overflow: 'hidden' }}>
                     {obtenerRutaImagen(plato) ? (
                       <img
                         src={obtenerRutaImagen(plato)}
                         alt={plato.nombre}
                         className="carta-card-img"
+                        loading="lazy"
+                        decoding="async"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     ) : (
-                      <div className="carta-card-img" style={{backgroundColor:"#333"}} />
+                      <div className="carta-card-img" style={{backgroundColor:"#333", width: '100%', height: '100%'}} />
                     )}
                   </div>
 
@@ -286,10 +267,9 @@ function Carta() {
                     </div>
                   </div>
                 </article>
-              ))
-            )}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </section>
 
        {/* MODAL DE GUARNICIÓN */}

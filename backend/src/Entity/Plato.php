@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlatoRepository::class)]
 #[ORM\Table(name: 'platos')]
+#[ORM\Index(name: 'idx_platos_activo', columns: ['activo'])]
+#[ORM\Index(name: 'idx_platos_tipo', columns: ['tipo'])]
 #[ORM\HasLifecycleCallbacks]
 class Plato
 {

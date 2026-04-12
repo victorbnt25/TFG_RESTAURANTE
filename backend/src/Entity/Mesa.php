@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MesaRepository::class)]
 #[ORM\Table(name: 'mesas')]
+#[ORM\Index(name: 'idx_mesas_activo', columns: ['activo'])]
+#[ORM\Index(name: 'idx_mesas_estado', columns: ['estado'])]
+#[ORM\Index(name: 'idx_mesas_zona', columns: ['zona'])]
 #[ORM\UniqueConstraint(name: 'uniq_mesas_codigo', columns: ['codigo'])]
 #[ORM\HasLifecycleCallbacks]
 class Mesa

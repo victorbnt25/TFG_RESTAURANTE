@@ -23,29 +23,52 @@ class ReservaController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function list(ReservaRepository $repo): JsonResponse
     {
-        // Pillamos todas las reservas de la base de datos y las ordenamos por fecha
-        $reservas = $repo->findBy([], ['fechaHoraReserva' => 'ASC']);
+        // Pillamos todas las reservas de la base de datos de forma optimizada (evitando N+1)
+        $reservas = $repo->findAllWithRelations();
         $data = [];
 
         // Recorremos cada reserva para prepararla para el JSON
-        foreach ($reservas as $reserva) {
-            $mesas = $reserva->getMesas();
-            $codigosMesas = array_map(fn($m) => $m->getCodigo(), $mesas->toArray());
-            $zona = !empty($codigosMesas) ? $mesas->first()->getZona()->value : '---';
+        $reservasAgrupadas = [];
+        foreach ($reservas as $r) {
+            $id = $r['id'];
+            if (!isset($reservasAgrupadas[$id])) {
+                $reservasAgrupadas[$id] = [
+                    'id' => $id,
+                    'nombre' => $r['userName'],
+                    'email' => $r['userEmail'],
+                    'fechaHoraReserva' => $r['fechaHoraReserva']?->format('Y-m-d H:i:s'),
+                    'numeroPersonas' => $r['numeroPersonas'],
+                    'estado' => $r['estado'] instanceof \UnitEnum ? $r['estado']->value : $r['estado'],
+                    'turno' => $r['turno'] instanceof \UnitEnum ? $r['turno']->value : $r['turno'],
+                    'canal' => $r['canal'] instanceof \UnitEnum ? $r['canal']->value : $r['canal'],
+                    'zona' => '---',
+                    'mesas' => [],
+                    'telefono' => $r['userPhone'],
+                    'observaciones' => $r['observaciones'],
+                ];
+            }
+            if ($r['mesaCodigo']) {
+                $reservasAgrupadas[$id]['mesas'][] = $r['mesaCodigo'];
+                if (isset($r['mesaZona'])) {
+                    $reservasAgrupadas[$id]['zona'] = $r['mesaZona'] instanceof \UnitEnum ? $r['mesaZona']->value : $r['mesaZona'];
+                }
+            }
+        }
 
+        foreach ($reservasAgrupadas as $ra) {
             $data[] = [
-                'id' => $reserva->getId(),
-                'nombre' => $reserva->getUsuario()?->getNombre(),
-                'email' => $reserva->getUsuario()?->getEmail(),
-                'fechaHoraReserva' => $reserva->getFechaHoraReserva()?->format('Y-m-d H:i:s'),
-                'numeroPersonas' => $reserva->getNumeroPersonas(),
-                'estado' => $reserva->getEstado()?->value,
-                'turno' => $reserva->getTurno()?->value,
-                'canal' => $reserva->getCanal()?->value,
-                'zona' => $zona,
-                'mesa' => implode(", ", $codigosMesas),
-                'telefono' => $reserva->getUsuario()?->getTelefono(),
-                'observaciones' => $reserva->getObservaciones(),
+                'id' => $ra['id'],
+                'nombre' => $ra['nombre'],
+                'email' => $ra['email'],
+                'fechaHoraReserva' => $ra['fechaHoraReserva'],
+                'numeroPersonas' => $ra['numeroPersonas'],
+                'estado' => $ra['estado'],
+                'turno' => $ra['turno'],
+                'canal' => $ra['canal'],
+                'zona' => $ra['zona'],
+                'mesa' => implode(", ", $ra['mesas']),
+                'telefono' => $ra['telefono'],
+                'observaciones' => $ra['observaciones'],
             ];
         }
 
@@ -60,20 +83,35 @@ class ReservaController extends AbstractController
             return $this->json([]);
         }
 
-        $reservas = $repo->findBy(['usuario' => $usuario], ['fechaHoraReserva' => 'DESC']);
+        $reservas = $repo->findByUsuarioWithRelations($usuario);
         $data = [];
 
-        foreach ($reservas as $reserva) {
-            $mesas = $reserva->getMesas();
-            $codigosMesas = array_map(fn($m) => $m->getCodigo(), $mesas->toArray());
+        $reservasAgrupadas = [];
+        foreach ($reservas as $r) {
+            $id = $r['id'];
+            if (!isset($reservasAgrupadas[$id])) {
+                $reservasAgrupadas[$id] = [
+                    'id' => $id,
+                    'fechaHoraReserva' => $r['fechaHoraReserva']?->format('Y-m-d H:i:s'),
+                    'numeroPersonas' => $r['numeroPersonas'],
+                    'estado' => $r['estado'] instanceof \UnitEnum ? $r['estado']->value : $r['estado'],
+                    'mesas' => [],
+                    'telefono' => $usuario->getTelefono(),
+                ];
+            }
+            if ($r['mesaCodigo']) {
+                $reservasAgrupadas[$id]['mesas'][] = $r['mesaCodigo'];
+            }
+        }
 
+        foreach ($reservasAgrupadas as $ra) {
             $data[] = [
-                'id' => $reserva->getId(),
-                'fechaHoraReserva' => $reserva->getFechaHoraReserva()?->format('Y-m-d H:i:s'),
-                'numeroPersonas' => $reserva->getNumeroPersonas(),
-                'estado' => $reserva->getEstado()?->value,
-                'mesa' => implode(", ", $codigosMesas),
-                'telefono' => $usuario->getTelefono(),
+                'id' => $ra['id'],
+                'fechaHoraReserva' => $ra['fechaHoraReserva'],
+                'numeroPersonas' => $ra['numeroPersonas'],
+                'estado' => $ra['estado'],
+                'mesa' => implode(", ", $ra['mesas']),
+                'telefono' => $ra['telefono'],
             ];
         }
 
@@ -208,26 +246,26 @@ class ReservaController extends AbstractController
             ], 404);
         }
 
-        // --- LÓGICA DE ASIGNACIÓN MULTI-MESA ---
+        // --- LÓGICA DE ASIGNACIÓN MULTI-MESA OPTIMIZADA ---
         $mesasAsignadas = [];
         $capacidadAcumulada = 0;
 
-        foreach ($mesas as $mesa) {
-            // Miramos si esta mesa ya tiene algún conflicto en ese horario
-            $hayConflicto = false;
-            $reservasDeEstaMesa = $mesa->getReservas();
-
-            foreach ($reservasDeEstaMesa as $resExistente) {
-                if ($resExistente->getEstado() === EstadoReservaEnum::CANCELADA) continue;
-                
-                $diff = abs($resExistente->getFechaHoraReserva()->getTimestamp() - $fechaHora->getTimestamp());
-                if ($diff < 5400) { // 90 min
-                    $hayConflicto = true;
-                    break;
-                }
+        // 1. Buscamos qué mesas ya están ocupadas en ese rango de tiempo (mismo día +/- 90 min)
+        // Pasamos todos los IDs de las mesas que nos interesan para filtrar en una sola consulta
+        $idsMesasCandidatas = array_map(fn($m) => $m->getId(), $mesas);
+        $conflictos = $reservaRepository->findOverlappingReservations($fechaHora, $idsMesasCandidatas);
+        
+        // Sacamos los IDs de las mesas que tienen conflicto
+        $idsMesasOcupadas = [];
+        foreach ($conflictos as $resConflicto) {
+            foreach ($resConflicto->getMesas() as $mConf) {
+                $idsMesasOcupadas[$mConf->getId()] = true;
             }
+        }
 
-            if (!$hayConflicto) {
+        // 2. Ahora recorremos las mesas candidatas y cogemos las que NO estén en la lista de ocupadas
+        foreach ($mesas as $mesa) {
+            if (!isset($idsMesasOcupadas[$mesa->getId()])) {
                 $mesasAsignadas[] = $mesa;
                 $capacidadAcumulada += $mesa->getCapacidad();
 
@@ -381,28 +419,22 @@ class ReservaController extends AbstractController
                 'estado' => EstadoMesaEnum::DISPONIBLE
             ], ['capacidad' => 'ASC']);
 
-            // --- LÓGICA DE ASIGNACIÓN MULTI-MESA (UPDATE) ---
+            // --- LÓGICA DE ASIGNACIÓN MULTI-MESA (UPDATE OPTIMIZADA) ---
             $mesasAsignadas = [];
             $capacidadAcumulada = 0;
 
-            foreach ($mesas as $mesa) {
-                $hayConflicto = false;
-                $reservasDeEstaMesa = $mesa->getReservas();
+            $idsMesasCandidatas = array_map(fn($m) => $m->getId(), $mesas);
+            $conflictos = $reservaRepository->findOverlappingReservations($nuevaFechaHora, $idsMesasCandidatas, $reserva->getId());
 
-                foreach ($reservasDeEstaMesa as $resExistente) {
-                    // Ignoramos la propia reserva que estamos editando
-                    if ($resExistente->getId() === $reserva->getId() || $resExistente->getEstado() === EstadoReservaEnum::CANCELADA) {
-                        continue;
-                    }
-                    
-                    $diff = abs($resExistente->getFechaHoraReserva()->getTimestamp() - $nuevaFechaHora->getTimestamp());
-                    if ($diff < 5400) { // 90 min
-                        $hayConflicto = true;
-                        break;
-                    }
+            $idsMesasOcupadas = [];
+            foreach ($conflictos as $resConflicto) {
+                foreach ($resConflicto->getMesas() as $mConf) {
+                    $idsMesasOcupadas[$mConf->getId()] = true;
                 }
+            }
 
-                if (!$hayConflicto) {
+            foreach ($mesas as $mesa) {
+                if (!isset($idsMesasOcupadas[$mesa->getId()])) {
                     $mesasAsignadas[] = $mesa;
                     $capacidadAcumulada += $mesa->getCapacidad();
                     if ($capacidadAcumulada >= $nuevoNumPersonas) break;

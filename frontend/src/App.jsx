@@ -16,6 +16,7 @@ import Privacidad from "./pages/Privacidad/privacidad.jsx";
 import MisReservas from "./pages/MisReservas/misReservas.jsx";
 import ScrollToTop from "./componentes/ScrollToTop.jsx";
 import Chatbot from "./componentes/Chatbot/Chatbot.jsx";
+import { useData } from "./context/DataContext.jsx";
 import "./App.css";
 
 // IMPORTS ADMINISTRACIÓN
@@ -36,6 +37,11 @@ import AdminPedidos from "./pages/Admin/AdminPedidos.jsx";
 function App() {
   const location = useLocation();
   const esRutaAdmin = location.pathname.startsWith("/admin");
+  const { cargandoTodo } = useData();
+
+  if (cargandoTodo) {
+    return <Loader />;
+  }
 
   return (
     <div className="layout">

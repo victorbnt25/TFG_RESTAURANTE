@@ -111,3 +111,10 @@ export async function crearPedido(datosPedido) {
     body: JSON.stringify(datosPedido),
   });
 }
+export async function obtenerMesas() {
+  return await request("/api/mesas");
+}
+
+export async function obtenerPolitica() {
+  return await request("/api/public/politica");
+}

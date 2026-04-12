@@ -95,28 +95,34 @@ class PedidoController extends AbstractController
     #[Route('', name: 'api_pedidos_listar', methods: ['GET'])]
 public function listar(EntityManagerInterface $em): JsonResponse
 {
-    $pedidos = $em->getRepository(Pedido::class)->findBy([], ['id' => 'DESC']);
+    $pedidos = $em->getRepository(Pedido::class)->findAllWithRelations();
 
     $resultado = [];
 
-    foreach ($pedidos as $pedido) {
-        $lineas = [];
-
-        foreach ($pedido->getLineas() as $linea) {
-            $lineas[] = [
-                'plato' => $linea->getPlato()->getNombre(),
-                'cantidad' => $linea->getCantidad(),
-                'precio' => $linea->getPrecioUnitario(),
+    $pedidosAgrupados = [];
+    foreach ($pedidos as $p) {
+        $id = $p['id'];
+        if (!isset($pedidosAgrupados[$id])) {
+            $pedidosAgrupados[$id] = [
+                'id' => $id,
+                'estado' => $p['estado'] instanceof \UnitEnum ? $p['estado']->value : $p['estado'],
+                'total' => $p['total'],
+                'fecha' => $p['creadoEn']?->format('Y-m-d H:i'),
+                'lineas' => [],
             ];
         }
 
-        $resultado[] = [
-            'id' => $pedido->getId(),
-            'estado' => $pedido->getEstado()->value,
-            'total' => $pedido->getTotal(),
-            'fecha' => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
-            'lineas' => $lineas,
-        ];
+        if ($p['platoNombre']) {
+            $pedidosAgrupados[$id]['lineas'][] = [
+                'plato' => $p['platoNombre'],
+                'cantidad' => $p['cantidad'],
+                'precio' => $p['precioUnitario'],
+            ];
+        }
+    }
+
+    foreach ($pedidosAgrupados as $pa) {
+        $resultado[] = $pa;
     }
 
     return $this->json($resultado);

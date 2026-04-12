@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PedidoRepository::class)]
 #[ORM\Table(name: 'pedidos')]
+#[ORM\Index(name: 'idx_pedidos_estado', columns: ['estado'])]
 #[ORM\HasLifecycleCallbacks]
 class Pedido
 {

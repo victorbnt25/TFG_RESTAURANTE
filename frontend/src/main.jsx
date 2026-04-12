@@ -6,13 +6,16 @@ import App from './App.jsx'
 import "./styles/theme.css";
 import "./styles/forms.css";
 import { CarritoProvider } from "./context/CarritoContext.jsx";
+import { DataProvider } from "./context/DataContext.jsx";
 
 createRoot(document.getElementById('root')).render(
    <StrictMode>
     <BrowserRouter>
-      <CarritoProvider>
-        <App/>
-      </CarritoProvider>
+      <DataProvider>
+        <CarritoProvider>
+          <App/>
+        </CarritoProvider>
+      </DataProvider>
     </BrowserRouter>
   </StrictMode>,
 )
