@@ -251,12 +251,6 @@ function Carta() {
                     <div className="card-price">{Number(plato.precio).toFixed(2)} €</div>
 
                     <div className="card-actions">
-                      <button
-                        className="btn-detalle"
-                        onClick={() => abrirDetalle(plato.id)}
-                      >
-                        Saber más
-                      </button>
 
                        <button
                         className="btn-add"

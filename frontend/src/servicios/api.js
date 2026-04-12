@@ -1,44 +1,20 @@
 export const API_URL = "http://localhost:8000";
 
 export async function request(ruta, opciones = {}) {
-  const url = `${API_URL}${ruta}`;
+  const url = `${API_URL}${ruta}`;                                    // Crea la dirección completa añadiendo el servidor
+  const headers = { "Content-Type": "application/json", ...opciones.headers }; // Prepara las etiquetas por defecto
+  
+  if (opciones.body instanceof FormData) delete headers["Content-Type"]; // Si enviamos fotos/archivos, quita la etiqueta JSON
 
-  const opcionesFinales = { ...opciones };
+  const respuesta = await fetch(url, { ...opciones, headers });       // Envía el paquete al servidor y espera respuesta
+  const datos = await respuesta.json().catch(() => null);             // Lee el contenido del paquete (JSON) o da nulo si falla
 
-  // Si no nos pasan cabeceras, creamos el objeto vacío para no petar
-  if (!opcionesFinales.headers) {
-    opcionesFinales.headers = {};
+  if (!respuesta.ok) {                                                // Si el servidor devuelve un error (404, 500, etc)
+    const errorMsg = datos?.error || datos?.mensaje || "Error";       // Busca el mensaje de error en los datos
+    throw new Error(errorMsg);                                        // Detiene todo y avisa del problema
   }
 
-  // Si no es un formulario con archivos, le decimos al server que le mandamos JSON
-  if (!(opcionesFinales.body instanceof FormData)) {
-    opcionesFinales.headers["Content-Type"] = "application/json";
-  }
-
-  const respuesta = await fetch(url, opcionesFinales);
-
-  let datos = null;
-
-  // Intentamos convertir la respuesta a un objeto de JS
-  try {
-    datos = await respuesta.json();
-  } catch (error) {
-    datos = null;
-  }
-
-  if (!respuesta.ok) {
-    // Miramos si la API nos ha dado algún mensaje de error que podamos enseñar
-    const mensaje =
-      datos?.error ||
-      datos?.mensaje ||
-      datos?.message ||
-      "Error en la petición";
-
-    // Si la respuesta no es un 200, lanzamos el error que nos mande el servidor
-    throw new Error(mensaje);
-  }
-
-  return datos;
+  return datos;                                                       // Todo OK: Devuelve los datos listos para usar
 }
 
 // Función para pillar todas las categorías para los filtros de la carta
