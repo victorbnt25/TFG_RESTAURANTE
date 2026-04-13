@@ -6,6 +6,7 @@ export async function request(ruta, opciones = {}) {
   
   if (opciones.body instanceof FormData) delete headers["Content-Type"]; // Si enviamos fotos/archivos, quita la etiqueta JSON
 
+  
   const respuesta = await fetch(url, { ...opciones, headers });       // Envía el paquete al servidor y espera respuesta
   const datos = await respuesta.json().catch(() => null);             // Lee el contenido del paquete (JSON) o da nulo si falla
 
