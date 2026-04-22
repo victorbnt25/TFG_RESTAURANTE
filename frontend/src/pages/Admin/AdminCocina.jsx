@@ -51,9 +51,9 @@ export default function AdminCocina() {
 
   const columnas = useMemo(() => {
     return {
-      abiertos: pedidos.filter((p) => p.estado === "ABIERTO"),
-      preparando: pedidos.filter((p) => p.estado === "EN_PREPARACION"),
-      servidos: pedidos.filter((p) => p.estado === "SERVIDO"),
+      pendientes: pedidos.filter((p) => p.estado === "PENDIENTE"),
+      pagados: pedidos.filter((p) => p.estado === "PAGADO"),
+      entregados: pedidos.filter((p) => p.estado === "ENTREGADO"),
     };
   }, [pedidos]);
 
@@ -85,15 +85,15 @@ export default function AdminCocina() {
       <div className="cocina-board">
         <section className="cocina-columna">
           <div className="cocina-columna-header cocina-abiertos">
-            <h3>Abiertos</h3>
-            <span>{columnas.abiertos.length}</span>
+            <h3>Pendientes</h3>
+            <span>{columnas.pendientes.length}</span>
           </div>
 
           <div className="cocina-columna-body">
-            {columnas.abiertos.length === 0 ? (
-              <p className="cocina-vacio">No hay pedidos abiertos.</p>
+            {columnas.pendientes.length === 0 ? (
+              <p className="cocina-vacio">No hay pedidos pendientes.</p>
             ) : (
-              columnas.abiertos.map((pedido) => (
+              columnas.pendientes.map((pedido) => (
                 <article key={pedido.id} className="cocina-card">
                   <div className="cocina-card-top">
                     <div>
@@ -122,10 +122,10 @@ export default function AdminCocina() {
                     <button
                       type="button"
                       className="btn-estado btn-estado-preparar"
-                      onClick={() => actualizarEstado(pedido.id, "EN_PREPARACION")}
+                      onClick={() => actualizarEstado(pedido.id, "PAGADO")}
                       disabled={actualizandoId === pedido.id}
                     >
-                      Pasar a preparación
+                      Pasar a pagado
                     </button>
                   </div>
                 </article>
@@ -136,15 +136,15 @@ export default function AdminCocina() {
 
         <section className="cocina-columna">
           <div className="cocina-columna-header cocina-preparacion">
-            <h3>En preparación</h3>
-            <span>{columnas.preparando.length}</span>
+            <h3>Pagados</h3>
+            <span>{columnas.pagados.length}</span>
           </div>
 
           <div className="cocina-columna-body">
-            {columnas.preparando.length === 0 ? (
-              <p className="cocina-vacio">No hay pedidos en preparación.</p>
+            {columnas.pagados.length === 0 ? (
+              <p className="cocina-vacio">No hay pedidos pagados.</p>
             ) : (
-              columnas.preparando.map((pedido) => (
+              columnas.pagados.map((pedido) => (
                 <article key={pedido.id} className="cocina-card">
                   <div className="cocina-card-top">
                     <div>
@@ -173,10 +173,10 @@ export default function AdminCocina() {
                     <button
                       type="button"
                       className="btn-estado btn-estado-servido"
-                      onClick={() => actualizarEstado(pedido.id, "SERVIDO")}
+                      onClick={() => actualizarEstado(pedido.id, "ENTREGADO")}
                       disabled={actualizandoId === pedido.id}
                     >
-                      Marcar servido
+                      Marcar entregado
                     </button>
 
                     <button
@@ -196,15 +196,15 @@ export default function AdminCocina() {
 
         <section className="cocina-columna">
           <div className="cocina-columna-header cocina-servidos">
-            <h3>Servidos</h3>
-            <span>{columnas.servidos.length}</span>
+            <h3>Entregados</h3>
+            <span>{columnas.entregados.length}</span>
           </div>
 
           <div className="cocina-columna-body">
-            {columnas.servidos.length === 0 ? (
-              <p className="cocina-vacio">No hay pedidos servidos.</p>
+            {columnas.entregados.length === 0 ? (
+              <p className="cocina-vacio">No hay pedidos entregados.</p>
             ) : (
-              columnas.servidos.map((pedido) => (
+              columnas.entregados.map((pedido) => (
                 <article key={pedido.id} className="cocina-card cocina-card-servido">
                   <div className="cocina-card-top">
                     <div>
@@ -233,7 +233,7 @@ export default function AdminCocina() {
                     <button
                       type="button"
                       className="btn-estado btn-estado-cerrar"
-                      onClick={() => actualizarEstado(pedido.id, "CERRADO")}
+                      onClick={() => actualizarEstado(pedido.id, "ENTREGADO")}
                       disabled={actualizandoId === pedido.id}
                     >
                       Cerrar pedido

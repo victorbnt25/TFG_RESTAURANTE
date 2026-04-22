@@ -52,23 +52,21 @@ function MisPedidos() {
   const resumen = useMemo(() => {
     return {
       totalPedidos: pedidos.length,
-      abiertos: pedidos.filter((p) => p.estado === "ABIERTO").length,
-      preparando: pedidos.filter((p) => p.estado === "EN_PREPARACION").length,
-      servidos: pedidos.filter((p) => p.estado === "SERVIDO").length,
+      pendientes: pedidos.filter((p) => p.estado === "PENDIENTE").length,
+      pagados: pedidos.filter((p) => p.estado === "PAGADO").length,
+      entregados: pedidos.filter((p) => p.estado === "ENTREGADO").length,
       cancelados: pedidos.filter((p) => p.estado === "CANCELADO").length,
     };
   }, [pedidos]);
 
   function obtenerClaseEstado(estado) {
     switch (estado) {
-      case "ABIERTO":
+      case "PENDIENTE":
         return "badge-estado badge-abierto";
-      case "EN_PREPARACION":
+      case "PAGADO":
         return "badge-estado badge-preparacion";
-      case "SERVIDO":
+      case "ENTREGADO":
         return "badge-estado badge-servido";
-      case "CERRADO":
-        return "badge-estado badge-cerrado";
       case "CANCELADO":
         return "badge-estado badge-cancelado";
       default:
@@ -104,18 +102,18 @@ function MisPedidos() {
         </div>
 
         <div className="mis-pedidos-kpi">
-          <span>Abiertos</span>
-          <strong>{resumen.abiertos}</strong>
+          <span>Pendientes</span>
+          <strong>{resumen.pendientes}</strong>
         </div>
 
         <div className="mis-pedidos-kpi">
-          <span>En preparación</span>
-          <strong>{resumen.preparando}</strong>
+          <span>Pagados</span>
+          <strong>{resumen.pagados}</strong>
         </div>
 
         <div className="mis-pedidos-kpi">
-          <span>Servidos</span>
-          <strong>{resumen.servidos}</strong>
+          <span>Entregados</span>
+          <strong>{resumen.entregados}</strong>
         </div>
 
         <div className="mis-pedidos-kpi">

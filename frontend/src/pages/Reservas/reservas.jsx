@@ -181,9 +181,9 @@ function Reservas() {
           >
             <option value="">Sin preferencia</option>
             <option value="SALA">Sala</option>
-            <option value="TERRAZA">Terraza</option>
-            <option value="BARRA">Barra</option>
-            <option value="PRIVADO">Privado</option>
+            <option value="Terraza">Terraza</option>
+            <option value="Barra">Barra</option>
+            <option value="Privado">Privado</option>
           </select>
         </div>
 

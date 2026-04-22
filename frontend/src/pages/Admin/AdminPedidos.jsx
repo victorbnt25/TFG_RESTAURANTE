@@ -4,10 +4,9 @@ import "./admin.css";
 
 const ESTADOS = [
   "TODOS",
-  "ABIERTO",
-  "EN_PREPARACION",
-  "SERVIDO",
-  "CERRADO",
+  "PENDIENTE",
+  "PAGADO",
+  "ENTREGADO",
   "CANCELADO",
 ];
 
@@ -192,23 +191,21 @@ export default function AdminPedidos() {
   const resumen = useMemo(() => {
     return {
       total: pedidos.length,
-      abiertos: pedidos.filter((p) => p.estado === "ABIERTO").length,
-      preparando: pedidos.filter((p) => p.estado === "EN_PREPARACION").length,
-      servidos: pedidos.filter((p) => p.estado === "SERVIDO").length,
+      pendientes: pedidos.filter((p) => p.estado === "PENDIENTE").length,
+      pagados: pedidos.filter((p) => p.estado === "PAGADO").length,
+      entregados: pedidos.filter((p) => p.estado === "ENTREGADO").length,
       cancelados: pedidos.filter((p) => p.estado === "CANCELADO").length,
     };
   }, [pedidos]);
 
   const obtenerClaseEstado = (estado) => {
     switch (estado) {
-      case "ABIERTO":
+      case "PENDIENTE":
         return "badge-estado badge-abierto";
-      case "EN_PREPARACION":
+      case "PAGADO":
         return "badge-estado badge-preparacion";
-      case "SERVIDO":
+      case "ENTREGADO":
         return "badge-estado badge-servido";
-      case "CERRADO":
-        return "badge-estado badge-cerrado";
       case "CANCELADO":
         return "badge-estado badge-cancelado";
       default:
@@ -259,18 +256,18 @@ export default function AdminPedidos() {
         </div>
 
         <div className="admin-kpi-card">
-          <span className="admin-kpi-label">Abiertos</span>
-          <strong className="admin-kpi-value">{resumen.abiertos}</strong>
+          <span className="admin-kpi-label">Pendientes</span>
+          <strong className="admin-kpi-value">{resumen.pendientes}</strong>
         </div>
 
         <div className="admin-kpi-card">
-          <span className="admin-kpi-label">En preparación</span>
-          <strong className="admin-kpi-value">{resumen.preparando}</strong>
+          <span className="admin-kpi-label">Pagados</span>
+          <strong className="admin-kpi-value">{resumen.pagados}</strong>
         </div>
 
         <div className="admin-kpi-card">
-          <span className="admin-kpi-label">Servidos</span>
-          <strong className="admin-kpi-value">{resumen.servidos}</strong>
+          <span className="admin-kpi-label">Entregados</span>
+          <strong className="admin-kpi-value">{resumen.entregados}</strong>
         </div>
 
         <div className="admin-kpi-card">
@@ -387,29 +384,20 @@ export default function AdminPedidos() {
                           type="button"
                           className="btn-estado btn-estado-preparar"
                           onClick={() =>
-                            cambiarEstado(pedido.id, "EN_PREPARACION")
+                            cambiarEstado(pedido.id, "PAGADO")
                           }
                           disabled={actualizandoId === pedido.id}
                         >
-                          Preparar
+                          Pagado
                         </button>
 
                         <button
                           type="button"
                           className="btn-estado btn-estado-servido"
-                          onClick={() => cambiarEstado(pedido.id, "SERVIDO")}
+                          onClick={() => cambiarEstado(pedido.id, "ENTREGADO")}
                           disabled={actualizandoId === pedido.id}
                         >
-                          Servido
-                        </button>
-
-                        <button
-                          type="button"
-                          className="btn-estado btn-estado-cerrar"
-                          onClick={() => cambiarEstado(pedido.id, "CERRADO")}
-                          disabled={actualizandoId === pedido.id}
-                        >
-                          Cerrar
+                          Entregado
                         </button>
 
                         <button
