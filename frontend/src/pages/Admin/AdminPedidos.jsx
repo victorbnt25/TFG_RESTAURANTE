@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { listarPedidos, cambiarEstadoPedido } from "../../servicios/adminApi";
 import "./admin.css";
 
@@ -21,6 +21,73 @@ export default function AdminPedidos() {
   const [pedidoExpandido, setPedidoExpandido] = useState(null);
   const [actualizandoId, setActualizandoId] = useState(null);
 
+  const [notificacionNuevoPedido, setNotificacionNuevoPedido] = useState("");
+  const [idsPedidosNuevos, setIdsPedidosNuevos] = useState([]);
+
+  const primerRender = useRef(true);
+  const ultimoPedidoIdRef = useRef(null);
+  const timeoutNotificacionRef = useRef(null);
+  const tituloOriginalRef = useRef(document.title);
+
+  const reproducirSonidoNuevoPedido = () => {
+    try {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) return;
+
+      const contexto = new AudioContextClass();
+      const oscilador = contexto.createOscillator();
+      const ganancia = contexto.createGain();
+
+      oscilador.type = "sine";
+      oscilador.frequency.setValueAtTime(880, contexto.currentTime);
+      oscilador.frequency.setValueAtTime(988, contexto.currentTime + 0.08);
+
+      ganancia.gain.setValueAtTime(0.0001, contexto.currentTime);
+      ganancia.gain.exponentialRampToValueAtTime(
+        0.08,
+        contexto.currentTime + 0.02
+      );
+      ganancia.gain.exponentialRampToValueAtTime(
+        0.0001,
+        contexto.currentTime + 0.35
+      );
+
+      oscilador.connect(ganancia);
+      ganancia.connect(contexto.destination);
+
+      oscilador.start();
+      oscilador.stop(contexto.currentTime + 0.36);
+    } catch (error) {
+      console.error("No se pudo reproducir el sonido del pedido nuevo", error);
+    }
+  };
+
+  const lanzarNotificacionNuevoPedido = (cantidadNuevos, nuevosIds) => {
+    const texto =
+      cantidadNuevos === 1
+        ? "🔔 Ha entrado un pedido nuevo"
+        : `🔔 Han entrado ${cantidadNuevos} pedidos nuevos`;
+
+    setNotificacionNuevoPedido(texto);
+    setIdsPedidosNuevos(nuevosIds);
+
+    document.title = texto;
+
+    reproducirSonidoNuevoPedido();
+
+    if (timeoutNotificacionRef.current) {
+      clearTimeout(timeoutNotificacionRef.current);
+    }
+
+    timeoutNotificacionRef.current = setTimeout(() => {
+      setNotificacionNuevoPedido("");
+      setIdsPedidosNuevos([]);
+      document.title = tituloOriginalRef.current;
+    }, 7000);
+  };
+
   const cargarPedidos = async (mostrarLoader = true) => {
     try {
       if (mostrarLoader) {
@@ -29,6 +96,35 @@ export default function AdminPedidos() {
 
       setError("");
       const data = await listarPedidos();
+
+      if (data.length > 0) {
+        const idMasNuevo = data[0].id;
+
+        if (primerRender.current) {
+          ultimoPedidoIdRef.current = idMasNuevo;
+          primerRender.current = false;
+        } else if (
+          ultimoPedidoIdRef.current !== null &&
+          idMasNuevo > ultimoPedidoIdRef.current
+        ) {
+          const nuevosPedidos = data.filter(
+            (pedido) => pedido.id > ultimoPedidoIdRef.current
+          );
+
+          lanzarNotificacionNuevoPedido(
+            nuevosPedidos.length,
+            nuevosPedidos.map((pedido) => pedido.id)
+          );
+
+          ultimoPedidoIdRef.current = idMasNuevo;
+        } else {
+          ultimoPedidoIdRef.current = Math.max(
+            ultimoPedidoIdRef.current || 0,
+            idMasNuevo
+          );
+        }
+      }
+
       setPedidos(data);
     } catch (e) {
       setError(e.message || "No se pudieron cargar los pedidos.");
@@ -44,9 +140,17 @@ export default function AdminPedidos() {
 
     const intervalo = setInterval(() => {
       cargarPedidos(false);
-    }, 15000);
+    }, 10000);
 
-    return () => clearInterval(intervalo);
+    return () => {
+      clearInterval(intervalo);
+
+      if (timeoutNotificacionRef.current) {
+        clearTimeout(timeoutNotificacionRef.current);
+      }
+
+      document.title = tituloOriginalRef.current;
+    };
   }, []);
 
   const cambiarEstado = async (id, estado) => {
@@ -76,6 +180,7 @@ export default function AdminPedidos() {
         textoBusqueda === "" ||
         String(pedido.id).includes(textoBusqueda) ||
         String(pedido.total).toLowerCase().includes(textoBusqueda) ||
+        String(pedido.mesa || "").toLowerCase().includes(textoBusqueda) ||
         pedido.lineas.some((linea) =>
           linea.plato.toLowerCase().includes(textoBusqueda)
         );
@@ -130,6 +235,23 @@ export default function AdminPedidos() {
         </button>
       </div>
 
+      {notificacionNuevoPedido && (
+        <div className="alerta-nuevo-pedido">
+          <span>{notificacionNuevoPedido}</span>
+          <button
+            type="button"
+            className="alerta-nuevo-pedido-cerrar"
+            onClick={() => {
+              setNotificacionNuevoPedido("");
+              setIdsPedidosNuevos([]);
+              document.title = tituloOriginalRef.current;
+            }}
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
+
       <div className="admin-kpis-grid">
         <div className="admin-kpi-card">
           <span className="admin-kpi-label">Total pedidos</span>
@@ -176,7 +298,7 @@ export default function AdminPedidos() {
         <div className="admin-busqueda-box">
           <input
             type="text"
-            placeholder="Buscar por ID, total o plato..."
+            placeholder="Buscar por ID, mesa, total o plato..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="admin-busqueda-input"
@@ -199,6 +321,7 @@ export default function AdminPedidos() {
               <tr>
                 <th>ID</th>
                 <th>Fecha</th>
+                <th>Mesa</th>
                 <th>Total</th>
                 <th>Estado</th>
                 <th>Unidades</th>
@@ -215,13 +338,18 @@ export default function AdminPedidos() {
                 );
 
                 const expandido = pedidoExpandido === pedido.id;
+                const esNuevo = idsPedidosNuevos.includes(pedido.id);
 
                 return (
-                  <tr key={pedido.id}>
+                  <tr
+                    key={pedido.id}
+                    className={esNuevo ? "fila-pedido-nuevo" : ""}
+                  >
                     <td>
                       <strong>#{pedido.id}</strong>
                     </td>
                     <td>{pedido.fecha}</td>
+                    <td>{pedido.mesa || "Sin mesa"}</td>
                     <td>{pedido.total} €</td>
                     <td>
                       <span className={obtenerClaseEstado(pedido.estado)}>

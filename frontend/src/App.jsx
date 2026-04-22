@@ -1,5 +1,4 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 import Cabecera from "./componentes/Cabecera/cabecera.jsx";
 import Footer from "./componentes/Footer/footer.jsx";
@@ -19,7 +18,6 @@ import Chatbot from "./componentes/Chatbot/Chatbot.jsx";
 import { useData } from "./context/DataContext.jsx";
 import "./App.css";
 
-// IMPORTS ADMINISTRACIÓN
 import AdminLayout from "./pages/Admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import AdminPlatos from "./pages/Admin/AdminPlatos.jsx";
@@ -27,12 +25,11 @@ import AdminMesas from "./pages/Admin/AdminMesas.jsx";
 import AdminPolitica from "./pages/Admin/AdminPolitica.jsx";
 import RutaProtegida from "./componentes/auth/RutaProtegida.jsx";
 import AdminLogin from "./pages/Admin/AdminLogin.jsx";
+import AdminCocina from "./pages/Admin/AdminCocina.jsx";
 
-// CONTEXTO CARRITO
 import Carrito from "./pages/Carrito/carrito.jsx";
-
+import MisPedidos from "./pages/MisPedidos/misPedidos.jsx";
 import AdminPedidos from "./pages/Admin/AdminPedidos.jsx";
-
 
 function App() {
   const location = useLocation();
@@ -60,20 +57,18 @@ function App() {
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/mis-reservas" element={<MisReservas />} />
+          <Route path="/mis-pedidos" element={<MisPedidos />} />
 
-          
-          
+          <Route path="/admin/login" element={<AdminLogin />} />
+
           <Route element={<RutaProtegida />}>
-           <Route element={<RutaProtegida />}>
-  <Route path="/admin/login" element={<AdminLogin />} />
-
-  <Route path="/admin" element={<AdminLayout />}>
-    <Route index element={<AdminDashboard />} />
-    <Route path="platos" element={<AdminPlatos />} />
-    <Route path="mesas" element={<AdminMesas />} />
-    <Route path="pedidos" element={<AdminPedidos />} /> 
-    <Route path="politica" element={<AdminPolitica />} />
-  </Route>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="platos" element={<AdminPlatos />} />
+              <Route path="cocina" element={<AdminCocina />} />
+              <Route path="mesas" element={<AdminMesas />} />
+              <Route path="pedidos" element={<AdminPedidos />} />
+              <Route path="politica" element={<AdminPolitica />} />
             </Route>
           </Route>
         </Routes>

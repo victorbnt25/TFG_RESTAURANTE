@@ -1,24 +1,32 @@
 export const API_URL = "http://localhost:8000";
 
 export async function request(ruta, opciones = {}) {
-  const url = `${API_URL}${ruta}`;                                    // Crea la dirección completa añadiendo el servidor
-  const headers = { "Content-Type": "application/json", ...opciones.headers }; // Prepara las etiquetas por defecto
-  
-  if (opciones.body instanceof FormData) delete headers["Content-Type"]; // Si enviamos fotos/archivos, quita la etiqueta JSON
+  const url = `${API_URL}${ruta}`;
+  const headers = { "Content-Type": "application/json", ...opciones.headers };
 
-  
-  const respuesta = await fetch(url, { ...opciones, headers });       // Envía el paquete al servidor y espera respuesta
-  const datos = await respuesta.json().catch(() => null);             // Lee el contenido del paquete (JSON) o da nulo si falla
-
-  if (!respuesta.ok) {                                                // Si el servidor devuelve un error (404, 500, etc)
-    const errorMsg = datos?.error || datos?.mensaje || "Error";       // Busca el mensaje de error en los datos
-    throw new Error(errorMsg);                                        // Detiene todo y avisa del problema
+  if (opciones.body instanceof FormData) {
+    delete headers["Content-Type"];
   }
 
-  return datos;                                                       // Todo OK: Devuelve los datos listos para usar
+  const respuesta = await fetch(url, { ...opciones, headers });
+
+  const texto = await respuesta.text();
+  let datos;
+
+  try {
+    datos = JSON.parse(texto);
+  } catch {
+    datos = texto;
+  }
+
+  if (!respuesta.ok) {
+    console.error("ERROR BACKEND:", datos);
+    throw new Error(typeof datos === "string" ? datos : datos?.error || "Error");
+  }
+
+  return datos;
 }
 
-// Función para pillar todas las categorías para los filtros de la carta
 export async function obtenerCategorias() {
   return await request("/api/categorias");
 }
@@ -37,7 +45,6 @@ export async function obtenerDetallePlato(idPlato) {
   return await request(`/api/platos/${idPlato}`);
 }
 
-// Esta es la función que manda la reserva nueva al servidor
 export async function crearReserva(datosReserva) {
   return await request("/api/reservas", {
     method: "POST",
@@ -82,16 +89,30 @@ export async function enviarContacto(datosContacto) {
     body: JSON.stringify(datosContacto),
   });
 }
+
 export async function crearPedido(datosPedido) {
   return await request("/api/pedidos", {
     method: "POST",
     body: JSON.stringify(datosPedido),
   });
 }
+
 export async function obtenerMesas() {
   return await request("/api/mesas");
 }
 
 export async function obtenerPolitica() {
   return await request("/api/public/politica");
+}
+
+export async function obtenerMisPedidos() {
+  return await request("/api/pedidos/mis-pedidos");
+}
+
+export async function obtenerKpisPedidos() {
+  return await request("/api/admin/dashboard/pedidos");
+}
+
+export async function obtenerMesasDisponiblesPedido() {
+  return await request("/api/mesas");
 }

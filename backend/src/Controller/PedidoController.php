@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\LineaPedido;
+use App\Entity\Mesa;
 use App\Entity\Pedido;
 use App\Enum\EstadoPedidoEnum;
 use App\Repository\PlatoRepository;
@@ -39,6 +40,18 @@ class PedidoController extends AbstractController
         $usuario = $this->getUser();
         if ($usuario) {
             $pedido->setUsuario($usuario);
+        }
+
+        if (!empty($datos['mesa_id'])) {
+            $mesa = $entityManager->getRepository(Mesa::class)->find($datos['mesa_id']);
+
+            if (!$mesa) {
+                return $this->json([
+                    'error' => 'La mesa seleccionada no existe.'
+                ], 404);
+            }
+
+            $pedido->setMesa($mesa);
         }
 
         $pedido->setEstado(EstadoPedidoEnum::ABIERTO);
@@ -89,69 +102,107 @@ class PedidoController extends AbstractController
                 'id' => $pedido->getId(),
                 'estado' => $pedido->getEstado()->value,
                 'total' => $pedido->getTotal(),
+                'mesa' => $pedido->getMesa()?->getCodigo(),
             ]
         ], 201);
     }
+
     #[Route('', name: 'api_pedidos_listar', methods: ['GET'])]
-public function listar(EntityManagerInterface $em): JsonResponse
-{
-    $pedidos = $em->getRepository(Pedido::class)->findAllWithRelations();
+    public function listar(EntityManagerInterface $em): JsonResponse
+    {
+        $pedidos = $em->getRepository(Pedido::class)->findBy([], ['id' => 'DESC']);
 
-    $resultado = [];
+        $resultado = [];
 
-    $pedidosAgrupados = [];
-    foreach ($pedidos as $p) {
-        $id = $p['id'];
-        if (!isset($pedidosAgrupados[$id])) {
-            $pedidosAgrupados[$id] = [
-                'id' => $id,
-                'estado' => $p['estado'] instanceof \UnitEnum ? $p['estado']->value : $p['estado'],
-                'total' => $p['total'],
-                'fecha' => $p['creadoEn']?->format('Y-m-d H:i'),
-                'lineas' => [],
+        foreach ($pedidos as $pedido) {
+            $lineas = [];
+
+            foreach ($pedido->getLineas() as $linea) {
+                $lineas[] = [
+                    'plato' => $linea->getPlato()->getNombre(),
+                    'cantidad' => $linea->getCantidad(),
+                    'precio' => $linea->getPrecioUnitario(),
+                ];
+            }
+
+            $resultado[] = [
+                'id' => $pedido->getId(),
+                'estado' => $pedido->getEstado()->value,
+                'total' => $pedido->getTotal(),
+                'fecha' => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
+                'mesa' => $pedido->getMesa()?->getCodigo(),
+                'lineas' => $lineas,
             ];
         }
 
-        if ($p['platoNombre']) {
-            $pedidosAgrupados[$id]['lineas'][] = [
-                'plato' => $p['platoNombre'],
-                'cantidad' => $p['cantidad'],
-                'precio' => $p['precioUnitario'],
+        return $this->json($resultado);
+    }
+
+    #[Route('/{id}/estado', name: 'api_pedido_estado', methods: ['PUT'])]
+    public function cambiarEstado(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        $pedido = $em->getRepository(Pedido::class)->find($id);
+
+        if (!$pedido) {
+            return $this->json(['error' => 'Pedido no encontrado'], 404);
+        }
+
+        $datos = json_decode($request->getContent(), true);
+
+        try {
+            $nuevoEstado = \App\Enum\EstadoPedidoEnum::from($datos['estado']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Estado inválido'], 400);
+        }
+
+        $pedido->setEstado($nuevoEstado);
+        $em->flush();
+
+        return $this->json(['mensaje' => 'Estado actualizado']);
+    }
+
+    #[Route('/mis-pedidos', name: 'api_mis_pedidos', methods: ['GET'])]
+    public function misPedidos(EntityManagerInterface $em): JsonResponse
+    {
+        $usuario = $this->getUser();
+
+        if (!$usuario) {
+            return $this->json(['error' => 'No autenticado'], 401);
+        }
+
+        $pedidos = $em->getRepository(Pedido::class)
+            ->findBy(['usuario' => $usuario], ['id' => 'DESC']);
+
+        $resultado = [];
+
+        foreach ($pedidos as $pedido) {
+            $lineas = [];
+
+            foreach ($pedido->getLineas() as $linea) {
+                $lineas[] = [
+                    'id' => $linea->getPlato()->getId(),
+                    'plato' => $linea->getPlato()->getNombre(),
+                    'cantidad' => $linea->getCantidad(),
+                    'precio' => $linea->getPrecioUnitario(),
+                    'imagen_url' => method_exists($linea->getPlato(), 'getImagenUrl')
+                        ? $linea->getPlato()->getImagenUrl()
+                        : null,
+                ];
+            }
+
+            $resultado[] = [
+                'id' => $pedido->getId(),
+                'estado' => $pedido->getEstado()->value,
+                'total' => $pedido->getTotal(),
+                'fecha' => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
+                'mesa' => $pedido->getMesa()?->getCodigo(),
+                'lineas' => $lineas,
             ];
         }
+
+        return $this->json($resultado);
     }
-
-    foreach ($pedidosAgrupados as $pa) {
-        $resultado[] = $pa;
-    }
-
-    return $this->json($resultado);
-}
- 
-#[Route('/{id}/estado', name: 'api_pedido_estado', methods: ['PUT'])]
-public function cambiarEstado(
-    int $id,
-    Request $request,
-    EntityManagerInterface $em
-): JsonResponse {
-    $pedido = $em->getRepository(Pedido::class)->find($id);
-
-    if (!$pedido) {
-        return $this->json(['error' => 'Pedido no encontrado'], 404);
-    }
-
-    $datos = json_decode($request->getContent(), true);
-
-    try {
-        $nuevoEstado = \App\Enum\EstadoPedidoEnum::from($datos['estado']);
-    } catch (\Exception $e) {
-        return $this->json(['error' => 'Estado inválido'], 400);
-    }
-
-    $pedido->setEstado($nuevoEstado);
-
-    $em->flush();
-
-    return $this->json(['mensaje' => 'Estado actualizado']);
-}
 }

@@ -45,6 +45,15 @@ export default function AdminLayout() {
           </Link>
 
           <Link
+            to="/admin/cocina"
+            className={`admin-nav-link ${
+              location.pathname === "/admin/cocina" ? "active" : ""
+            }`}
+          >
+            Cocina
+          </Link>
+
+          <Link
             to="/admin/mesas"
             className={`admin-nav-link ${
               location.pathname === "/admin/mesas" ? "active" : ""
@@ -52,33 +61,15 @@ export default function AdminLayout() {
           >
             Mesas
           </Link>
-
-          <Link
-            to="/admin/politica"
-            className={`admin-nav-link ${
-              location.pathname === "/admin/politica" ? "active" : ""
-            }`}
-          >
-            Política Legal
-          </Link>
         </nav>
 
-        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Link
-            to="/"
-            className="btn-add"
-            style={{ textAlign: "center", textDecoration: "none", backgroundColor: "#fff", color: "#000" }}
-          >
-            VOLVER A LA WEB
-          </Link>
-          
-          <button
-            onClick={handleLogout}
-            className="btn-delete"
-          >
-            CERRAR SESIÓN
-          </button>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="btn-delete"
+          style={{ marginTop: "auto" }}
+        >
+          CERRAR SESIÓN
+        </button>
       </aside>
 
       <main className="admin-content">

@@ -7,25 +7,23 @@ function Login() {
   const navigate = useNavigate();
 
   const [correo, setCorreo] = useState("");
-  const [password, setPassword] = useState("");
+  const [contrasena, setContrasena] = useState("");
   const [mensajeError, setMensajeError] = useState(null);
   const [cargando, setCargando] = useState(false);
 
   const manejarLogin = async (evento) => {
-    evento.preventDefault(); // Que no se recargue la página al darle al botón
+    evento.preventDefault();
     setMensajeError(null);
-    setCargando(true); // Ponemos el estado de carga para que no le den dos veces
+    setCargando(true);
 
     try {
       const response = await iniciarSesion({
         email: correo.trim(),
-        contrasena: password,
+        contrasena: contrasena,
       });
 
-      // Si todo va bien, guardamos al usuario en el navegador para que no se pierda al refrescar
-      localStorage.setItem("usuario", JSON.stringify(response.usuario));
+      sessionStorage.setItem("usuario", JSON.stringify(response.usuario));
 
-      // Si es el jefe, lo mandamos al panel de admin, si no al inicio normal
       if (response.usuario.rol === "ADMIN") {
         navigate("/admin");
       } else {
@@ -70,13 +68,13 @@ function Login() {
         </div>
 
         <div className="form-group form-full-width">
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="contrasena">Contraseña</label>
           <input
-            id="password"
+            id="contrasena"
             type="password"
             placeholder="Introduce tu contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={contrasena}
+            onChange={(e) => setContrasena(e.target.value)}
             required
           />
         </div>
@@ -128,4 +126,3 @@ function Login() {
 }
 
 export default Login;
-

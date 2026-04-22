@@ -33,7 +33,7 @@ class Mesa
     private int $capacidad;
 
     #[ORM\Column(type: 'string', enumType: ZonaMesaEnum::class)]
-    private ZonaMesaEnum $zona;
+    private ?ZonaMesaEnum $zona = null;
 
     #[ORM\Column(type: 'string', enumType: EstadoMesaEnum::class)]
     private EstadoMesaEnum $estado;
@@ -60,8 +60,16 @@ class Mesa
     public function getCapacidad(): int { return $this->capacidad; }
     public function setCapacidad(int $capacidad): self { $this->capacidad = $capacidad; return $this; }
 
-    public function getZona(): ZonaMesaEnum { return $this->zona; }
-    public function setZona(ZonaMesaEnum $zona): self { $this->zona = $zona; return $this; }
+   public function getZona(): ?ZonaMesaEnum
+{
+    return $this->zona;
+}
+
+public function setZona(?ZonaMesaEnum $zona): self
+{
+    $this->zona = $zona;
+    return $this;
+}
 
     public function getEstado(): EstadoMesaEnum { return $this->estado; }
     public function setEstado(EstadoMesaEnum $estado): self { $this->estado = $estado; return $this; }

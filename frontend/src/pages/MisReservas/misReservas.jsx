@@ -20,7 +20,7 @@ export default function MisReservas() {
   });
   const [guardando, setGuardando] = useState(false);
 
-  const usuarioGuardado = localStorage.getItem("usuario");
+  const usuarioGuardado = sessionStorage.getItem("usuario");
   const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
 
   useEffect(() => {

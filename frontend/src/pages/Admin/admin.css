@@ -287,3 +287,256 @@
     from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
     to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
+
+
+/* DASHBOARD */
+
+.admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.kpi {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.kpi span {
+  display: block;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.kpi strong {
+  font-size: 1.8rem;
+  color: #fff;
+}
+/*NUEVO PEDIDO*/
+
+.alerta-nuevo-pedido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(231, 126, 35, 0.22),
+    rgba(231, 126, 35, 0.1)
+  );
+  border: 1px solid rgba(231, 126, 35, 0.45);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  animation: aparecerAlertaPedido 0.35s ease;
+}
+
+.alerta-nuevo-pedido-cerrar {
+  background: #111;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.alerta-nuevo-pedido-cerrar:hover {
+  opacity: 0.9;
+}
+
+@keyframes aparecerAlertaPedido {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* fila nuevo pedido */
+
+.fila-pedido-nuevo {
+  animation: resaltarFilaNuevoPedido 1.2s ease-in-out 3;
+  box-shadow: inset 4px 0 0 #e77e23;
+}
+
+@keyframes resaltarFilaNuevoPedido {
+  0% {
+    background: rgba(231, 126, 35, 0.04);
+  }
+  50% {
+    background: rgba(231, 126, 35, 0.18);
+  }
+  100% {
+    background: rgba(231, 126, 35, 0.04);
+  }
+}
+
+/* ZONA DE COCINA */
+
+.admin-cocina-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.admin-cocina-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cocina-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.cocina-columna {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #2c2c2c;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.cocina-columna-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+.cocina-columna-header h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.cocina-columna-header span {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: #111;
+  color: #fff;
+}
+
+.cocina-abiertos {
+  background: rgba(231, 126, 35, 0.08);
+}
+
+.cocina-preparacion {
+  background: rgba(13, 110, 253, 0.08);
+}
+
+.cocina-servidos {
+  background: rgba(25, 135, 84, 0.08);
+}
+
+.cocina-columna-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cocina-vacio {
+  color: #9f9f9f;
+  text-align: center;
+  padding: 22px 10px;
+}
+
+.cocina-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.018));
+  border: 1px solid #313131;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+.cocina-card-servido {
+  opacity: 0.92;
+}
+
+.cocina-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cocina-card-top h4 {
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+.cocina-card-top p {
+  margin: 0;
+  color: #b3b3b3;
+  font-size: 0.92rem;
+}
+
+.cocina-card-top strong {
+  color: #e77e23;
+  font-size: 1.05rem;
+}
+
+.cocina-card-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  color: #b8b8b8;
+  font-size: 0.9rem;
+}
+
+.cocina-lineas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cocina-linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #f3f3f3;
+}
+
+.cocina-linea strong {
+  color: #fff;
+}
+
+.cocina-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1200px) {
+  .cocina-board {
+    grid-template-columns: 1fr;
+  }
+}

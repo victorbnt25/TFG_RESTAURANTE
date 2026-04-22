@@ -34,9 +34,10 @@ export function CarritoProvider({ children }) {
         ...carritoAnterior,
         {
           id: plato.id,
-          nombre: plato.nombre,
+          nombre: plato.nombre || plato.plato,
           precio: Number(plato.precio),
-          imagen_url: plato.imagen_url || plato.imagenUrl || plato.foto_url || "",
+          imagen_url:
+            plato.imagen_url || plato.imagenUrl || plato.foto_url || "",
           cantidad: 1,
         },
       ];
@@ -71,6 +72,53 @@ export function CarritoProvider({ children }) {
     setCarrito([]);
   }
 
+  function reemplazarCarrito(productos) {
+    const productosFormateados = productos.map((producto) => ({
+      id: producto.id,
+      nombre: producto.nombre || producto.plato,
+      precio: Number(producto.precio),
+      imagen_url:
+        producto.imagen_url || producto.imagenUrl || producto.foto_url || "",
+      cantidad: Number(producto.cantidad),
+    }));
+
+    setCarrito(productosFormateados);
+  }
+
+  function anadirLoteAlCarrito(productos) {
+    setCarrito((carritoAnterior) => {
+      const nuevoCarrito = [...carritoAnterior];
+
+      productos.forEach((producto) => {
+        const indiceExistente = nuevoCarrito.findIndex(
+          (item) => item.id === producto.id
+        );
+
+        if (indiceExistente !== -1) {
+          nuevoCarrito[indiceExistente] = {
+            ...nuevoCarrito[indiceExistente],
+            cantidad:
+              nuevoCarrito[indiceExistente].cantidad + Number(producto.cantidad),
+          };
+        } else {
+          nuevoCarrito.push({
+            id: producto.id,
+            nombre: producto.nombre || producto.plato,
+            precio: Number(producto.precio),
+            imagen_url:
+              producto.imagen_url ||
+              producto.imagenUrl ||
+              producto.foto_url ||
+              "",
+            cantidad: Number(producto.cantidad),
+          });
+        }
+      });
+
+      return nuevoCarrito;
+    });
+  }
+
   const totalProductos = carrito.reduce(
     (acumulador, item) => acumulador + item.cantidad,
     0
@@ -90,6 +138,8 @@ export function CarritoProvider({ children }) {
         disminuirCantidad,
         eliminarDelCarrito,
         vaciarCarrito,
+        reemplazarCarrito,
+        anadirLoteAlCarrito,
         totalProductos,
         totalPrecio,
       }}

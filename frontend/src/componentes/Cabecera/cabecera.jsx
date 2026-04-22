@@ -11,7 +11,7 @@ function Cabecera() {
 
   const { totalProductos } = useCarrito();
 
-  const usuarioGuardado = localStorage.getItem("usuario");
+  const usuarioGuardado = sessionStorage.getItem("usuario");
   const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function Cabecera() {
   }, [totalProductos]);
 
   const cerrarSesion = () => {
-    localStorage.removeItem("usuario");
+    sessionStorage.removeItem("usuario");
     navigate("/");
     window.location.reload();
   };
@@ -57,6 +57,7 @@ function Cabecera() {
           </Link>
         )}
         <Link to="/contacto">Contacto</Link>
+        <Link to="/mis-pedidos">Mis pedidos</Link>
 
         {usuario && usuario.rol === "ADMIN" && (
           <Link to="/admin" className="enlace-admin">
@@ -138,7 +139,7 @@ export default Cabecera;
 CAMBIOS REALIZADOS EN ESTE ARCHIVO
 
 1. Se mantiene la lógica visual de la cabecera ya existente.
-2. Se mejora la lectura del usuario desde localStorage para evitar errores si no hay sesión.
+2. Se mejora la lectura del usuario desde sessionStorage para evitar errores si no hay sesión.
 3. Se sustituyen los enlaces <a> por <Link> para trabajar correctamente con React Router.
 4. Se mantiene el saludo personalizado mostrando el primer nombre del usuario.
 5. Si el usuario tiene rol ADMIN, se muestra acceso al panel de administración.

@@ -28,7 +28,7 @@ const Chatbot = () => {
     setInputValue('');
     setIsTyping(true);
 
-    const user = JSON.parse(localStorage.getItem("usuario") || "null");
+    const user = JSON.parse(sessionStorage.getItem("usuario") || "null");
     
     try {
       const response = await fetch('http://localhost:5000/chat', {

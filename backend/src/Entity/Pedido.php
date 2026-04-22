@@ -31,7 +31,7 @@ class Pedido
     private ?Reserva $reserva = null;
 
     #[ORM\Column(type: 'string', enumType: EstadoPedidoEnum::class)]
-    private EstadoPedidoEnum $estado;
+    private EstadoPedidoEnum $estado = EstadoPedidoEnum::PENDIENTE;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private string $total = '0.00';
@@ -44,12 +44,28 @@ class Pedido
     #[ORM\OneToMany(mappedBy: 'pedido', targetEntity: Pago::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $pagos;
 
+    /* Relación opcional con Mesa, para pedidos sin reserva previa */
+    #[ORM\ManyToOne(targetEntity: Mesa::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Mesa $mesa = null;
+
     public function __construct()
     {
         $this->estado = EstadoPedidoEnum::ABIERTO;
         $this->lineas = new ArrayCollection();
         $this->pagos = new ArrayCollection();
     }
+
+    public function getMesa(): ?Mesa
+{
+    return $this->mesa;
+}
+
+public function setMesa(?Mesa $mesa): self
+{
+    $this->mesa = $mesa;
+    return $this;
+}
 
     public function getId(): ?int { return $this->id; }
 

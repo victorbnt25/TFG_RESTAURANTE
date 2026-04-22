@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { API_URL, crearPedido } from "../../servicios/api";
+import {
+  API_URL,
+  crearPedido,
+  obtenerMesasDisponiblesPedido,
+} from "../../servicios/api";
 import { useCarrito } from "../../context/CarritoContext";
-import "./carrito.css"; // Nuevos estilos premium
+import "./carrito.css";
 
 function Carrito() {
   const navigate = useNavigate();
@@ -20,6 +24,26 @@ function Carrito() {
   const [enviandoPedido, setEnviandoPedido] = useState(false);
   const [mensajePedido, setMensajePedido] = useState("");
   const [errorPedido, setErrorPedido] = useState("");
+  const [mesas, setMesas] = useState([]);
+  const [mesaSeleccionada, setMesaSeleccionada] = useState("");
+
+  useEffect(() => {
+    cargarMesas();
+  }, []);
+
+  async function cargarMesas() {
+    try {
+      const data = await obtenerMesasDisponiblesPedido();
+      const mesasActivas = data.filter(
+        (mesa) =>
+          mesa.activo === true &&
+          (mesa.estado === "DISPONIBLE" || mesa.estado === "LIBRE")
+      );
+      setMesas(mesasActivas);
+    } catch (error) {
+      console.error("No se pudieron cargar las mesas", error);
+    }
+  }
 
   function obtenerRutaImagen(imagen) {
     if (!imagen) return "";
@@ -32,18 +56,28 @@ function Carrito() {
       setMensajePedido("");
       setErrorPedido("");
 
+      if (!mesaSeleccionada) {
+        setErrorPedido("Debes seleccionar una mesa antes de tramitar el pedido.");
+        setEnviandoPedido(false);
+        return;
+      }
+
       const productos = carrito.map((item) => ({
         id: item.id,
         cantidad: item.cantidad,
       }));
 
-      const respuesta = await crearPedido({ productos });
+      const respuesta = await crearPedido({
+        productos,
+        mesa_id: Number(mesaSeleccionada),
+      });
 
       setMensajePedido(
-        `🎉 Pedido #${respuesta.pedido.id} tramitado correctamente por un total de ${respuesta.pedido.total} €.`
+        `🎉 Pedido #${respuesta.pedido.id} tramitado correctamente por un total de ${respuesta.pedido.total} € para la mesa ${respuesta.pedido.mesa ?? ""}.`
       );
 
       vaciarCarrito();
+      setMesaSeleccionada("");
     } catch (error) {
       setErrorPedido(error.message || "No se pudo tramitar el pedido.");
     } finally {
@@ -53,21 +87,51 @@ function Carrito() {
 
   return (
     <section className="container carrito-page">
-      <h1 className="title" style={{ color: "#fff", marginBottom: "10px" }}>TU PEDIDO</h1>
+      <h1 className="title" style={{ color: "#fff", marginBottom: "10px" }}>
+        TU PEDIDO
+      </h1>
 
       {mensajePedido && (
-        <div style={{ marginTop: "20px", marginBottom: "30px", background: "rgba(40,167,69,0.1)", padding: "20px", borderRadius: "12px", border: "1px solid #28a745" }}>
-          <p style={{ color: "#28a745", fontWeight: "bold", fontSize: "1.2rem", marginBottom: "15px" }}>
+        <div
+          style={{
+            marginTop: "20px",
+            marginBottom: "30px",
+            background: "rgba(40,167,69,0.1)",
+            padding: "20px",
+            borderRadius: "12px",
+            border: "1px solid #28a745",
+          }}
+        >
+          <p
+            style={{
+              color: "#28a745",
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              marginBottom: "15px",
+            }}
+          >
             {mensajePedido}
           </p>
-          <button className="btn-tramitar" onClick={() => navigate("/")} style={{ width: "auto", padding: "10px 20px" }}>
+          <button
+            className="btn-tramitar"
+            onClick={() => navigate("/")}
+            style={{ width: "auto", padding: "10px 20px" }}
+          >
             Volver al inicio
           </button>
         </div>
       )}
 
       {errorPedido && (
-        <p style={{ color: "#ff4d4d", padding: "15px", background: "rgba(220,53,69,0.1)", borderRadius: "8px", border: "1px solid #ff4d4d" }}>
+        <p
+          style={{
+            color: "#ff4d4d",
+            padding: "15px",
+            background: "rgba(220,53,69,0.1)",
+            borderRadius: "8px",
+            border: "1px solid #ff4d4d",
+          }}
+        >
           {errorPedido}
         </p>
       )}
@@ -75,24 +139,27 @@ function Carrito() {
       {carrito.length === 0 && !mensajePedido ? (
         <div className="carrito-vacio">
           <p>Aún no has añadido ningún plato delicioso a tu pedido.</p>
-          <Link to="/carta" className="btn-tramitar" style={{ display: "inline-block", width: "auto", padding: "12px 30px" }}>
+          <Link
+            to="/carta"
+            className="btn-tramitar"
+            style={{ display: "inline-block", width: "auto", padding: "12px 30px" }}
+          >
             Ver la carta
           </Link>
         </div>
       ) : (
         carrito.length > 0 && (
           <div className="carrito-layout">
-            
-            {/* IZQUIERDA: LISTA DE PRODUCTOS */}
             <div className="carrito-items">
               {carrito.map((item) => (
                 <article key={item.id} className="carrito-item">
-                  
                   {item.imagen_url || item.imagenUrl || item.foto_url ? (
-                    <img 
-                      src={obtenerRutaImagen(item.imagen_url || item.imagenUrl || item.foto_url)} 
-                      alt={item.nombre} 
-                      className="carrito-img" 
+                    <img
+                      src={obtenerRutaImagen(
+                        item.imagen_url || item.imagenUrl || item.foto_url
+                      )}
+                      alt={item.nombre}
+                      className="carrito-img"
                     />
                   ) : (
                     <div className="carrito-img-placeholder" />
@@ -100,16 +167,24 @@ function Carrito() {
 
                   <div className="carrito-detalles">
                     <h3>{item.nombre}</h3>
-                    <p className="carrito-precio-uni">{Number(item.precio).toFixed(2)} € / ud.</p>
-                    <p className="carrito-subtotal">Subtotal: {(item.precio * item.cantidad).toFixed(2)} €</p>
-                    
+                    <p className="carrito-precio-uni">
+                      {Number(item.precio).toFixed(2)} € / ud.
+                    </p>
+                    <p className="carrito-subtotal">
+                      Subtotal: {(item.precio * item.cantidad).toFixed(2)} €
+                    </p>
+
                     <div className="carrito-controles">
                       <div className="control-cantidad">
-                        <button className="btn-qty" onClick={() => disminuirCantidad(item.id)}>-</button>
+                        <button className="btn-qty" onClick={() => disminuirCantidad(item.id)}>
+                          -
+                        </button>
                         <span className="label-qty">{item.cantidad}</span>
-                        <button className="btn-qty" onClick={() => aumentarCantidad(item.id)}>+</button>
+                        <button className="btn-qty" onClick={() => aumentarCantidad(item.id)}>
+                          +
+                        </button>
                       </div>
-                      
+
                       <button className="btn-remove" onClick={() => eliminarDelCarrito(item.id)}>
                         Eliminar
                       </button>
@@ -119,19 +194,53 @@ function Carrito() {
               ))}
             </div>
 
-            {/* DERECHA: RESUMEN LATERAL (STICKY) */}
             <div className="carrito-sidebar-wrapper">
               <aside className="carrito-resumen">
                 <h2>Resumen del pago</h2>
-                
+
                 <div className="resumen-linea">
                   <span>Productos ({totalProductos})</span>
                   <span>{totalPrecio.toFixed(2)} €</span>
                 </div>
-                
+
                 <div className="resumen-linea">
                   <span>Gastos de gestión</span>
-                  <span style={{color: "#28a745"}}>Gratis</span>
+                  <span style={{ color: "#28a745" }}>Gratis</span>
+                </div>
+
+                <div className="resumen-mesa" style={{ margin: "18px 0" }}>
+                  <label
+                    htmlFor="mesa"
+                    style={{
+                      display: "block",
+                      color: "#fff",
+                      marginBottom: "8px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Selecciona una mesa
+                  </label>
+
+                  <select
+                    id="mesa"
+                    value={mesaSeleccionada}
+                    onChange={(e) => setMesaSeleccionada(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      borderRadius: "10px",
+                      background: "#111",
+                      color: "#fff",
+                      border: "1px solid #333",
+                    }}
+                  >
+                    <option value="">Elige una mesa</option>
+                    {mesas.map((mesa) => (
+                      <option key={mesa.id} value={mesa.id}>
+                        {mesa.codigo} · {mesa.zona} · {mesa.capacidad} pers.
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="resumen-total">
@@ -140,9 +249,9 @@ function Carrito() {
                 </div>
 
                 <div className="carrito-botones">
-                  <button 
-                    className="btn-tramitar" 
-                    onClick={tramitarPedido} 
+                  <button
+                    className="btn-tramitar"
+                    onClick={tramitarPedido}
                     disabled={enviandoPedido}
                   >
                     {enviandoPedido ? "Tramitando..." : "Finalizar Pedido"}
@@ -151,14 +260,13 @@ function Carrito() {
                   <Link to="/carta" className="btn-seguir">
                     Añadir más cosas
                   </Link>
-                  
+
                   <button className="btn-vaciar" onClick={vaciarCarrito}>
                     Vaciar todo mi carrito
                   </button>
                 </div>
               </aside>
             </div>
-
           </div>
         )
       )}

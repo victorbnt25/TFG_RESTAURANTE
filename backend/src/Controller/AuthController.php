@@ -61,10 +61,6 @@ class AuthController extends AbstractController
         $usuario = new Usuario();
         $usuario->setNombre($nombre);
         $usuario->setEmail($email);
-
-        // IMPORTANTE:
-        // El rol SIEMPRE será CLIENTE en el registro público.
-        // No se acepta ningún rol enviado desde frontend.
         $usuario->setRol(RolUsuarioEnum::CLIENTE);
 
         $hash = $passwordHasher->hashPassword($usuario, $contrasena);
@@ -131,5 +127,13 @@ class AuthController extends AbstractController
             ]
         ]);
     }
+
+    #[Route('/logout', name: 'api_logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        return $this->json([
+            'ok' => true,
+            'mensaje' => 'Logout correcto'
+        ]);
+    }
 }
-
