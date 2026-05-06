@@ -45,7 +45,7 @@ class PlatoController extends AbstractController
                 'tipo' => $plato['tipo'] instanceof \UnitEnum ? $plato['tipo']->value : $plato['tipo'],
                 'disponibilidad' => $plato['disponibilidad'] instanceof \UnitEnum ? $plato['disponibilidad']->value : $plato['disponibilidad'],
                 'activo' => (bool)$plato['activo'],
-                'imagen_url' => $plato['imagenUrl'],
+                'foto_url' => $plato['imagenUrl'],
                 'categoria' => [
                     'id' => $plato['catId'],
                     'nombre' => $plato['catNombre'],
@@ -96,7 +96,7 @@ class PlatoController extends AbstractController
             'tipo' => $plato->getTipo()?->value,
             'disponibilidad' => $plato->getDisponibilidad()?->value,
             'activo' => $plato->isActivo(),
-            'imagen_url' => $plato->getImagenUrl(),
+            'foto_url' => $plato->getImagenUrl(),
             'categoria' => [
                 'id' => $plato->getCategoria()?->getId(),
                 'nombre' => $plato->getCategoria()?->getNombre(),
@@ -204,30 +204,57 @@ class PlatoController extends AbstractController
     #[Route('/{id}/foto', methods: ['POST'])]
     public function subirFoto(Plato $plato, Request $request, EntityManagerInterface $em): JsonResponse
     {
-        // Buscamos el campo 'foto' en lo que se ha subido
-        $archivo = $request->files->get('foto');
-        if (!$archivo) {
-            return $this->json(['error' => 'No hay archivo'], 400);
-        }
-
-        $rutaCarpeta = $this->getParameter('kernel.project_dir') . '/public/uploads';
-
-        // Si el plato ya tenía foto, borramos la vieja para no llenar el server de basura
-        if ($plato->getImagenUrl()) {
-            $vieja = $this->getParameter('kernel.project_dir') . '/public' . $plato->getImagenUrl();
-            if (file_exists($vieja)) {
-                unlink($vieja);
+        try {
+            // Buscamos el campo 'foto' en lo que se ha subido
+            $archivo = $request->files->get('foto');
+            if (!$archivo) {
+                return $this->json(['error' => 'No hay archivo en la petición'], 400);
             }
+
+            // Verificamos si el archivo es válido (por si excede el tamaño máximo de PHP)
+            if (!$archivo->isValid()) {
+                return $this->json(['error' => 'El archivo no es válido: ' . $archivo->getErrorMessage()], 400);
+            }
+
+            $rutaCarpeta = $this->getParameter('kernel.project_dir') . '/public/uploads';
+
+            // Aseguramos que la carpeta existe y es escribible
+            if (!is_dir($rutaCarpeta)) {
+                if (!mkdir($rutaCarpeta, 0777, true) && !is_dir($rutaCarpeta)) {
+                    return $this->json(['error' => 'No se pudo crear la carpeta de subida'], 500);
+                }
+            }
+
+            if (!is_writable($rutaCarpeta)) {
+                return $this->json(['error' => 'La carpeta de subida no tiene permisos de escritura'], 500);
+            }
+
+            // Si el plato ya tenía foto, borramos la vieja para no llenar el server de basura
+            if ($plato->getImagenUrl()) {
+                $vieja = $this->getParameter('kernel.project_dir') . '/public' . $plato->getImagenUrl();
+                if (file_exists($vieja) && is_file($vieja)) {
+                    @unlink($vieja); // Usamos @ por si falla por permisos, que no pare la ejecución
+                }
+            }
+
+            // Generamos un nombre único y movemos el archivo
+            $extension = $archivo->getClientOriginalExtension() ?: 'jpg';
+            $nombreArchivo = uniqid('plato_', true) . '.' . $extension;
+            $archivo->move($rutaCarpeta, $nombreArchivo);
+
+            // Le ponemos la ruta nueva al plato y guardamos en la DB
+            $plato->setImagenUrl('/uploads/' . $nombreArchivo);
+            $em->flush();
+
+            return $this->json(['ok' => true, 'foto_url' => $plato->getImagenUrl()]);
+            
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Error interno al subir la foto: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
         }
-
-        $nombreArchivo = uniqid('plato_') . '.webp';
-        $archivo->move($rutaCarpeta, $nombreArchivo);
-
-        // Le ponemos la ruta nueva al plato y guardamos en la DB
-        $plato->setImagenUrl('/uploads/' . $nombreArchivo);
-        $em->flush();
-
-        return $this->json(['ok' => true, 'foto_url' => $plato->getImagenUrl()]);
     }
 
     #[Route('/{id}', methods: ['DELETE'])]

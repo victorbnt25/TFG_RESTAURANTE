@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { listarMesas, crearMesa, eliminarMesa, actualizarMesa } from "../../servicios/adminApi";
+import { CheckCircle, CheckSquare, XSquare } from "lucide-react";
 import "./admin.css";
 
 export default function AdminMesas() {
@@ -67,7 +68,7 @@ export default function AdminMesas() {
       if (mesaEditando) {
         // ACTUALIZAR
         await actualizarMesa(mesaEditando.id, formData);
-        setMensaje("✅ Mesa actualizada correctamente");
+        setMensaje("Mesa actualizada correctamente");
         setMesaEditando(null);
       } else {
         // CREAR
@@ -77,7 +78,7 @@ export default function AdminMesas() {
           zona: formData.zona,
         };
         await crearMesa(body);
-        setMensaje("✅ Mesa añadida correctamente");
+        setMensaje("Mesa añadida correctamente");
       }
       
       setFormData({ codigo: "", capacidad: "", zona: "SALA" });
@@ -97,13 +98,17 @@ export default function AdminMesas() {
             {mesaEditando ? `Editando Mesa: ${mesaEditando.codigo}` : "Gestión de Mesas"}
         </h2>
 
-        {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+        {mensaje && (
+          <p className="mensaje-exito" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CheckCircle size={16} /> {mensaje}
+          </p>
+        )}
         {error && <p className="mensaje-error">{error}</p>}
 
         {/* Formulario dual: Crea o Edita */}
         <form onSubmit={handleSubmit} className="platos-form-horizontal">
           <div className="form-group">
-            <label style={{color: '#888', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>Código</label>
+            <label className="admin-label-small">Código</label>
             <input 
               name="codigo" 
               placeholder="Código (ej: T-01)" 
@@ -113,7 +118,7 @@ export default function AdminMesas() {
             />
           </div>
           <div className="form-group">
-            <label style={{color: '#888', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>Capacidad</label>
+            <label className="admin-label-small">Capacidad</label>
             <input 
                 name="capacidad" 
                 type="number" 
@@ -124,7 +129,7 @@ export default function AdminMesas() {
             />
           </div>
           <div className="form-group">
-            <label style={{color: '#888', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>Zona</label>
+            <label className="admin-label-small">Zona</label>
             <select name="zona" value={formData.zona} onChange={handleChange}>
               <option value="SALA">Sala</option>
               <option value="Terraza">Terraza</option>
@@ -133,15 +138,26 @@ export default function AdminMesas() {
             </select>
           </div>
           
-          <div style={{display: 'flex', gap: '10px'}}>
-              <button type="submit" disabled={cargando} className="btn-add">
-                {cargando ? "PROCESANDO..." : (mesaEditando ? "GUARDAR" : "+ AÑADIR")}
+          <div style={{ display: 'flex', gap: '12px', marginTop: '10px', alignItems: 'flex-end', width: '100%', flexWrap: 'wrap' }}>
+            <button 
+              type="submit" 
+              disabled={cargando} 
+              className="btn-add" 
+              style={{ height: '44px', flex: '1', maxWidth: '220px' }}
+            >
+              {cargando ? "PROCESANDO..." : (mesaEditando ? "GUARDAR CAMBIOS" : "+ AÑADIR MESA")}
+            </button>
+
+            {mesaEditando && (
+              <button 
+                type="button" 
+                className="btn-delete-link" 
+                onClick={cancelarEdicion}
+                style={{ height: '44px', padding: '0 20px', display: 'flex', alignItems: 'center' }}
+              >
+                CANCELAR
               </button>
-              {mesaEditando && (
-                  <button type="button" onClick={cancelarEdicion} className="btn-delete-link" style={{border: '1px solid #444'}}>
-                      CANCELAR
-                  </button>
-              )}
+            )}
           </div>
         </form>
 
@@ -168,7 +184,11 @@ export default function AdminMesas() {
                   <td>{m.capacidad} pers.</td>
                   <td><span className={`badge ${m.zona.toLowerCase()}`}>{m.zona}</span></td>
                   <td>{m.estado}</td>
-                  <td>{m.activo ? "✅" : "❌"}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    {m.activo
+                      ? <CheckSquare size={18} color="#28a745" />
+                      : <XSquare size={18} color="#dc3545" />}
+                  </td>
                   <td style={{display: 'flex', gap: '8px'}}>
                     <button onClick={() => prepararEdicion(m)} className="btn-edit-table" style={{fontSize: '0.8rem'}}>Editar</button>
                     <button onClick={async () => {
@@ -177,7 +197,7 @@ export default function AdminMesas() {
                       try {
                         await eliminarMesa(m.id);
                         await fetchMesas();
-                        setMensaje("✅ Mesa eliminada");
+                        setMensaje("Mesa eliminada");
                         if(mesaEditando?.id === m.id) cancelarEdicion();
                       } catch (e) { setError(e.message); } finally { setCargando(false); }
                     }} className="btn-delete-link">Borrar</button>

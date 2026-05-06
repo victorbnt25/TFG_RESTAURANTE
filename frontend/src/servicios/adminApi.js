@@ -134,6 +134,12 @@ export async function cambiarEstadoPedido(id, estado) {
   });
 }
 
+export async function eliminarPedido(id) {
+  return await request(`/api/pedidos/${id}`, {
+    method: "DELETE",
+  });
+}
+
 // =======================
 // CONFIGURACIÓN
 // =======================

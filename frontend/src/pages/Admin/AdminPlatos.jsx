@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listarPlatos, crearPlato, eliminarPlato, actualizarPlato, subirFotoPlato } from "../../servicios/adminApi";
 import { API_URL } from "../../servicios/api";
+import { CheckCircle, Camera } from "lucide-react";
 import "./admin.css";
 
 export default function AdminPlatos() {
@@ -63,7 +64,7 @@ export default function AdminPlatos() {
         if (archivo) {
           await subirFotoPlato(platoEditando.id, archivo);
         }
-        setMensaje("✅ Producto actualizado correctamente");
+        setMensaje("Producto actualizado correctamente");
         setPlatoEditando(null);
       } else {
         // CREAR
@@ -71,7 +72,7 @@ export default function AdminPlatos() {
         if (archivo && resp.id) {
           await subirFotoPlato(resp.id, archivo);
         }
-        setMensaje("✅ Plato añadido correctamente");
+        setMensaje("Plato añadido correctamente");
       }
       
       setFormData({ nombre: "", precio: "", descripcion: "", tipo: "PRINCIPAL" });
@@ -92,20 +93,38 @@ export default function AdminPlatos() {
             {platoEditando ? `Editando: ${platoEditando.nombre}` : "Gestión de Carta"}
         </h2>
 
-        {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+        {mensaje && (
+        <p className="mensaje-exito" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CheckCircle size={16} /> {mensaje}
+        </p>
+      )}
         {error && <p className="mensaje-error">{error}</p>}
 
-        <form onSubmit={handleSubmit} className="platos-form-horizontal" style={{ flexWrap: 'wrap' }}>
-          <div className="form-group" style={{ minWidth: '200px' }}>
-            <label style={{color: '#888', fontSize: '0.8rem'}}>Nombre</label>
-            <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre del producto" required />
+        <form onSubmit={handleSubmit} className="platos-form-horizontal">
+          <div className="form-group" style={{ minWidth: '220px' }}>
+            <label className="admin-label-small">Nombre</label>
+            <input 
+              name="nombre" 
+              value={formData.nombre} 
+              onChange={handleChange} 
+              placeholder="Nombre del producto" 
+              required 
+            />
           </div>
-          <div className="form-group" style={{ minWidth: '100px' }}>
-            <label style={{color: '#888', fontSize: '0.8rem'}}>Precio (€)</label>
-            <input name="precio" type="number" step="0.01" value={formData.precio} onChange={handleChange} placeholder="Precio" required />
+          <div className="form-group" style={{ minWidth: '100px', maxWidth: '120px' }}>
+            <label className="admin-label-small">Precio (€)</label>
+            <input 
+              name="precio" 
+              type="number" 
+              step="0.01" 
+              value={formData.precio} 
+              onChange={handleChange} 
+              placeholder="0.00" 
+              required 
+            />
           </div>
-          <div className="form-group" style={{ minWidth: '150px' }}>
-            <label style={{color: '#888', fontSize: '0.8rem'}}>Categoría</label>
+          <div className="form-group" style={{ minWidth: '160px' }}>
+            <label className="admin-label-small">Categoría</label>
             <select name="tipo" value={formData.tipo} onChange={handleChange}>
               <option value="PRINCIPAL">Hamburguesa</option>
               <option value="ENTRANTE">Entrante</option>
@@ -115,28 +134,59 @@ export default function AdminPlatos() {
             </select>
           </div>
           
-          <div className="form-group" style={{ minWidth: '100%', marginTop: '10px' }}>
-            <label style={{color: '#888', fontSize: '0.8rem'}}>Descripción</label>
-            <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows="2" placeholder="Breve descripción..."></textarea>
+          <div className="form-group" style={{ minWidth: '100%', marginTop: '5px' }}>
+            <label className="admin-label-small">Descripción</label>
+            <textarea 
+              name="descripcion" 
+              value={formData.descripcion} 
+              onChange={handleChange} 
+              rows="2" 
+              placeholder="Describe los ingredientes o detalles del plato..."
+            ></textarea>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px', alignItems: 'flex-end' }}>
-             <div className="form-group">
-                <label htmlFor="file-plato" className="custom-file-upload" style={{ padding: '8px', fontSize: '0.7rem' }}>
-                  {archivo ? "✅ IMAGEN SELECCIONADA" : "📸 SUBIR FOTO"}
-                </label>
-                <input id="file-plato" type="file" className="input-file-hidden" onChange={(e) => setArchivo(e.target.files[0])} />
-             </div>
-             
-             <button type="submit" disabled={cargando} className="btn-add">
-               {cargando ? "PROCESANDO..." : (platoEditando ? "GUARDAR" : "+ AÑADIR")}
-             </button>
-             
-             {platoEditando && (
-               <button type="button" onClick={cancelarEdicion} className="btn-delete-link" style={{ textDecoration: 'none', border: '1px solid #444' }}>
-                 CANCELAR
-               </button>
-             )}
+          <div style={{ display: 'flex', gap: '12px', marginTop: '10px', alignItems: 'flex-end', width: '100%', flexWrap: 'wrap' }}>
+            <div className="form-group" style={{ flex: '0 0 auto' }}>
+              <label className="admin-label-small">Imagen</label>
+              <label htmlFor="file-plato" className={`custom-file-upload ${archivo ? 'selected' : ''}`}>
+                {archivo ? (
+                  <>
+                    <CheckCircle size={18} /> IMAGEN SELECCIONADA
+                  </>
+                ) : (
+                  <>
+                    <Camera size={18} /> SUBIR FOTO
+                  </>
+                )}
+              </label>
+              <input 
+                id="file-plato" 
+                type="file" 
+                className="input-file-hidden" 
+                onChange={(e) => setArchivo(e.target.files[0])} 
+                accept="image/*"
+              />
+            </div>
+            
+            <button 
+              type="submit" 
+              disabled={cargando} 
+              className="btn-add" 
+              style={{ height: '44px', flex: '1', maxWidth: '220px' }}
+            >
+              {cargando ? "PROCESANDO..." : (platoEditando ? "GUARDAR CAMBIOS" : "+ AÑADIR PLATO")}
+            </button>
+
+            {platoEditando && (
+              <button 
+                type="button" 
+                className="btn-delete-link" 
+                onClick={cancelarEdicion}
+                style={{ height: '44px', padding: '0 20px', display: 'flex', alignItems: 'center' }}
+              >
+                CANCELAR
+              </button>
+            )}
           </div>
         </form>
 
@@ -181,7 +231,7 @@ export default function AdminPlatos() {
                       try {
                         await eliminarPlato(p.id);
                         await fetchPlatos();
-                        setMensaje("✅ Producto eliminado");
+                                        setMensaje("Producto eliminado");
                         if(platoEditando?.id === p.id) cancelarEdicion();
                       } catch (e) { setError(e.message); } finally { setCargando(false); }
                     }} className="btn-delete-link" style={{ textDecoration: 'none' }}>Borrar</button>

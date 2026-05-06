@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { listarPedidos, cambiarEstadoPedido } from "../../servicios/adminApi";
+import { listarPedidos, cambiarEstadoPedido, eliminarPedido } from "../../servicios/adminApi";
+import { Bell, CheckCircle, Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import "./admin.css";
 
 const ESTADOS = [
@@ -10,12 +11,122 @@ const ESTADOS = [
   "CANCELADO",
 ];
 
+const CustomDatePicker = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [viewDate, setViewDate] = useState(value ? new Date(value) : new Date());
+  const calendarRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
+
+  const handlePrevMonth = () => {
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+  };
+
+  const handleSelectDay = (day) => {
+    const selected = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+    // Ajustar a formato YYYY-MM-DD local
+    const yyyy = selected.getFullYear();
+    const mm = String(selected.getMonth() + 1).padStart(2, '0');
+    const dd = String(selected.getDate()).padStart(2, '0');
+    onChange(`${yyyy}-${mm}-${dd}`);
+    setIsOpen(false);
+  };
+
+  const renderDays = () => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const totalDays = daysInMonth(year, month);
+    const startDay = firstDayOfMonth(year, month); // 0 (Dom) a 6 (Sab)
+    
+    // Ajustamos para que empiece en Lunes (1) si queremos, pero lo dejamos estándar por ahora
+    const days = [];
+    // Padding inicial
+    for (let i = 0; i < startDay; i++) {
+      days.push(<div key={`empty-${i}`} className="calendar-day other-month"></div>);
+    }
+    // Días del mes
+    const today = new Date();
+    const selectedDate = value ? new Date(value) : null;
+
+    for (let d = 1; d <= totalDays; d++) {
+      const isToday = today.getDate() === d && today.getMonth() === month && today.getFullYear() === year;
+      const isSelected = selectedDate && selectedDate.getDate() === d && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
+      
+      days.push(
+        <div 
+          key={d} 
+          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+          onClick={() => handleSelectDay(d)}
+        >
+          {d}
+        </div>
+      );
+    }
+    return days;
+  };
+
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+  return (
+    <div className="calendar-wrapper" ref={calendarRef}>
+      <div 
+        className="input-fecha-filtro" 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '140px' }}
+      >
+        <Calendar size={16} color="var(--color-primary)" />
+        {value ? value : "Seleccionar fecha"}
+      </div>
+      
+      {value && (
+        <button className="btn-clear-date" onClick={() => onChange("")}>
+          <X size={14} />
+        </button>
+      )}
+
+      {isOpen && (
+        <div className="calendar-popover">
+          <div className="calendar-header">
+            <button className="calendar-nav-btn" onClick={handlePrevMonth}><ChevronLeft size={16} /></button>
+            <div className="calendar-month-name">
+              {monthNames[viewDate.getMonth()]} {viewDate.getFullYear()}
+            </div>
+            <button className="calendar-nav-btn" onClick={handleNextMonth}><ChevronRight size={16} /></button>
+          </div>
+          <div className="calendar-grid">
+            {["D", "L", "M", "X", "J", "V", "S"].map(d => (
+              <div key={d} className="calendar-day-label">{d}</div>
+            ))}
+            {renderDays()}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function AdminPedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(true);
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
+  const [filtroFecha, setFiltroFecha] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [pedidoExpandido, setPedidoExpandido] = useState(null);
   const [actualizandoId, setActualizandoId] = useState(null);
@@ -66,8 +177,8 @@ export default function AdminPedidos() {
   const lanzarNotificacionNuevoPedido = (cantidadNuevos, nuevosIds) => {
     const texto =
       cantidadNuevos === 1
-        ? "🔔 Ha entrado un pedido nuevo"
-        : `🔔 Han entrado ${cantidadNuevos} pedidos nuevos`;
+        ? "Ha entrado un pedido nuevo"
+        : `Han entrado ${cantidadNuevos} pedidos nuevos`;
 
     setNotificacionNuevoPedido(texto);
     setIdsPedidosNuevos(nuevosIds);
@@ -159,10 +270,25 @@ export default function AdminPedidos() {
       setError("");
 
       await cambiarEstadoPedido(id, estado);
-      setMensaje(`✅ Estado del pedido #${id} actualizado a ${estado}`);
+      setMensaje(`Estado del pedido #${id} actualizado a ${estado}`);
       await cargarPedidos(false);
     } catch (e) {
       setError(e.message || "No se pudo actualizar el estado del pedido.");
+    } finally {
+      setActualizandoId(null);
+    }
+  };
+
+  const handleEliminarPedido = async (id) => {
+    if (!window.confirm(`¿Estás seguro de eliminar permanentemente el pedido #${id}?`)) return;
+    
+    try {
+      setActualizandoId(id);
+      await eliminarPedido(id);
+      setMensaje(`Pedido #${id} eliminado correctamente`);
+      await cargarPedidos(false);
+    } catch (e) {
+      setError(e.message || "No se pudo eliminar el pedido.");
     } finally {
       setActualizandoId(null);
     }
@@ -172,6 +298,8 @@ export default function AdminPedidos() {
     return pedidos.filter((pedido) => {
       const cumpleEstado =
         filtroEstado === "TODOS" || pedido.estado === filtroEstado;
+
+      const cumpleFecha = !filtroFecha || (pedido.fecha && pedido.fecha.startsWith(filtroFecha));
 
       const textoBusqueda = busqueda.trim().toLowerCase();
 
@@ -184,9 +312,9 @@ export default function AdminPedidos() {
           linea.plato.toLowerCase().includes(textoBusqueda)
         );
 
-      return cumpleEstado && cumpleBusqueda;
+      return cumpleEstado && cumpleFecha && cumpleBusqueda;
     });
-  }, [pedidos, filtroEstado, busqueda]);
+  }, [pedidos, filtroEstado, filtroFecha, busqueda]);
 
   const resumen = useMemo(() => {
     return {
@@ -234,7 +362,10 @@ export default function AdminPedidos() {
 
       {notificacionNuevoPedido && (
         <div className="alerta-nuevo-pedido">
-          <span>{notificacionNuevoPedido}</span>
+          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Bell size={18} />
+            {notificacionNuevoPedido}
+          </span>
           <button
             type="button"
             className="alerta-nuevo-pedido-cerrar"
@@ -278,7 +409,7 @@ export default function AdminPedidos() {
 
       <div className="admin-toolbar">
         <div className="filtros-container">
-          <span>Filtrar por estado:</span>
+          <span>Estado:</span>
           <select
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value)}
@@ -292,6 +423,14 @@ export default function AdminPedidos() {
           </select>
         </div>
 
+        <div className="filtros-container">
+          <span>Fecha:</span>
+          <CustomDatePicker 
+            value={filtroFecha} 
+            onChange={setFiltroFecha}
+          />
+        </div>
+
         <div className="admin-busqueda-box">
           <input
             type="text"
@@ -303,7 +442,11 @@ export default function AdminPedidos() {
         </div>
       </div>
 
-      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+      {mensaje && (
+        <p className="mensaje-exito" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CheckCircle size={16} /> {mensaje}
+        </p>
+      )}
       {error && <p className="mensaje-error">{error}</p>}
       {cargando && <p>Cargando pedidos...</p>}
 
@@ -380,34 +523,63 @@ export default function AdminPedidos() {
                     </td>
                     <td>
                       <div className="pedido-acciones">
-                        <button
-                          type="button"
-                          className="btn-estado btn-estado-preparar"
-                          onClick={() =>
-                            cambiarEstado(pedido.id, "PAGADO")
-                          }
-                          disabled={actualizandoId === pedido.id}
-                        >
-                          Pagado
-                        </button>
+                        {pedido.estado === "PENDIENTE" && (
+                          <>
+                            <button
+                              type="button"
+                              className="btn-estado btn-estado-preparar"
+                              onClick={() => cambiarEstado(pedido.id, "PAGADO")}
+                              disabled={actualizandoId === pedido.id}
+                            >
+                              Pagado
+                            </button>
 
-                        <button
-                          type="button"
-                          className="btn-estado btn-estado-servido"
-                          onClick={() => cambiarEstado(pedido.id, "ENTREGADO")}
-                          disabled={actualizandoId === pedido.id}
-                        >
-                          Entregado
-                        </button>
+                            <button
+                              type="button"
+                              className="btn-estado btn-estado-servido"
+                              onClick={() => cambiarEstado(pedido.id, "ENTREGADO")}
+                              disabled={actualizandoId === pedido.id}
+                            >
+                              Entregado
+                            </button>
 
-                        <button
-                          type="button"
-                          className="btn-estado btn-estado-cancelar"
-                          onClick={() => cambiarEstado(pedido.id, "CANCELADO")}
-                          disabled={actualizandoId === pedido.id}
-                        >
-                          Cancelar
-                        </button>
+                            <button
+                              type="button"
+                              className="btn-estado btn-estado-cancelar"
+                              onClick={() => cambiarEstado(pedido.id, "CANCELADO")}
+                              disabled={actualizandoId === pedido.id}
+                            >
+                              Cancelar
+                            </button>
+                          </>
+                        )}
+
+                        {pedido.estado === "CANCELADO" && (
+                          <>
+                            <button
+                              type="button"
+                              className="btn-estado btn-estado-preparar"
+                              onClick={() => cambiarEstado(pedido.id, "PENDIENTE")}
+                              disabled={actualizandoId === pedido.id}
+                            >
+                              Reactivar
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-estado btn-estado-cancelar"
+                              onClick={() => handleEliminarPedido(pedido.id)}
+                              disabled={actualizandoId === pedido.id}
+                            >
+                              Eliminar
+                            </button>
+                          </>
+                        )}
+
+                        {(pedido.estado === "PAGADO" || pedido.estado === "ENTREGADO") && (
+                          <span style={{ color: '#666', fontSize: '0.75rem', fontWeight: '700' }}>
+                            SIN ACCIONES
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>

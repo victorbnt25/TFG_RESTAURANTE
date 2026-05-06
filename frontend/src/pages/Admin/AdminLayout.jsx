@@ -65,7 +65,7 @@ export default function AdminLayout() {
 
         <button
           onClick={handleLogout}
-          className="btn-delete"
+          className="btn-admin-logout"
           style={{ marginTop: "auto" }}
         >
           CERRAR SESIÓN

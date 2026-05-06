@@ -397,4 +397,18 @@ CABECERA RESPONSIVE
     margin-left: 0;
     margin-top: 10px;
   }
+}
+
+/* =========================
+   BOTON CERRAR SESIÓN
+========================= */
+.btn-cerrar-sesion {
+  color: #ff4d4d !important;
+  font-weight: bold;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-cerrar-sesion:hover {
+  background-color: #ffe6e6 !important;
+  color: #cc0000 !important;
 }

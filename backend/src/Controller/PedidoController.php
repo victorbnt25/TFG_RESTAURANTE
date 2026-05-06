@@ -54,7 +54,7 @@ class PedidoController extends AbstractController
             $pedido->setMesa($mesa);
         }
 
-        $pedido->setEstado(EstadoPedidoEnum::ABIERTO);
+        $pedido->setEstado(EstadoPedidoEnum::PENDIENTE);
 
         $totalPedido = 0;
 
@@ -204,5 +204,20 @@ class PedidoController extends AbstractController
         }
 
         return $this->json($resultado);
+    }
+
+    #[Route('/{id}', name: 'api_pedido_eliminar', methods: ['DELETE'])]
+    public function eliminar(int $id, EntityManagerInterface $em): JsonResponse
+    {
+        $pedido = $em->getRepository(Pedido::class)->find($id);
+
+        if (!$pedido) {
+            return $this->json(['error' => 'Pedido no encontrado'], 404);
+        }
+
+        $em->remove($pedido);
+        $em->flush();
+
+        return $this->json(['mensaje' => 'Pedido eliminado']);
     }
 }

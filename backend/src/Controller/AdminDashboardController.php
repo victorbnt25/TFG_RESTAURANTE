@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
-use App\Enum\EstadoReservaEnum;
+use App\Enum\EstadoPedidoEnum;
 use App\Repository\ReservaRepository;
+use App\Entity\Pedido;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,56 +16,53 @@ class AdminDashboardController extends AbstractController
     #[Route('/reservas', name: 'api_admin_dashboard_reservas', methods: ['GET'])]
     public function obtenerKpisReservas(ReservaRepository $reservaRepository): JsonResponse
     {
-        // Usar los KPIs optimizados directo desde la base de datos (evita N+1 y cargar miles de objetos en memoria)
         $kpis = $reservaRepository->getKpisDashboard();
-
         return $this->json($kpis);
     }
-    #[Route('/api/admin/dashboard/pedidos', name: 'admin_dashboard_pedidos', methods: ['GET'])]
-public function kpisPedidos(EntityManagerInterface $em): JsonResponse
-{
-    $pedidos = $em->getRepository(Pedido::class)->findAll();
 
-    $hoy = new \DateTime('today');
+    #[Route('/pedidos', name: 'admin_dashboard_pedidos', methods: ['GET'])]
+    public function kpisPedidos(EntityManagerInterface $em): JsonResponse
+    {
+        $pedidos = $em->getRepository(Pedido::class)->findAll();
 
-    $totalPedidos = count($pedidos);
-    $abiertos = 0;
-    $preparando = 0;
-    $servidos = 0;
-    $cancelados = 0;
+        $hoy = new \DateTime('today');
 
-    $ingresosHoy = 0;
-    $ingresosTotal = 0;
+        $totalPedidos = count($pedidos);
+        $pendientes   = 0;
+        $pagados      = 0;
+        $entregados   = 0;
+        $cancelados   = 0;
+        $ingresosHoy   = 0.0;
+        $ingresosTotal = 0.0;
 
-    foreach ($pedidos as $pedido) {
-        $estado = $pedido->getEstado()->value;
-        $total = (float) $pedido->getTotal();
+        foreach ($pedidos as $pedido) {
+            $estado = $pedido->getEstado()->value;
+            $total  = (float) $pedido->getTotal();
 
-        // Estados
-        if ($estado === 'ABIERTO') $abiertos++;
-        if ($estado === 'EN_PREPARACION') $preparando++;
-        if ($estado === 'SERVIDO') $servidos++;
-        if ($estado === 'CANCELADO') $cancelados++;
+            if ($estado === EstadoPedidoEnum::PENDIENTE->value)  $pendientes++;
+            if ($estado === EstadoPedidoEnum::PAGADO->value)     $pagados++;
+            if ($estado === EstadoPedidoEnum::ENTREGADO->value)  $entregados++;
+            if ($estado === EstadoPedidoEnum::CANCELADO->value)  $cancelados++;
 
-        // Ingresos total
-        $ingresosTotal += $total;
+            // Los ingresos solo cuentan si el pedido está PAGADO o ENTREGADO
+            if ($estado === EstadoPedidoEnum::PAGADO->value || $estado === EstadoPedidoEnum::ENTREGADO->value) {
+                $ingresosTotal += $total;
 
-        // Ingresos hoy
-        $fecha = $pedido->getCreadoEn();
-
-        if ($fecha && $fecha >= $hoy) {
-            $ingresosHoy += $total;
+                $fecha = $pedido->getCreadoEn();
+                if ($fecha && $fecha >= $hoy) {
+                    $ingresosHoy += $total;
+                }
+            }
         }
-    }
 
-    return $this->json([
-        'totalPedidos' => $totalPedidos,
-        'abiertos' => $abiertos,
-        'preparando' => $preparando,
-        'servidos' => $servidos,
-        'cancelados' => $cancelados,
-        'ingresosHoy' => number_format($ingresosHoy, 2, '.', ''),
-        'ingresosTotal' => number_format($ingresosTotal, 2, '.', ''),
-    ]);
-}
+        return $this->json([
+            'totalPedidos'  => $totalPedidos,
+            'pendientes'    => $pendientes,
+            'pagados'       => $pagados,
+            'entregados'    => $entregados,
+            'cancelados'    => $cancelados,
+            'ingresosHoy'   => number_format($ingresosHoy, 2, '.', ''),
+            'ingresosTotal' => number_format($ingresosTotal, 2, '.', ''),
+        ]);
+    }
 }

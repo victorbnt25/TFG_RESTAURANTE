@@ -27,6 +27,9 @@ function Carrito() {
   const [mesas, setMesas] = useState([]);
   const [mesaSeleccionada, setMesaSeleccionada] = useState("");
 
+  const usuarioGuardado = sessionStorage.getItem("usuario");
+  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+
   useEffect(() => {
     cargarMesas();
   }, []);
@@ -237,7 +240,7 @@ function Carrito() {
                     <option value="">Elige una mesa</option>
                     {mesas.map((mesa) => (
                       <option key={mesa.id} value={mesa.id}>
-                        {mesa.codigo} · {mesa.zona} · {mesa.capacidad} pers.
+                        {mesa.codigo} · {mesa.zona}
                       </option>
                     ))}
                   </select>
@@ -249,13 +252,24 @@ function Carrito() {
                 </div>
 
                 <div className="carrito-botones">
-                  <button
-                    className="btn-tramitar"
-                    onClick={tramitarPedido}
-                    disabled={enviandoPedido}
-                  >
-                    {enviandoPedido ? "Tramitando..." : "Finalizar Pedido"}
-                  </button>
+                  {!usuario ? (
+                    <div style={{ textAlign: "center", marginBottom: "15px" }}>
+                      <p style={{ color: "#ff4d4d", marginBottom: "10px", fontWeight: "bold" }}>
+                        Debes iniciar sesión para realizar el pedido.
+                      </p>
+                      <Link to="/login" className="btn-tramitar" style={{ background: "#ff9800", color: "#111" }}>
+                        Iniciar Sesión
+                      </Link>
+                    </div>
+                  ) : (
+                    <button
+                      className="btn-tramitar"
+                      onClick={tramitarPedido}
+                      disabled={enviandoPedido}
+                    >
+                      {enviandoPedido ? "Tramitando..." : "Finalizar Pedido"}
+                    </button>
+                  )}
 
                   <Link to="/carta" className="btn-seguir">
                     Añadir más cosas

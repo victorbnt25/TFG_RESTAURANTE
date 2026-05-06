@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { listarPedidos, cambiarEstadoPedido } from "../../servicios/adminApi";
+import { CheckCircle } from "lucide-react";
 import "./admin.css";
 
 export default function AdminCocina() {
@@ -40,7 +41,7 @@ export default function AdminCocina() {
       setError("");
 
       await cambiarEstadoPedido(id, estado);
-      setMensaje(`✅ Pedido #${id} actualizado a ${estado}`);
+      setMensaje(`Pedido #${id} actualizado a ${estado}`);
       await cargarPedidos(false);
     } catch (e) {
       setError(e.message || "No se pudo actualizar el pedido.");
@@ -78,7 +79,11 @@ export default function AdminCocina() {
         </button>
       </div>
 
-      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+      {mensaje && (
+        <p className="mensaje-exito" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CheckCircle size={16} /> {mensaje}
+        </p>
+      )}
       {error && <p className="mensaje-error">{error}</p>}
       {cargando && <p>Cargando pedidos...</p>}
 
