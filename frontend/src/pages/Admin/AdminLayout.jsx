@@ -5,8 +5,9 @@ export default function AdminLayout() {
   const location = useLocation();
 
   const handleLogout = () => {
+    sessionStorage.removeItem("usuario");
     localStorage.removeItem("token_admin");
-    window.location.href = "/admin/login";
+    window.location.href = "/";
   };
 
   return (
@@ -60,6 +61,15 @@ export default function AdminLayout() {
             }`}
           >
             Mesas
+          </Link>
+
+          <Link
+            to="/admin/politica"
+            className={`admin-nav-link ${
+              location.pathname === "/admin/politica" ? "active" : ""
+            }`}
+          >
+            Política
           </Link>
         </nav>
 

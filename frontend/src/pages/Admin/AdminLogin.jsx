@@ -156,6 +156,22 @@ export default function AdminLogin() {
             {cargando ? "ENTRANDO..." : "ACCEDER"}
           </button>
         </form>
+
+        <div style={{ marginTop: "24px", textAlign: "center" }}>
+          <button 
+            onClick={() => navigate("/")}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#888",
+              cursor: "pointer",
+              fontSize: "0.9rem",
+              textDecoration: "underline"
+            }}
+          >
+            Volver a la web principal
+          </button>
+        </div>
       </div>
     </div>
   );
