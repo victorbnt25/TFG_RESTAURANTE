@@ -38,18 +38,29 @@ class ChatRequest(BaseModel):
 
 # --- HERRAMIENTAS (TOOLS) PARA OPENAI ---
 # Aquí le decimos a la IA qué funciones "sabe" ejecutar
+# Mapeo de nombres de categoría a IDs de base de datos
+CATEGORY_MAP = {
+    "entrantes": 1,
+    "hamburguesas": 2,
+    "carnes": 2,
+    "postres": 3,
+    "bebidas": 4,
+}
+
+# --- HERRAMIENTAS (TOOLS) PARA OPENAI ---
+# Aquí le decimos a la IA qué funciones "sabe" ejecutar
 tools = [
     {
         "type": "function",
         "function": {
             "name": "consultar_menu",
-            "description": "Obtiene la lista de platos del restaurante. Puede filtrar por categoría.",
+            "description": "Obtiene la lista de platos del restaurante. DEBES USARLA siempre que el usuario pregunte por comida, hamburguesas o menú.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "categoria": {
                         "type": "string", 
-                        "enum": ["entrantes", "carnes", "pescados", "postres", "bebidas"],
+                        "enum": ["entrantes", "hamburguesas", "carnes", "postres", "bebidas"],
                         "description": "La categoría de comida que busca el usuario."
                     }
                 }
@@ -87,6 +98,11 @@ tools = [
 async def call_symfony_api(endpoint: str, method: str = "GET", data: dict = None):
     """Comunicación directa con el backend de Symfony dentro de la red Docker."""
     async with httpx.AsyncClient(timeout=30.0) as ac:
+        # Si es consulta de menú, mapeamos la categoría a ID
+        if endpoint == "platos" and data and "categoria" in data:
+            cat_name = data["categoria"].lower()
+            data["categoria"] = CATEGORY_MAP.get(cat_name, data["categoria"])
+
         url = f"{SYMFONY_API_URL}/{endpoint}"
         try:
             print(f"Llamando a Symfony: {method} {url} con data={data}")
@@ -133,14 +149,17 @@ async def handle_chat(request: ChatRequest):
         "- COCINA: Cierra a las 23:30. No permitas reservas después de esa hora 🍳.\n"
         "- DURACIÓN: Todas las reservas tienen una duración máxima de 90 minutos ⏱️.\n"
         "- ZONAS: Tenemos SALA y TERRAZA principalmente. También hay BARRA y PRIVADO si lo preguntan.\n"
+        "- RESERVAS PARA NO REGISTRADOS: Si el usuario NO está logueado y quiere reservar, DEBES decirle que por la web solo pueden reservar usuarios registrados. Invítales a usar el botón de registro que aparece debajo o diles que pueden llamar al 📞 912 345 678 para reservar por teléfono.\n"
         "- IMPORTANTE (ZONAS): Antes de confirmar cualquier reserva, PREGUNTA siempre qué zona prefieren (Sala o Terraza) 🏛️⛲. Si el usuario dice que le da igual, no envíes el parámetro 'zona'.\n"
-        "- IMPORTANTE (MENÚ): Si el usuario pide ver la carta o el menú, NO enumeres los platos uno a uno. En su lugar, dale este enlace: [Ver nuestra Carta Digital](http://localhost:5173/carta) 📖✨ e invítale a echar un vistazo.\n"
-        "- Solo usa la herramienta 'consultar_menu' si el usuario hace una pregunta muy específica (ej: '¿Tenéis platos para celíacos?' o '¿Qué postres hay?') 🕵️‍♂️.\n"
+        "- IMPORTANTE (MENÚ): Cuando el usuario pregunte por la comida, hamburguesas, el menú o categorías específicas, USA SIEMPRE la herramienta 'consultar_menu' para mostrarle las tarjetas visuales 🍔✨.\n"
+        "- REGLAS DE TEXTO: 1. Usa negritas (`**Texto**`) para resaltar nombres de platos o precios importantes. 2. NUNCA pongas enlaces de imágenes en Markdown (ej: no uses '![...]'). 3. Si usas las tarjetas [PLATO:...], NO repitas la descripción del plato en el texto, sé muy breve.\n"
+        "- Solo usa la herramienta 'consultar_menu' con la categoría adecuada (ej: 'hamburguesas', 'postres', etc.) para filtrar los resultados 🕵️‍♂️.\n"
         "- No des consejos generales de vida (deporte, salud, viajes). Si el usuario saca temas ajenos, sé muy simpático pero redirige la conversación inmediatamente hacia el restaurante 🍽️.\n"
         "- Ejemplo: Si el usuario va a correr, dile que eso es genial y que le esperamos con una mesa lista para recuperar energías 🏃‍♂️💨 -> 🍔.\n"
         "- Sé proactivo: cada mensaje debe invitar a ver el menú o a reservar una mesa.\n"
         "- Usa emojis en cada frase para mantener la energía alta ✨.\n"
-        "- NO uses Markdown complejo.\n\n"
+        "- NO uses Markdown complejo.\n"
+        "- FORMATO DE PLATOS: Cuando menciones platos específicos que existen en la base de datos, DEBES añadir al final de tu mensaje o entre párrafos el tag especial: `[PLATO:{\"id\":1, \"nombre\":\"Nombre\", \"precio\":\"10.50\", \"foto_url\":\"/uploads/foto.jpg\", \"descripcion\":\"...\"}]`. Hazlo para cada plato relevante que encuentres. Esto permitirá que el usuario los vea como tarjetas visuales 🍔📸.\n\n"
         "REGLAS DE NEGOCIO:\n"
         "- Usa 'consultar_menu' para platos reales de la DB.\n"
         "- Usa 'crear_reserva' SOLO si el usuario está logueado.\n"
@@ -167,7 +186,7 @@ async def handle_chat(request: ChatRequest):
 
         # 2. Llamada inicial a OpenAI para detectar intención
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-5.4-mini",
             messages=openai_messages,
             tools=tools,
             tool_choice="auto"
@@ -192,7 +211,7 @@ async def handle_chat(request: ChatRequest):
 
                 # Lógica según la función detectada
                 if function_name == "consultar_menu":
-                    api_result = await call_symfony_api("platos", "GET", {})
+                    api_result = await call_symfony_api("platos", "GET", function_args)
                 elif function_name == "crear_reserva":
                     # Solo ejecutamos si hay login (doble check de seguridad)
                     if request.user:
