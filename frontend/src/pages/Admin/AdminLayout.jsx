@@ -73,10 +73,17 @@ export default function AdminLayout() {
           </Link>
         </nav>
 
+        <Link
+          to="/"
+          className="btn-admin-home"
+          style={{ marginTop: "auto", marginBottom: "10px" }}
+        >
+          VOLVER A INICIO
+        </Link>
+
         <button
           onClick={handleLogout}
           className="btn-admin-logout"
-          style={{ marginTop: "auto" }}
         >
           CERRAR SESIÓN
         </button>

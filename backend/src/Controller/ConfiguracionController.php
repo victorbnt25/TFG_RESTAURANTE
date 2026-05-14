@@ -28,9 +28,12 @@ class ConfiguracionController extends AbstractController
             $contenido = file_get_contents($filePath);
         }
 
-        return $this->json([
+        $response = $this->json([
             'politica' => $contenido
         ]);
+        $response->setPublic();
+        $response->setMaxAge(300);
+        return $response;
     }
 
     #[Route('/api/admin/politica', name: 'api_admin_politica_save', methods: ['POST', 'PUT'])]

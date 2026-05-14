@@ -32,7 +32,10 @@ class MesaController extends AbstractController
             ];
         }
         
-        return $this->json($data);
+        $response = $this->json($data);
+        $response->setPublic();
+        $response->setMaxAge(300);
+        return $response;
     }
 
     #[Route('', methods: ['POST'])]

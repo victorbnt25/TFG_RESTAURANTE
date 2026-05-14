@@ -27,6 +27,9 @@ final class CategoriaController extends AbstractController
             ];
         }, $categorias);
 
-        return $this->json($datos);
+        $response = $this->json($datos);
+        $response->setPublic();
+        $response->setMaxAge(300);
+        return $response;
     }
 }

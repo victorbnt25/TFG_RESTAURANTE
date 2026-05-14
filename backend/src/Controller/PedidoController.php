@@ -110,7 +110,7 @@ class PedidoController extends AbstractController
     #[Route('', name: 'api_pedidos_listar', methods: ['GET'])]
     public function listar(EntityManagerInterface $em): JsonResponse
     {
-        $pedidos = $em->getRepository(Pedido::class)->findBy([], ['id' => 'DESC']);
+        $pedidos = $em->getRepository(Pedido::class)->findAllWithRelations();
 
         $resultado = [];
 
@@ -184,7 +184,7 @@ class PedidoController extends AbstractController
         }
 
         $pedidos = $em->getRepository(Pedido::class)
-            ->findBy(['usuario' => $usuario], ['id' => 'DESC']);
+            ->findByUsuarioWithRelations($usuario);
 
         $resultado = [];
 

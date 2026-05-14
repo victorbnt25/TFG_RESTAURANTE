@@ -42,13 +42,11 @@ export function DataProvider({ children }) {
       setMesas(datosMesas);
       setPolitica(datosPolitica.politica);
 
-      // 2. Precargamos las imágenes en segundo plano para que no haya parpadeos
-      await precargarImagenes(datosPlatos);
+      // 2. Precargamos las imágenes en segundo plano (sin await para no bloquear)
+      precargarImagenes(datosPlatos).catch(e => console.error("Error precargando imágenes", e));
 
-      // Pequeño retardo artificial para que el splash screen no parpadee si la red es ultra rápida
-      setTimeout(() => {
-        setCargandoTodo(false);
-      }, 500);
+      // Mostramos la app inmediatamente
+      setCargandoTodo(false);
 
     } catch (err) {
       console.error("Error inicializando la aplicación:", err);

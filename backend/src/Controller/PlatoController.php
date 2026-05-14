@@ -53,7 +53,11 @@ class PlatoController extends AbstractController
             ];
         }
 
-        return $this->json($data);
+        $response = $this->json($data);
+        $response->setPublic();
+        $response->setMaxAge(300); // Caché de 5 minutos en el navegador
+        
+        return $response;
     }
 
     #[Route('/{id}', methods: ['GET'])]

@@ -100,57 +100,35 @@ class ReservaRepository extends ServiceEntityRepository
             $fechaInicio = new \DateTimeImmutable('first day of january this year 00:00:00');
         }
 
-        // Helper para crear el query builder base con el filtro de fecha opcional
-        $createBaseQb = function() use ($fechaInicio) {
-            $qb = $this->createQueryBuilder('r')->select('COUNT(r.id)');
-            if ($fechaInicio) {
-                $qb->andWhere('r.fechaHoraReserva >= :inicioFiltro')
-                   ->setParameter('inicioFiltro', $fechaInicio);
-            }
-            return $qb;
-        };
+        $qb = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id) as total')
+            ->addSelect("SUM(CASE WHEN r.estado = 'PENDIENTE' THEN 1 ELSE 0 END) as pendientes")
+            ->addSelect("SUM(CASE WHEN r.estado = 'CONFIRMADA' THEN 1 ELSE 0 END) as confirmadas")
+            ->addSelect("SUM(CASE WHEN r.estado = 'CANCELADA' THEN 1 ELSE 0 END) as canceladas");
 
-        // Total de reservas (filtrado por periodo)
-        $total = $createBaseQb()->getQuery()->getSingleScalarResult();
+        if ($fechaInicio) {
+            $qb->where('r.fechaHoraReserva >= :inicioFiltro')
+               ->setParameter('inicioFiltro', $fechaInicio);
+        }
+
+        $res = $qb->getQuery()->getSingleResult();
 
         // Reservas de hoy (activas)
         $hoy = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
             ->where('r.fechaHoraReserva BETWEEN :inicio AND :fin')
-            ->andWhere('r.estado IN (:estadosActivos)')
+            ->andWhere("r.estado IN ('PENDIENTE', 'CONFIRMADA')")
             ->setParameter('inicio', $inicioHoy)
             ->setParameter('fin', $finHoy)
-            ->setParameter('estadosActivos', [\App\Enum\EstadoReservaEnum::PENDIENTE, \App\Enum\EstadoReservaEnum::CONFIRMADA])
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        // Pendientes (filtradas)
-        $pendientes = $createBaseQb()
-            ->andWhere('r.estado = :estado')
-            ->setParameter('estado', \App\Enum\EstadoReservaEnum::PENDIENTE)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        // Confirmadas (filtradas)
-        $confirmadas = $createBaseQb()
-            ->andWhere('r.estado = :estado')
-            ->setParameter('estado', \App\Enum\EstadoReservaEnum::CONFIRMADA)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        // Canceladas (filtradas)
-        $canceladas = $createBaseQb()
-            ->andWhere('r.estado = :estado')
-            ->setParameter('estado', \App\Enum\EstadoReservaEnum::CANCELADA)
             ->getQuery()
             ->getSingleScalarResult();
 
         return [
-            'total'       => (int) $total,
+            'total'       => (int) $res['total'],
             'hoy'         => (int) $hoy,
-            'pendientes'  => (int) $pendientes,
-            'confirmadas' => (int) $confirmadas,
-            'canceladas'  => (int) $canceladas,
+            'pendientes'  => (int) $res['pendientes'],
+            'confirmadas' => (int) $res['confirmadas'],
+            'canceladas'  => (int) $res['canceladas'],
         ];
     }
 }
