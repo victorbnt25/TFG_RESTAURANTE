@@ -105,8 +105,8 @@ export async function obtenerPolitica() {
   return await request("/api/public/politica");
 }
 
-export async function obtenerMisPedidos() {
-  return await request("/api/pedidos/mis-pedidos");
+export async function obtenerMisPedidos(email) {
+  return await request(`/api/pedidos/mis-pedidos?email=${encodeURIComponent(email)}`);
 }
 
 export async function obtenerKpisPedidos() {

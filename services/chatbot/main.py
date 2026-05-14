@@ -164,7 +164,7 @@ async def handle_chat(request: ChatRequest):
         "- Usa 'consultar_menu' para platos reales de la DB.\n"
         "- Usa 'crear_reserva' SOLO si el usuario está logueado.\n"
         "- Si el usuario está logueado, inyecta su nombre, email y teléfono automáticamente en la herramienta.\n"
-        "- Pregunta SIEMPRE por la zona antes de usar 'crear_reserva'."
+        "- Pregunta SIEMPRE por la zona antes de usar 'crear_reserva', pero SI el usuario ya te ha proporcionado todos los datos necesarios para una reserva (fecha, hora, personas y zona), DEBES llamar inmediatamente a la función 'crear_reserva'. NO le preguntes si quiere hacer la reserva si ya te ha dado los datos, HAZLA directamente."
     )
 
     # Reconstruir historial para OpenAI
@@ -186,7 +186,7 @@ async def handle_chat(request: ChatRequest):
 
         # 2. Llamada inicial a OpenAI para detectar intención
         response = client.chat.completions.create(
-            model="gpt-5.4-mini",
+            model="gpt-4o-mini",
             messages=openai_messages,
             tools=tools,
             tool_choice="auto"

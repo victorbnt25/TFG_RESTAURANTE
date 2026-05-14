@@ -101,9 +101,57 @@
     border-radius: 2px;
 }
 
-.estado-badge.pendiente { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid #ffc107; }
-.estado-badge.confirmada { background: rgba(40, 167, 69, 0.1); color: #28a745; border: 1px solid #28a745; }
-.estado-badge.cancelada { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; }
+.estado-badge.PENDIENTE   { background: rgba(255, 193, 7, 0.12);  color: #ffc107; border: 1px solid rgba(255,193,7,0.4); }
+.estado-badge.CONFIRMADA  { background: rgba(40, 167, 69, 0.12);  color: #28a745; border: 1px solid rgba(40,167,69,0.4); }
+.estado-badge.CANCELADA   { background: rgba(220, 53, 69, 0.12);  color: #dc3545; border: 1px solid rgba(220,53,69,0.4); }
+.estado-badge.COMPLETADA  { background: rgba(99, 102, 241, 0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.4); }
+.estado-badge.NO_SHOW     { background: rgba(156, 163, 175, 0.1); color: #9ca3af; border: 1px solid rgba(156,163,175,0.3); }
+
+/* Sin reservas */
+.sin-reservas {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.sin-reservas p {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+}
+
+.btn-reservar-ahora {
+    display: inline-block;
+    background: var(--color-primary);
+    color: #000;
+    font-family: var(--font-fitz);
+    font-weight: 900;
+    font-size: 0.9rem;
+    padding: 14px 36px;
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(184, 134, 11, 0.25);
+}
+
+.btn-reservar-ahora:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(184, 134, 11, 0.45);
+    background: #d4a017;
+}
+
+.mensaje-error {
+    text-align: center;
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.08);
+    border: 1px solid rgba(220,53,69,0.3);
+    border-radius: 6px;
+    padding: 12px 20px;
+    margin: 0 auto 20px;
+    max-width: 500px;
+    font-size: 0.9rem;
+}
 
 .reserva-body p {
     margin: 10px 0;

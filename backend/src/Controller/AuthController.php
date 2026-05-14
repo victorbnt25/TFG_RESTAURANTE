@@ -124,6 +124,7 @@ class AuthController extends AbstractController
                 'email' => $usuario->getEmail(),
                 'rol' => $usuario->getRol()?->value,
                 'estado' => $usuario->getEstado()?->value,
+                'telefono' => $usuario->getTelefono(),
             ]
         ]);
     }

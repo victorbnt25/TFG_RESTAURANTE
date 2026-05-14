@@ -51,7 +51,7 @@ class Pedido
 
     public function __construct()
     {
-        $this->estado = EstadoPedidoEnum::ABIERTO;
+        $this->estado = EstadoPedidoEnum::PENDIENTE;
         $this->lineas = new ArrayCollection();
         $this->pagos = new ArrayCollection();
     }

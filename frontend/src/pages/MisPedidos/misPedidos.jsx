@@ -8,6 +8,10 @@ function MisPedidos() {
   const navigate = useNavigate();
   const { reemplazarCarrito } = useCarrito();
 
+  // Leemos el usuario de la sesión
+  const usuarioGuardado = sessionStorage.getItem("usuario");
+  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+
   const [pedidos, setPedidos] = useState([]);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -15,6 +19,10 @@ function MisPedidos() {
   const [mensajeAccion, setMensajeAccion] = useState("");
 
   useEffect(() => {
+    if (!usuario) {
+      navigate("/login");
+      return;
+    }
     cargarPedidos();
   }, []);
 
@@ -22,8 +30,7 @@ function MisPedidos() {
     try {
       setCargando(true);
       setError("");
-
-      const data = await obtenerMisPedidos();
+      const data = await obtenerMisPedidos(usuario.email);
       setPedidos(data);
     } catch (e) {
       setError(e.message || "No se pudieron cargar tus pedidos.");
@@ -42,7 +49,7 @@ function MisPedidos() {
     }));
 
     reemplazarCarrito(productos);
-    setMensajeAccion(`✅ El pedido #${pedido.id} se ha cargado en tu carrito.`);
+    setMensajeAccion(`El pedido #${pedido.id} se ha cargado en tu carrito.`);
 
     setTimeout(() => {
       navigate("/carrito");
@@ -86,7 +93,7 @@ function MisPedidos() {
 
         <button
           type="button"
-          className="btn-carta"
+          className="btn-actualizar-pedidos"
           onClick={cargarPedidos}
         >
           Actualizar

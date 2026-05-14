@@ -25,6 +25,7 @@ function Carta() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [platoSeleccionado, setPlatoSeleccionado] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [error, setError] = useState("");
   const [miniCarritoAbierto, setMiniCarritoAbierto] = useState(false);
   
   // Estados para Guarniciones
@@ -289,7 +290,10 @@ function Carta() {
                   onClick={() => confirmarAñadirBurger(g)}
                 >
                   <div className="guarnicion-img-container">
-                    {g.imagen_url ? <img src={`${API_URL}${g.imagen_url}`} alt={g.nombre} /> : <div className="no-img">?</div>}
+                    {(g.foto_url || g.imagen_url || g.imagenUrl)
+                      ? <img src={`${API_URL}${g.foto_url || g.imagen_url || g.imagenUrl}`} alt={g.nombre} />
+                      : <div className="no-img">?</div>
+                    }
                   </div>
                   <span className="guarnicion-name">{g.nombre}</span>
                   {Number(g.precio) > 0 && <span className="guarnicion-extra">+0.00€</span>}

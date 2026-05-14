@@ -86,13 +86,16 @@ class ReservaRepository extends ServiceEntityRepository
     public function getKpisDashboard(): array
     {
         $inicioHoy = (new \DateTimeImmutable('today'))->setTime(0, 0, 0);
-        $finHoy = (new \DateTimeImmutable('today'))->setTime(23, 59, 59);
-        
-        $inicioSemana = (new \DateTimeImmutable('monday this week'))->setTime(0, 0, 0);
-        $finSemana = (new \DateTimeImmutable('sunday this week'))->setTime(23, 59, 59);
+        $finHoy    = (new \DateTimeImmutable('today'))->setTime(23, 59, 59);
 
-        // 1. Reservas de hoy (estado PENDIENTE o CONFIRMADA)
-        $reservasHoy = $this->createQueryBuilder('r')
+        // Total de reservas
+        $total = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Reservas de hoy (activas)
+        $hoy = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
             ->where('r.fechaHoraReserva BETWEEN :inicio AND :fin')
             ->andWhere('r.estado IN (:estadosActivos)')
@@ -102,32 +105,36 @@ class ReservaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        // 2. Reservas de la semana (estado PENDIENTE o CONFIRMADA)
-        $reservasSemana = $this->createQueryBuilder('r')
+        // Pendientes (todas)
+        $pendientes = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
-            ->where('r.fechaHoraReserva BETWEEN :inicioSemana AND :finSemana')
-            ->andWhere('r.estado IN (:estadosActivos)')
-            ->setParameter('inicioSemana', $inicioSemana)
-            ->setParameter('finSemana', $finSemana)
-            ->setParameter('estadosActivos', [\App\Enum\EstadoReservaEnum::PENDIENTE, \App\Enum\EstadoReservaEnum::CONFIRMADA])
+            ->where('r.estado = :estado')
+            ->setParameter('estado', \App\Enum\EstadoReservaEnum::PENDIENTE)
             ->getQuery()
             ->getSingleScalarResult();
 
-        // 3. Reservas canceladas hoy
-        $canceladasHoy = $this->createQueryBuilder('r')
+        // Confirmadas (todas)
+        $confirmadas = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
-            ->where('r.fechaHoraReserva BETWEEN :inicio AND :fin')
-            ->andWhere('r.estado = :estadoCancelada')
-            ->setParameter('inicio', $inicioHoy)
-            ->setParameter('fin', $finHoy)
-            ->setParameter('estadoCancelada', \App\Enum\EstadoReservaEnum::CANCELADA)
+            ->where('r.estado = :estado')
+            ->setParameter('estado', \App\Enum\EstadoReservaEnum::CONFIRMADA)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Canceladas (todas)
+        $canceladas = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.estado = :estado')
+            ->setParameter('estado', \App\Enum\EstadoReservaEnum::CANCELADA)
             ->getQuery()
             ->getSingleScalarResult();
 
         return [
-            'reservas_hoy' => (int) $reservasHoy,
-            'reservas_semana' => (int) $reservasSemana,
-            'canceladas_hoy' => (int) $canceladasHoy,
+            'total'       => (int) $total,
+            'hoy'         => (int) $hoy,
+            'pendientes'  => (int) $pendientes,
+            'confirmadas' => (int) $confirmadas,
+            'canceladas'  => (int) $canceladas,
         ];
     }
 }

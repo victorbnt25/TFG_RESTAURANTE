@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCarrito } from '../../context/CarritoContext';
 import './Chatbot.css';
 
 const saludos = [
@@ -16,10 +17,29 @@ const Chatbot = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [toast, setToast] = useState('');
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
+  const { agregarAlCarrito } = useCarrito();
 
   // Obtenemos el usuario actual
   const user = JSON.parse(sessionStorage.getItem("usuario") || "null");
+
+  // Feedback visual al añadir al carrito
+  const mostrarToast = (texto) => {
+    setToast(texto);
+    setTimeout(() => setToast(''), 2500);
+  };
+
+  const handleAnadirAlCarrito = (plato) => {
+    agregarAlCarrito({
+      id: plato.id,
+      nombre: plato.nombre,
+      precio: Number(plato.precio),
+      foto_url: plato.foto_url || '',
+    });
+    mostrarToast(`✅ ${plato.nombre} añadido al carrito`);
+  };
 
   // Auto-scroll al final de los mensajes
   const scrollToBottom = () => {
@@ -52,19 +72,34 @@ const Chatbot = () => {
       parts.push({ type: 'text', value: content.substring(lastIndex) });
     }
 
-    // Función para procesar negritas (**texto**)
+    // Función para procesar negritas (**texto**) e imágenes (![alt](url))
     const parseMarkdown = (text) => {
-      const boldRegex = /\*\*(.*?)\*\*/g;
       const parts = [];
       let lastIndex = 0;
+      const combinedRegex = /!\[([^\]]*)\]\((.*?)\)|\*\*(.*?)\*\*/g;
       let match;
 
-      while ((match = boldRegex.exec(text)) !== null) {
+      while ((match = combinedRegex.exec(text)) !== null) {
         if (match.index > lastIndex) {
           parts.push(text.substring(lastIndex, match.index));
         }
-        parts.push(<strong key={match.index}>{match[1]}</strong>);
-        lastIndex = boldRegex.lastIndex;
+        if (match[1] !== undefined) {
+          // Es imagen
+          const alt = match[1];
+          const url = match[2].startsWith('http') ? match[2] : `http://localhost:8000${match[2]}`;
+          parts.push(
+            <img 
+              key={match.index} 
+              src={url} 
+              alt={alt} 
+              style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '10px', display: 'block' }} 
+            />
+          );
+        } else if (match[3] !== undefined) {
+          // Es negrita
+          parts.push(<strong key={match.index}>{match[3]}</strong>);
+        }
+        lastIndex = combinedRegex.lastIndex;
       }
 
       if (lastIndex < text.length) {
@@ -91,7 +126,7 @@ const Chatbot = () => {
         );
       } else {
         const plato = part.value;
-        const imgUrl = plato.foto_url ? `http://localhost:8000${plato.foto_url}` : 'https://via.placeholder.com/300/200?text=Comida';
+        const imgUrl = plato.foto_url ? `http://localhost:8000${plato.foto_url}` : 'https://via.placeholder.com/300x200?text=Comida';
         cardGroup.push(
           <div key={i} className="plato-card-mini">
             <div className="plato-card-image-container">
@@ -101,6 +136,12 @@ const Chatbot = () => {
               <h4 className="plato-name">{plato.nombre}</h4>
               <p className="plato-price">{plato.precio}€</p>
               <p className="plato-desc-mini">{plato.descripcion}</p>
+              <button
+                className="btn-chatbot-anadir"
+                onClick={() => handleAnadirAlCarrito(plato)}
+              >
+                + Añadir al carrito
+              </button>
             </div>
           </div>
         );
@@ -129,7 +170,7 @@ const Chatbot = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           message: inputValue,
-          history: messages, // Enviamos todo el historial
+          history: messages.slice(-10), // Limitamos a los últimos 10 mensajes
           user: user         // Enviamos los datos del usuario si está identificado
         }),
       });
@@ -154,6 +195,13 @@ const Chatbot = () => {
 
   return (
     <div className={`chatbot-container ${isOpen ? 'open' : ''}`}>
+      {/* Toast de notificación */}
+      {toast && (
+        <div className="chatbot-toast">
+          {toast}
+        </div>
+      )}
+
       {/* Burbuja flotante */}
       <button className="chatbot-bubble" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? '✕' : '💬'}
@@ -172,8 +220,8 @@ const Chatbot = () => {
               <div className="message-bubble">
                 {renderMessageContent(msg.content)}
                 
-                {/* Botones de acción dinámicos al final de los mensajes del bot */}
-                {msg.role === 'bot' && (
+                {/* Botones de acción solo en el último mensaje del bot */}
+                {msg.role === 'bot' && index === messages.length - 1 && (
                   <div className="bot-actions">
                     <Link to="/carta" className="btn-chatbot-action outline">
                       Ver Carta 📖

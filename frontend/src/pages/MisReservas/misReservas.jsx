@@ -119,7 +119,7 @@ export default function MisReservas() {
               const horaFmt = dt.toLocaleTimeString("es-ES", {
                 hour: "2-digit", minute: "2-digit"
               });
-              const esCancelada = reserva.estado === "cancelada";
+              const esCancelada = reserva.estado === "CANCELADA";
 
               return (
                 <article key={reserva.id} className={`reserva-card ${esCancelada ? 'cancelada' : ''}`}>

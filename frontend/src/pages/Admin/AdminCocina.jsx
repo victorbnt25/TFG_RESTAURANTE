@@ -237,11 +237,11 @@ export default function AdminCocina() {
                   <div className="cocina-acciones">
                     <button
                       type="button"
-                      className="btn-estado btn-estado-cerrar"
-                      onClick={() => actualizarEstado(pedido.id, "ENTREGADO")}
+                      className="btn-estado btn-estado-cancelar"
+                      onClick={() => actualizarEstado(pedido.id, "CANCELADO")}
                       disabled={actualizandoId === pedido.id}
                     >
-                      Cerrar pedido
+                      Anular pedido
                     </button>
                   </div>
                 </article>

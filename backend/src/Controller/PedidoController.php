@@ -165,12 +165,22 @@ class PedidoController extends AbstractController
     }
 
     #[Route('/mis-pedidos', name: 'api_mis_pedidos', methods: ['GET'])]
-    public function misPedidos(EntityManagerInterface $em): JsonResponse
-    {
-        $usuario = $this->getUser();
+    public function misPedidos(
+        Request $request,
+        EntityManagerInterface $em,
+        \App\Repository\UsuarioRepository $usuarioRepository
+    ): JsonResponse {
+        // La API es stateless. Identificamos al usuario por su email
+        $email = $request->query->get('email');
+
+        if (!$email) {
+            return $this->json(['error' => 'Se requiere el email del usuario'], 400);
+        }
+
+        $usuario = $usuarioRepository->findOneBy(['email' => mb_strtolower(trim($email))]);
 
         if (!$usuario) {
-            return $this->json(['error' => 'No autenticado'], 401);
+            return $this->json(['error' => 'Usuario no encontrado'], 404);
         }
 
         $pedidos = $em->getRepository(Pedido::class)
@@ -183,10 +193,10 @@ class PedidoController extends AbstractController
 
             foreach ($pedido->getLineas() as $linea) {
                 $lineas[] = [
-                    'id' => $linea->getPlato()->getId(),
-                    'plato' => $linea->getPlato()->getNombre(),
-                    'cantidad' => $linea->getCantidad(),
-                    'precio' => $linea->getPrecioUnitario(),
+                    'id'         => $linea->getPlato()->getId(),
+                    'plato'      => $linea->getPlato()->getNombre(),
+                    'cantidad'   => $linea->getCantidad(),
+                    'precio'     => $linea->getPrecioUnitario(),
                     'imagen_url' => method_exists($linea->getPlato(), 'getImagenUrl')
                         ? $linea->getPlato()->getImagenUrl()
                         : null,
@@ -194,11 +204,11 @@ class PedidoController extends AbstractController
             }
 
             $resultado[] = [
-                'id' => $pedido->getId(),
+                'id'     => $pedido->getId(),
                 'estado' => $pedido->getEstado()->value,
-                'total' => $pedido->getTotal(),
-                'fecha' => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
-                'mesa' => $pedido->getMesa()?->getCodigo(),
+                'total'  => $pedido->getTotal(),
+                'fecha'  => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
+                'mesa'   => $pedido->getMesa()?->getCodigo(),
                 'lineas' => $lineas,
             ];
         }

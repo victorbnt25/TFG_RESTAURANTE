@@ -1,24 +1,21 @@
-// import { useState } from "react";
-// import { crearReserva } from "../../servicios/api";
-// import { request } from "../../servicios/api";
-// import fondoReservas from "../../assets/media/fondo-reservas.webp"; // Foto de fondo del hero
-// import "./reservas.css";
-
 import { useState } from "react";
 import { crearReserva } from "../../servicios/api";
-import fondoReservas from "../../assets/media/fondo-reservas.webp"; // Foto de fondo del hero
+import fondoReservas from "../../assets/media/fondo-reservas.webp";
 import "./reservas.css";
 
 function Reservas() {
+  // Leemos el usuario de sesión para prerrellenar el formulario
+  const usuarioGuardado = sessionStorage.getItem("usuario");
+  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+
   const [formulario, setFormulario] = useState({
-    // Este es el estado del formulario, donde se guarda lo que escribe el usuario
-    nombre: "",
-    correo: "",
+    nombre: usuario?.nombre || "",
+    correo: usuario?.email || "",
     fecha: "",
     hora: "",
     numeroPersonas: "",
     zona: "",
-    telefono: "",
+    telefono: usuario?.telefono || "",
     observaciones: "",
   });
 
@@ -141,6 +138,7 @@ function Reservas() {
             name="fecha"
             value={formulario.fecha}
             onChange={manejarCambio}
+            min={new Date().toISOString().split('T')[0]}
             required
           />
         </div>
@@ -181,9 +179,9 @@ function Reservas() {
           >
             <option value="">Sin preferencia</option>
             <option value="SALA">Sala</option>
-            <option value="Terraza">Terraza</option>
-            <option value="Barra">Barra</option>
-            <option value="Privado">Privado</option>
+            <option value="TERRAZA">Terraza</option>
+            <option value="BARRA">Barra</option>
+            <option value="PRIVADO">Privado</option>
           </select>
         </div>
 

@@ -76,7 +76,7 @@ function Carrito() {
       });
 
       setMensajePedido(
-        `🎉 Pedido #${respuesta.pedido.id} tramitado correctamente por un total de ${respuesta.pedido.total} € para la mesa ${respuesta.pedido.mesa ?? ""}.`
+        `Pedido #${respuesta.pedido.id} tramitado correctamente por un total de ${respuesta.pedido.total} € para la mesa ${respuesta.pedido.mesa ?? ""}.`
       );
 
       vaciarCarrito();
