@@ -10,6 +10,12 @@ const saludos = [
   '¡Ey! 👋 Bienvenido a Sons of Burger. ¿Te apetece ver la carta o prefieres que te reservemos sitio?'
 ];
 
+const quickSuggestions = [
+  { label: '🍔 Recomiéndame algo', query: '¿Qué hamburguesa me recomiendas hoy?' },
+  { label: '📅 Reservar mesa', query: 'Quiero hacer una reserva' },
+  { label: '📍 ¿Dónde estáis?', query: '¿Cuál es vuestra ubicación y horario?' }
+];
+
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -155,11 +161,21 @@ const Chatbot = () => {
     return finalElements;
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
+  const handleQuickSuggestion = (query) => {
+    setInputValue(query);
+    // Usamos un pequeño timeout para que el usuario vea el texto antes de enviarse
+    setTimeout(() => {
+      const fakeEvent = { preventDefault: () => {} };
+      handleSendMessage(fakeEvent, query);
+    }, 100);
+  };
 
-    const userMessage = { role: 'user', content: inputValue };
+  const handleSendMessage = async (e, directQuery = null) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const messageText = directQuery || inputValue;
+    if (!messageText.trim()) return;
+
+    const userMessage = { role: 'user', content: messageText };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
@@ -169,29 +185,24 @@ const Chatbot = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: inputValue,
-          history: messages.slice(-10), // Limitamos a los últimos 10 mensajes
-          user: user         // Enviamos los datos del usuario si está identificado
+          message: messageText,
+          history: messages.slice(-10),
+          user: user
         }),
       });
 
       const data = await response.json();
-      
       if (data.reply) {
         setMessages((prev) => [...prev, { role: 'bot', content: data.reply }]);
-      } else {
-        throw new Error('Sin respuesta del bot');
       }
     } catch (error) {
-      console.error('Error enviando mensaje:', error);
-      setMessages((prev) => [
-        ...prev, 
-        { role: 'bot', content: 'Lo siento, ha habido un problema de conexión. ¿Puedes intentarlo más tarde?' }
-      ]);
+      console.error('Error:', error);
+      setMessages((prev) => [...prev, { role: 'bot', content: 'Error de conexión.' }]);
     } finally {
       setIsTyping(false);
     }
   };
+
 
   return (
     <div className={`chatbot-container ${isOpen ? 'open' : ''}`}>
@@ -251,7 +262,21 @@ const Chatbot = () => {
           <div ref={messagesEndRef} />
         </div>
 
+        <div className="chatbot-quick-suggestions">
+          {quickSuggestions.map((suggestion, idx) => (
+            <button 
+              key={idx} 
+              className="quick-suggestion-btn"
+              onClick={() => handleQuickSuggestion(suggestion.query)}
+              disabled={isTyping}
+            >
+              {suggestion.label}
+            </button>
+          ))}
+        </div>
+
         <form className="chatbot-input" onSubmit={handleSendMessage}>
+
           <input
             type="text"
             placeholder="Escribe un mensaje..."

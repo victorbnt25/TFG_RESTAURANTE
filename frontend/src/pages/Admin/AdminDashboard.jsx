@@ -40,6 +40,7 @@ export default function AdminDashboard() {
     cargarDatos();
   }, [periodo]);
 
+
   async function cargarDatos() {
     try {
       const [reservas, pedidos] = await Promise.all([
@@ -79,6 +80,8 @@ export default function AdminDashboard() {
           </button>
         </div>
       </div>
+
+
 
       {error && (
         <div className="dashboard-error">

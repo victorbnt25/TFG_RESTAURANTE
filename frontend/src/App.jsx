@@ -15,8 +15,10 @@ import Privacidad from "./pages/Privacidad/privacidad.jsx";
 import MisReservas from "./pages/MisReservas/misReservas.jsx";
 import ScrollToTop from "./componentes/ScrollToTop.jsx";
 import Chatbot from "./componentes/Chatbot/Chatbot.jsx";
+import CookieConsent from "./componentes/CookieConsent/CookieConsent.jsx";
 import { useData } from "./context/DataContext.jsx";
 import "./App.css";
+
 
 import AdminLayout from "./pages/Admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
@@ -76,7 +78,9 @@ function App() {
 
       {!esRutaAdmin && <Footer />}
       {!esRutaAdmin && <Chatbot />}
+      {!esRutaAdmin && <CookieConsent />}
     </div>
+
   );
 }
 
