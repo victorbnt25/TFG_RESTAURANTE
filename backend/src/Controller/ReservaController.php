@@ -276,10 +276,11 @@ class ReservaController extends AbstractController
         }
 
         if ($capacidadAcumulada < $numeroPersonas) {
-            error_log("CONFLICTO RESERVA: No hay capacidad suficiente (" . $capacidadAcumulada . "/" . $numeroPersonas . ") en zona " . ($zonaTexto ?: 'Todas') . " para " . $fechaHora->format('Y-m-d H:i'));
-            return $this->json([
-                'error' => 'No tenemos mesas disponibles para ese número de personas en el horario seleccionado'
-            ], 409);
+            $msg = $zonaEnum 
+                ? "Lo sentimos, no hay disponibilidad en la zona " . $zonaEnum->value . " para ese horario y número de personas."
+                : "Lo sentimos, no hay disponibilidad para el horario y número de personas seleccionados.";
+            
+            return $this->json(['error' => $msg], 409);
         }
 
         $reserva = new Reserva();
@@ -290,7 +291,7 @@ class ReservaController extends AbstractController
         $reserva->setFechaHoraReserva($fechaHora);
         $reserva->setNumeroPersonas($numeroPersonas);
         $reserva->setObservaciones($observaciones);
-        $reserva->setEstado(EstadoReservaEnum::PENDIENTE);
+        $reserva->setEstado(EstadoReservaEnum::CONFIRMADA);
 
         // Guardamos todo de golpe con el flush
         $em->persist($reserva);
@@ -333,6 +334,27 @@ class ReservaController extends AbstractController
         return $this->json([
             'ok' => true,
             'mensaje' => 'Reserva cancelada correctamente'
+        ]);
+    }
+
+    #[Route('/{id}/confirmar', methods: ['PUT'])]
+    public function confirmar(
+        int $id,
+        ReservaRepository $repo,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        $reserva = $repo->find($id);
+
+        if (!$reserva) {
+            return $this->json(['error' => 'Reserva no encontrada'], 404);
+        }
+
+        $reserva->setEstado(EstadoReservaEnum::CONFIRMADA);
+        $em->flush();
+
+        return $this->json([
+            'ok' => true,
+            'mensaje' => 'Reserva confirmada correctamente'
         ]);
     }
 

@@ -131,6 +131,8 @@ class PedidoController extends AbstractController
                 'total' => $pedido->getTotal(),
                 'fecha' => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
                 'mesa' => $pedido->getMesa()?->getCodigo(),
+                'zona' => $pedido->getMesa()?->getZona()?->value ?? ($pedido->getReserva()?->getMesas()->first() ? $pedido->getReserva()->getMesas()->first()->getZona()->value : 'Sin zona'),
+                'personas' => $pedido->getReserva()?->getNumeroPersonas() ?? $pedido->getMesa()?->getCapacidad() ?? 'N/A',
                 'lineas' => $lineas,
             ];
         }
@@ -209,6 +211,8 @@ class PedidoController extends AbstractController
                 'total'  => $pedido->getTotal(),
                 'fecha'  => $pedido->getCreadoEn()?->format('Y-m-d H:i'),
                 'mesa'   => $pedido->getMesa()?->getCodigo(),
+                'zona'   => $pedido->getMesa()?->getZona()?->value ?? ($pedido->getReserva()?->getMesas()->first() ? $pedido->getReserva()->getMesas()->first()->getZona()->value : 'Sin zona'),
+                'personas' => $pedido->getReserva()?->getNumeroPersonas() ?? $pedido->getMesa()?->getCapacidad() ?? 'N/A',
                 'lineas' => $lineas,
             ];
         }

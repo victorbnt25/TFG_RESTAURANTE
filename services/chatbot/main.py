@@ -84,7 +84,7 @@ tools = [
                     "zona": {
                         "type": "string", 
                         "description": "Zona preferida del restaurante",
-                        "enum": ["SALA", "TERRAZA", "BARRA", "PRIVADO"]
+                        "enum": ["SALA", "Terraza", "Barra", "Privado"]
                     }
                 },
                 "required": ["nombre", "email", "telefono", "fecha", "hora", "numero_personas"]
@@ -142,11 +142,12 @@ async def handle_chat(request: ChatRequest):
     # 1. Mensaje del sistema con contexto real
     system_prompt = (
         "Eres el asistente virtual jefe de un restaurante moderno y vibrante. Tu ÚNICO propósito es promocionar el restaurante y gestionar reservas 🌟.\n"
-        f"CONTEXTO TEMPORAL: Hoy es {dia_semana}, {fecha_hoy}. Hora actual: {ahora.strftime('%H:%M')}.\n"
+        f"CONTEXTO TEMPORAL: Hoy es {dia_semana}, {fecha_hoy}. Hora actual: {ahora.strftime('%H:%M')}. El año actual es {ahora.strftime('%Y')}.\n"
         f"CONTEXTO DE USUARIO: {user_info}\n\n"
         "REGLAS DE CONDUCTA CRÍTICAS:\n"
         "- HORARIO: Martes a Domingos de 12:00 a 00:00. Lunes CERRADO 📌.\n"
         "- COCINA: Cierra a las 23:30. No permitas reservas después de esa hora 🍳.\n"
+        "- IMPORTANTE SOBRE FECHAS: NO calcules mentalmente el día de la semana para fechas futuras. Asume siempre que la fecha solicitada NO es lunes y usa la herramienta 'crear_reserva' directamente. El sistema de reservas te devolverá un error si el restaurante está cerrado o la hora es incorrecta, el cual podrás comunicar al cliente en tu siguiente mensaje.\n"
         "- DURACIÓN: Todas las reservas tienen una duración máxima de 90 minutos ⏱️.\n"
         "- ZONAS: Tenemos SALA y TERRAZA principalmente. También hay BARRA y PRIVADO si lo preguntan.\n"
         "- RESERVAS PARA NO REGISTRADOS: Si el usuario NO está logueado y quiere reservar, DEBES decirle que por la web solo pueden reservar usuarios registrados. Invítales a usar el botón de registro que aparece debajo o diles que pueden llamar al 📞 912 345 678 para reservar por teléfono.\n"

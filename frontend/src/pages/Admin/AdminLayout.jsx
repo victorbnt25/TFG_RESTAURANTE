@@ -79,6 +79,15 @@ export default function AdminLayout() {
           </Link>
 
           <Link
+            to="/admin/reservas"
+            className={`admin-nav-link ${
+              location.pathname === "/admin/reservas" ? "active" : ""
+            }`}
+          >
+            Reservas
+          </Link>
+
+          <Link
             to="/admin/cocina"
             className={`admin-nav-link ${
               location.pathname === "/admin/cocina" ? "active" : ""

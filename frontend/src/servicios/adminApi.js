@@ -112,6 +112,12 @@ export function cancelarReservaAdmin(id) {
   });
 }
 
+export function confirmarReservaAdmin(id) {
+  return request(`/api/reservas/${id}/confirmar`, {
+    method: "PUT",
+  });
+}
+
 export function eliminarReservaAdmin(id) {
   return request(`/api/reservas/${id}`, {
     method: "DELETE",

@@ -461,10 +461,11 @@ export default function AdminPedidos() {
               <tr>
                 <th>ID</th>
                 <th>Fecha</th>
+                <th>Zona</th>
                 <th>Mesa</th>
+                <th>Personas</th>
                 <th>Total</th>
                 <th>Estado</th>
-                <th>Unidades</th>
                 <th>Productos</th>
                 <th>Acciones</th>
               </tr>
@@ -489,15 +490,20 @@ export default function AdminPedidos() {
                       <strong>#{pedido.id}</strong>
                     </td>
                     <td>{pedido.fecha}</td>
+                    <td>{pedido.zona}</td>
                     <td>{pedido.mesa || "Sin mesa"}</td>
+                    <td>{pedido.personas}</td>
                     <td>{pedido.total} €</td>
                     <td>
                       <span className={obtenerClaseEstado(pedido.estado)}>
                         {pedido.estado}
                       </span>
                     </td>
-                    <td>{totalUnidades}</td>
                     <td>
+                      <div className="pedido-resumen-inline">
+                        {pedido.lineas.map(l => `${l.cantidad}x ${l.plato}`).join(", ").substring(0, 40)}
+                        {pedido.lineas.map(l => `${l.cantidad}x ${l.plato}`).join(", ").length > 40 ? "..." : ""}
+                      </div>
                       <button
                         type="button"
                         className="btn-edit-table"
@@ -505,7 +511,7 @@ export default function AdminPedidos() {
                           setPedidoExpandido(expandido ? null : pedido.id)
                         }
                       >
-                        {expandido ? "Ocultar" : "Ver productos"}
+                        {expandido ? "Ocultar" : "Ver todo"}
                       </button>
 
                       {expandido && (

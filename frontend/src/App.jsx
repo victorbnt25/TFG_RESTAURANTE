@@ -32,6 +32,7 @@ import AdminCocina from "./pages/Admin/AdminCocina.jsx";
 import Carrito from "./pages/Carrito/carrito.jsx";
 import MisPedidos from "./pages/MisPedidos/misPedidos.jsx";
 import AdminPedidos from "./pages/Admin/AdminPedidos.jsx";
+import AdminReservas from "./pages/Admin/AdminReservas.jsx";
 
 function App() {
   const location = useLocation();
@@ -70,6 +71,7 @@ function App() {
               <Route path="cocina" element={<AdminCocina />} />
               <Route path="mesas" element={<AdminMesas />} />
               <Route path="pedidos" element={<AdminPedidos />} />
+              <Route path="reservas" element={<AdminReservas />} />
               <Route path="politica" element={<AdminPolitica />} />
             </Route>
           </Route>
