@@ -81,18 +81,37 @@ class ReservaRepository extends ServiceEntityRepository
 
     /**
      * Calcula los KPIs directamente en la base de datos usando COUNT
+     * @param string $periodo Filtro de periodo (todo, semana, mes, ano)
      * @return array
      */
-    public function getKpisDashboard(): array
+    public function getKpisDashboard(string $periodo = 'todo'): array
     {
         $inicioHoy = (new \DateTimeImmutable('today'))->setTime(0, 0, 0);
         $finHoy    = (new \DateTimeImmutable('today'))->setTime(23, 59, 59);
 
-        // Total de reservas
-        $total = $this->createQueryBuilder('r')
-            ->select('COUNT(r.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $fechaInicio = null;
+        if ($periodo === 'hoy') {
+            $fechaInicio = new \DateTimeImmutable('today 00:00:00');
+        } elseif ($periodo === 'semana') {
+            $fechaInicio = new \DateTimeImmutable('monday this week 00:00:00');
+        } elseif ($periodo === 'mes') {
+            $fechaInicio = new \DateTimeImmutable('first day of this month 00:00:00');
+        } elseif ($periodo === 'ano') {
+            $fechaInicio = new \DateTimeImmutable('first day of january this year 00:00:00');
+        }
+
+        // Helper para crear el query builder base con el filtro de fecha opcional
+        $createBaseQb = function() use ($fechaInicio) {
+            $qb = $this->createQueryBuilder('r')->select('COUNT(r.id)');
+            if ($fechaInicio) {
+                $qb->andWhere('r.fechaHoraReserva >= :inicioFiltro')
+                   ->setParameter('inicioFiltro', $fechaInicio);
+            }
+            return $qb;
+        };
+
+        // Total de reservas (filtrado por periodo)
+        $total = $createBaseQb()->getQuery()->getSingleScalarResult();
 
         // Reservas de hoy (activas)
         $hoy = $this->createQueryBuilder('r')
@@ -105,26 +124,23 @@ class ReservaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        // Pendientes (todas)
-        $pendientes = $this->createQueryBuilder('r')
-            ->select('COUNT(r.id)')
-            ->where('r.estado = :estado')
+        // Pendientes (filtradas)
+        $pendientes = $createBaseQb()
+            ->andWhere('r.estado = :estado')
             ->setParameter('estado', \App\Enum\EstadoReservaEnum::PENDIENTE)
             ->getQuery()
             ->getSingleScalarResult();
 
-        // Confirmadas (todas)
-        $confirmadas = $this->createQueryBuilder('r')
-            ->select('COUNT(r.id)')
-            ->where('r.estado = :estado')
+        // Confirmadas (filtradas)
+        $confirmadas = $createBaseQb()
+            ->andWhere('r.estado = :estado')
             ->setParameter('estado', \App\Enum\EstadoReservaEnum::CONFIRMADA)
             ->getQuery()
             ->getSingleScalarResult();
 
-        // Canceladas (todas)
-        $canceladas = $this->createQueryBuilder('r')
-            ->select('COUNT(r.id)')
-            ->where('r.estado = :estado')
+        // Canceladas (filtradas)
+        $canceladas = $createBaseQb()
+            ->andWhere('r.estado = :estado')
             ->setParameter('estado', \App\Enum\EstadoReservaEnum::CANCELADA)
             ->getQuery()
             ->getSingleScalarResult();

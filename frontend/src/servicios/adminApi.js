@@ -4,12 +4,12 @@ import { request } from "./api";
 // DASHBOARD
 // =======================
 
-export function obtenerKpisReservas() {
-  return request("/api/admin/dashboard/reservas");
+export function obtenerKpisReservas(periodo = 'todo') {
+  return request(`/api/admin/dashboard/reservas?periodo=${periodo}`);
 }
 
-export function obtenerKpisPedidos() {
-  return request("/api/admin/dashboard/pedidos");
+export function obtenerKpisPedidos(periodo = 'todo') {
+  return request(`/api/admin/dashboard/pedidos?periodo=${periodo}`);
 }
 
 // =======================

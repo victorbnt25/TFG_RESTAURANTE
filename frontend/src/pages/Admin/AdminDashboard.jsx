@@ -34,16 +34,17 @@ export default function AdminDashboard() {
   const [kpisReservas, setKpisReservas] = useState(null);
   const [kpisPedidos, setKpisPedidos]   = useState(null);
   const [error, setError]               = useState(null);
+  const [periodo, setPeriodo]           = useState("todo"); // 'todo', 'semana', 'mes', 'ano'
 
   useEffect(() => {
     cargarDatos();
-  }, []);
+  }, [periodo]);
 
   async function cargarDatos() {
     try {
       const [reservas, pedidos] = await Promise.all([
-        obtenerKpisReservas(),
-        obtenerKpisPedidos(),
+        obtenerKpisReservas(periodo),
+        obtenerKpisPedidos(periodo),
       ]);
       setKpisReservas(reservas);
       setKpisPedidos(pedidos);
@@ -60,9 +61,23 @@ export default function AdminDashboard() {
           <h2 className="admin-title-graffiti">Dashboard</h2>
           <p className="admin-subtitle-text">Resumen general del restaurante en tiempo real.</p>
         </div>
-        <button className="btn-add" onClick={cargarDatos} type="button">
-          Actualizar
-        </button>
+        <div className="admin-dashboard-actions" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <select 
+            className="admin-select" 
+            value={periodo} 
+            onChange={(e) => setPeriodo(e.target.value)}
+            style={{ padding: '8px 12px', borderRadius: '4px', background: '#111', color: '#fff', border: '1px solid #333' }}
+          >
+            <option value="todo">Desde siempre</option>
+            <option value="hoy">Hoy</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mes</option>
+            <option value="ano">Este año</option>
+          </select>
+          <button className="btn-add" onClick={cargarDatos} type="button">
+            Actualizar
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -85,7 +100,7 @@ export default function AdminDashboard() {
             <KpiCard icon={CheckCircle} label="Entregados"       value={kpisPedidos.entregados}   accent="#28a745" />
             <KpiCard icon={XCircle}     label="Cancelados"       value={kpisPedidos.cancelados}   accent="#dc3545" />
             <KpiCard icon={Euro}        label="Ingresos hoy"     value={`${kpisPedidos.ingresosHoy} €`}   accent="#ffd700" />
-            <KpiCard icon={TrendingUp}  label="Ingresos totales" value={`${kpisPedidos.ingresosTotal} €`} accent="#ffd700" />
+            <KpiCard icon={TrendingUp}  label={periodo === 'todo' ? "Ingresos totales" : "Ingresos periodo"} value={`${kpisPedidos.ingresosTotal} €`} accent="#ffd700" />
           </div>
         </section>
       )}
