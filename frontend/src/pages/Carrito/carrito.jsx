@@ -73,6 +73,7 @@ function Carrito() {
       const respuesta = await crearPedido({
         productos,
         mesa_id: Number(mesaSeleccionada),
+        email: usuario ? usuario.email : null
       });
 
       setMensajePedido(

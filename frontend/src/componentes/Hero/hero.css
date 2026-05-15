@@ -50,25 +50,29 @@
 .hero_titulo {
   font-family: 'Bebas Neue', sans-serif;
   transform: skewX(-10deg);
-  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-size: clamp(1.8rem, 4vw, 3.2rem); /* Reducido aún más */
   margin-bottom: 10px;
   color: var(--color-primary, #ffcc00);
-  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  line-height: 0.85;
 }
 
 .hero_subtitulo {
   font-family: 'Bebas Neue', sans-serif;
   transform: skewX(-10deg);
-  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-size: clamp(0.85rem, 1.5vw, 1.2rem); /* Reducido aún más */
   color: #fff;
-  max-width: 800px;
-  letter-spacing: 1px;
+  max-width: 600px;
+  letter-spacing: 0.5px;
 }
 
 @media (max-width: 768px) {
   .hero {
-    height: 60vh;
-    /* Ajusta el margen en móvil si el header cambia de tamaño */
-    margin-top: var(--header-height-mobile, 70px);
+    height: 45vh; /* Aún más corto */
+    margin-top: 0; 
+  }
+  .hero__content {
+    padding: 0 10px;
+    width: 90%;
   }
 }

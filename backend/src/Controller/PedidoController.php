@@ -38,6 +38,13 @@ class PedidoController extends AbstractController
         $pedido = new Pedido();
 
         $usuario = $this->getUser();
+        
+        // Si no hay usuario en sesión (stateless), buscamos por el email que nos mande el frontend
+        if (!$usuario && !empty($datos['email'])) {
+            $usuario = $entityManager->getRepository(\App\Entity\Usuario::class)
+                ->findOneBy(['email' => mb_strtolower(trim($datos['email']))]);
+        }
+
         if ($usuario) {
             $pedido->setUsuario($usuario);
         }

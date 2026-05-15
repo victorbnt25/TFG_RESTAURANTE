@@ -486,20 +486,20 @@ export default function AdminPedidos() {
                     key={pedido.id}
                     className={esNuevo ? "fila-pedido-nuevo" : ""}
                   >
-                    <td>
+                    <td data-label="ID">
                       <strong>#{pedido.id}</strong>
                     </td>
-                    <td>{pedido.fecha}</td>
-                    <td>{pedido.zona}</td>
-                    <td>{pedido.mesa || "Sin mesa"}</td>
-                    <td>{pedido.personas}</td>
-                    <td>{pedido.total} €</td>
-                    <td>
+                    <td data-label="FECHA">{pedido.fecha}</td>
+                    <td data-label="ZONA">{pedido.zona}</td>
+                    <td data-label="MESA">{pedido.mesa || "Sin mesa"}</td>
+                    <td data-label="PERSONAS">{pedido.personas}</td>
+                    <td data-label="TOTAL">{pedido.total} €</td>
+                    <td data-label="ESTADO">
                       <span className={obtenerClaseEstado(pedido.estado)}>
                         {pedido.estado}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="PRODUCTOS">
                       <div className="pedido-resumen-inline">
                         {pedido.lineas.map(l => `${l.cantidad}x ${l.plato}`).join(", ").substring(0, 40)}
                         {pedido.lineas.map(l => `${l.cantidad}x ${l.plato}`).join(", ").length > 40 ? "..." : ""}
@@ -527,7 +527,7 @@ export default function AdminPedidos() {
                         </div>
                       )}
                     </td>
-                    <td>
+                    <td data-label="ACCIONES">
                       <div className="pedido-acciones">
                         {pedido.estado === "PENDIENTE" && (
                           <>

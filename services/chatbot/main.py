@@ -127,7 +127,11 @@ async def handle_chat(request: ChatRequest):
     # Obtener fecha y hora actual para el contexto
     ahora = datetime.now()
     fecha_hoy = ahora.strftime("%Y-%m-%d")
-    dia_semana = ahora.strftime("%A") # Podrías traducirlo si quieres
+    dias_es = {
+        "Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles",
+        "Thursday": "Jueves", "Friday": "Viernes", "Saturday": "Sábado", "Sunday": "Domingo"
+    }
+    dia_semana_es = dias_es.get(ahora.strftime("%A"), ahora.strftime("%A"))
 
     # Determinar estado de login y datos de usuario
     user_info = ""
@@ -137,17 +141,18 @@ async def handle_chat(request: ChatRequest):
         tel_user = request.user.get("telefono", "")
         user_info = f"El usuario está LOGUEADO como '{nombre_user}' ({email_user}) Tel: {tel_user}. Puedes usar estos datos para reservas automáticamente sin preguntar. NUNCA pidas el nombre, email o teléfono si ya los tienes arriba."
     else:
-        user_info = "El usuario NO está logueado. IMPORTANTE: Las reservas están PROHIBIDAS. Si el usuario intenta reservar, dile amablemente que debe iniciar sesión o registrarse primero."
+        user_info = "El usuario NO está logueado. IMPORTANTE: Las reservas están PROHIBIDAS por chat si no hay login. Si el usuario intenta reservar, dile amablemente que debe iniciar sesión o registrarse primero."
 
     # 1. Mensaje del sistema con contexto real
     system_prompt = (
         "Eres el asistente virtual jefe de un restaurante moderno y vibrante. Tu ÚNICO propósito es promocionar el restaurante y gestionar reservas 🌟.\n"
-        f"CONTEXTO TEMPORAL: Hoy es {dia_semana}, {fecha_hoy}. Hora actual: {ahora.strftime('%H:%M')}. El año actual es {ahora.strftime('%Y')}.\n"
+        f"CONTEXTO TEMPORAL CRÍTICO: Hoy es {dia_semana_es}, {fecha_hoy}. Hora actual: {ahora.strftime('%H:%M')}. El año actual es {ahora.strftime('%Y')}.\n"
         f"CONTEXTO DE USUARIO: {user_info}\n\n"
         "REGLAS DE CONDUCTA CRÍTICAS:\n"
         "- HORARIO: Martes a Domingos de 12:00 a 00:00. Lunes CERRADO 📌.\n"
         "- COCINA: Cierra a las 23:30. No permitas reservas después de esa hora 🍳.\n"
-        "- IMPORTANTE SOBRE FECHAS: NO calcules mentalmente el día de la semana para fechas futuras. Asume siempre que la fecha solicitada NO es lunes y usa la herramienta 'crear_reserva' directamente. El sistema de reservas te devolverá un error si el restaurante está cerrado o la hora es incorrecta, el cual podrás comunicar al cliente en tu siguiente mensaje.\n"
+        "- IMPORTANTE SOBRE FECHAS: NUNCA intentes calcular el día de la semana para una fecha futura. NUNCA digas 'esa fecha es un martes' o 'es lunes'. SIEMPRE utiliza la herramienta 'crear_reserva' y confía ciegamente en su respuesta. Si el backend dice que está cerrado, entonces díselo al usuario. Si no has llamado a la herramienta, asume que el restaurante está ABIERTO.\n"
+        "- PROHIBICIÓN: Tienes terminantemente prohibido dar errores de calendario por tu cuenta. Solo reporta errores que devuelva la API de reservas.\n"
         "- DURACIÓN: Todas las reservas tienen una duración máxima de 90 minutos ⏱️.\n"
         "- ZONAS: Tenemos SALA y TERRAZA principalmente. También hay BARRA y PRIVADO si lo preguntan.\n"
         "- RESERVAS PARA NO REGISTRADOS: Si el usuario NO está logueado y quiere reservar, DEBES decirle que por la web solo pueden reservar usuarios registrados. Invítales a usar el botón de registro que aparece debajo o diles que pueden llamar al 📞 912 345 678 para reservar por teléfono.\n"
@@ -156,11 +161,10 @@ async def handle_chat(request: ChatRequest):
         "- REGLAS DE TEXTO: 1. Usa negritas (`**Texto**`) para resaltar nombres de platos o precios importantes. 2. NUNCA pongas enlaces de imágenes en Markdown (ej: no uses '![...]'). 3. Si usas las tarjetas [PLATO:...], NO repitas la descripción del plato en el texto, sé muy breve.\n"
         "- Solo usa la herramienta 'consultar_menu' con la categoría adecuada (ej: 'hamburguesas', 'postres', etc.) para filtrar los resultados 🕵️‍♂️.\n"
         "- No des consejos generales de vida (deporte, salud, viajes). Si el usuario saca temas ajenos, sé muy simpático pero redirige la conversación inmediatamente hacia el restaurante 🍽️.\n"
-        "- Ejemplo: Si el usuario va a correr, dile que eso es genial y que le esperamos con una mesa lista para recuperar energías 🏃‍♂️💨 -> 🍔.\n"
         "- Sé proactivo: cada mensaje debe invitar a ver el menú o a reservar una mesa.\n"
         "- Usa emojis en cada frase para mantener la energía alta ✨.\n"
         "- NO uses Markdown complejo.\n"
-        "- FORMATO DE PLATOS: Cuando menciones platos específicos que existen en la base de datos, DEBES añadir al final de tu mensaje o entre párrafos el tag especial: `[PLATO:{\"id\":1, \"nombre\":\"Nombre\", \"precio\":\"10.50\", \"foto_url\":\"/uploads/foto.jpg\", \"descripcion\":\"...\"}]`. Hazlo para cada plato relevante que encuentres. Esto permitirá que el usuario los vea como tarjetas visuales 🍔📸.\n\n"
+        "- FORMATO DE PLATOS: Cuando menciones platos específicos que existen en la base de datos, DEBES añadir al final de tu mensaje o entre párrafos el tag especial: `[PLATO:{\"id\":1, \"nombre\":\"Nombre\", \"precio\":\"10.50\", \"foto_url\":\"/uploads/foto.jpg\", \"descripcion\":\"...\"}]`.\n\n"
         "REGLAS DE NEGOCIO:\n"
         "- Usa 'consultar_menu' para platos reales de la DB.\n"
         "- Usa 'crear_reserva' SOLO si el usuario está logueado.\n"
@@ -190,7 +194,8 @@ async def handle_chat(request: ChatRequest):
             model="gpt-4o-mini",
             messages=openai_messages,
             tools=tools,
-            tool_choice="auto"
+            tool_choice="auto",
+            temperature=0
         )
 
         response_message = response.choices[0].message
@@ -233,7 +238,8 @@ async def handle_chat(request: ChatRequest):
             # 4. Segunda llamada a OpenAI
             final_response = client.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=openai_messages
+                messages=openai_messages,
+                temperature=0
             )
             return {"reply": final_response.choices[0].message.content}
 

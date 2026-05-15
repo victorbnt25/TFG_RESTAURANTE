@@ -28,10 +28,6 @@ const Chatbot = () => {
   const navigate = useNavigate();
   const { agregarAlCarrito } = useCarrito();
 
-  // Obtenemos el usuario actual
-  const user = JSON.parse(sessionStorage.getItem("usuario") || "null");
-
-  // Feedback visual al añadir al carrito
   const mostrarToast = (texto) => {
     setToast(texto);
     setTimeout(() => setToast(''), 2500);
@@ -47,13 +43,8 @@ const Chatbot = () => {
     mostrarToast(`✅ ${plato.nombre} añadido al carrito`);
   };
 
-  // Auto-scroll al final de los mensajes
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   const renderMessageContent = (content) => {
@@ -73,66 +64,41 @@ const Chatbot = () => {
       }
       lastIndex = platoRegex.lastIndex;
     }
-
     if (lastIndex < content.length) {
       parts.push({ type: 'text', value: content.substring(lastIndex) });
     }
 
-    // Función para procesar negritas (**texto**) e imágenes (![alt](url))
     const parseMarkdown = (text) => {
-      const parts = [];
-      let lastIndex = 0;
-      const combinedRegex = /!\[([^\]]*)\]\((.*?)\)|\*\*(.*?)\*\*/g;
-      let match;
-
-      while ((match = combinedRegex.exec(text)) !== null) {
-        if (match.index > lastIndex) {
-          parts.push(text.substring(lastIndex, match.index));
-        }
-        if (match[1] !== undefined) {
-          // Es imagen
-          const alt = match[1];
-          const url = match[2].startsWith('http') ? match[2] : `http://localhost:8000${match[2]}`;
-          parts.push(
-            <img 
-              key={match.index} 
-              src={url} 
-              alt={alt} 
-              style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '10px', display: 'block' }} 
-            />
-          );
-        } else if (match[3] !== undefined) {
-          // Es negrita
-          parts.push(<strong key={match.index}>{match[3]}</strong>);
-        }
-        lastIndex = combinedRegex.lastIndex;
+      const result = [];
+      let li = 0;
+      const re = /\*\*(.*?)\*\*/g;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        if (m.index > li) result.push(text.substring(li, m.index));
+        result.push(<strong key={m.index}>{m[1]}</strong>);
+        li = re.lastIndex;
       }
-
-      if (lastIndex < text.length) {
-        parts.push(text.substring(lastIndex));
-      }
-
-      return parts;
+      if (li < text.length) result.push(text.substring(li));
+      return result;
     };
 
-    // Agrupamos las partes para renderizar texto y luego el carrusel de platos
     const finalElements = [];
     let cardGroup = [];
 
     parts.forEach((part, i) => {
       if (part.type === 'text') {
         if (cardGroup.length > 0) {
-          finalElements.push(<div key={`group-${i}`} className="platos-carousel">{cardGroup}</div>);
+          finalElements.push(<div key={`g-${i}`} className="platos-carousel">{cardGroup}</div>);
           cardGroup = [];
         }
         finalElements.push(
-          <div key={i} className="text-content">
-            {parseMarkdown(part.value)}
-          </div>
+          <div key={i} className="text-content">{parseMarkdown(part.value)}</div>
         );
       } else {
         const plato = part.value;
-        const imgUrl = plato.foto_url ? `http://localhost:8000${plato.foto_url}` : 'https://via.placeholder.com/300x200?text=Comida';
+        const imgUrl = plato.foto_url
+          ? `http://localhost:8000${plato.foto_url}`
+          : 'https://via.placeholder.com/300x200?text=Comida';
         cardGroup.push(
           <div key={i} className="plato-card-mini">
             <div className="plato-card-image-container">
@@ -142,10 +108,7 @@ const Chatbot = () => {
               <h4 className="plato-name">{plato.nombre}</h4>
               <p className="plato-price">{plato.precio}€</p>
               <p className="plato-desc-mini">{plato.descripcion}</p>
-              <button
-                className="btn-chatbot-anadir"
-                onClick={() => handleAnadirAlCarrito(plato)}
-              >
+              <button className="btn-chatbot-anadir" onClick={() => handleAnadirAlCarrito(plato)}>
                 + Añadir al carrito
               </button>
             </div>
@@ -155,19 +118,9 @@ const Chatbot = () => {
     });
 
     if (cardGroup.length > 0) {
-      finalElements.push(<div key="group-final" className="platos-carousel">{cardGroup}</div>);
+      finalElements.push(<div key="gf" className="platos-carousel">{cardGroup}</div>);
     }
-
     return finalElements;
-  };
-
-  const handleQuickSuggestion = (query) => {
-    setInputValue(query);
-    // Usamos un pequeño timeout para que el usuario vea el texto antes de enviarse
-    setTimeout(() => {
-      const fakeEvent = { preventDefault: () => {} };
-      handleSendMessage(fakeEvent, query);
-    }, 100);
   };
 
   const handleSendMessage = async (e, directQuery = null) => {
@@ -175,54 +128,53 @@ const Chatbot = () => {
     const messageText = directQuery || inputValue;
     if (!messageText.trim()) return;
 
-    const userMessage = { role: 'user', content: messageText };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, { role: 'user', content: messageText }]);
     setInputValue('');
     setIsTyping(true);
-    
+
+    const currentUser = JSON.parse(sessionStorage.getItem('usuario') || 'null');
+
     try {
       const response = await fetch('http://localhost:5000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          message: messageText,
-          history: messages.slice(-10),
-          user: user
-        }),
+        body: JSON.stringify({ message: messageText, history: messages.slice(-10), user: currentUser }),
       });
-
       const data = await response.json();
       if (data.reply) {
-        setMessages((prev) => [...prev, { role: 'bot', content: data.reply }]);
+        setMessages(prev => [...prev, { role: 'bot', content: data.reply }]);
       }
     } catch (error) {
-      console.error('Error:', error);
-      setMessages((prev) => [...prev, { role: 'bot', content: 'Error de conexión.' }]);
+      setMessages(prev => [...prev, { role: 'bot', content: 'Error de conexión.' }]);
     } finally {
       setIsTyping(false);
     }
   };
 
+  const handleQuickSuggestion = (query) => {
+    setInputValue(query);
+    setTimeout(() => {
+      handleSendMessage({ preventDefault: () => {} }, query);
+    }, 100);
+  };
+
+  const currentUser = JSON.parse(sessionStorage.getItem('usuario') || 'null');
 
   return (
     <div className={`chatbot-container ${isOpen ? 'open' : ''}`}>
-      {/* Toast de notificación */}
-      {toast && (
-        <div className="chatbot-toast">
-          {toast}
-        </div>
-      )}
+      {toast && <div className="chatbot-toast">{toast}</div>}
 
-      {/* Burbuja flotante */}
-      <button className="chatbot-bubble" onClick={() => setIsOpen(!isOpen)}>
+      <button className="chatbot-bubble" onClick={() => setIsOpen(o => !o)}>
         {isOpen ? '✕' : '💬'}
       </button>
 
-      {/* Ventana de Chat */}
       <div className="chatbot-window">
         <div className="chatbot-header">
-          <h3>Asistente Virtual</h3>
-          <p>Restaurante en línea</p>
+          <div>
+            <h3>Asistente Virtual</h3>
+            <p>Restaurante en línea</p>
+          </div>
+          <button className="chatbot-close-btn" onClick={() => setIsOpen(false)}>✕</button>
         </div>
 
         <div className="chatbot-messages">
@@ -230,23 +182,13 @@ const Chatbot = () => {
             <div key={index} className={`message-wrapper ${msg.role}`}>
               <div className="message-bubble">
                 {renderMessageContent(msg.content)}
-                
-                {/* Botones de acción solo en el último mensaje del bot */}
                 {msg.role === 'bot' && index === messages.length - 1 && (
                   <div className="bot-actions">
-                    <Link to="/carta" className="btn-chatbot-action outline">
-                      Ver Carta 📖
-                    </Link>
-                    
-                    {user ? (
-                      <Link to="/reservas" className="btn-chatbot-action">
-                        Hacer Reserva 📅
-                      </Link>
-                    ) : (
-                      <Link to="/registrarse" className="btn-chatbot-action">
-                        Registrarme para Reservar 🔐
-                      </Link>
-                    )}
+                    <Link to="/carta" className="btn-chatbot-action outline">Ver Carta 📖</Link>
+                    {currentUser
+                      ? <Link to="/reservas" className="btn-chatbot-action">Hacer Reserva 📅</Link>
+                      : <Link to="/registrarse" className="btn-chatbot-action">Registrarme 🔐</Link>
+                    }
                   </div>
                 )}
               </div>
@@ -263,29 +205,22 @@ const Chatbot = () => {
         </div>
 
         <div className="chatbot-quick-suggestions">
-          {quickSuggestions.map((suggestion, idx) => (
-            <button 
-              key={idx} 
-              className="quick-suggestion-btn"
-              onClick={() => handleQuickSuggestion(suggestion.query)}
-              disabled={isTyping}
-            >
-              {suggestion.label}
+          {quickSuggestions.map((s, idx) => (
+            <button key={idx} className="quick-suggestion-btn"
+              onClick={() => handleQuickSuggestion(s.query)} disabled={isTyping}>
+              {s.label}
             </button>
           ))}
         </div>
 
         <form className="chatbot-input" onSubmit={handleSendMessage}>
-
           <input
             type="text"
             placeholder="Escribe un mensaje..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
-          <button type="submit" disabled={isTyping}>
-            ➤
-          </button>
+          <button type="submit" disabled={isTyping}>➤</button>
         </form>
       </div>
     </div>

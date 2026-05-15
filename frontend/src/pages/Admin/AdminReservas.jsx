@@ -258,27 +258,27 @@ export default function AdminReservas() {
                     color: pasada ? '#888' : 'inherit'
                   }}
                 >
-                  <td><strong>#{r.id}</strong></td>
-                  <td>
+                  <td data-label="ID"><strong>#{r.id}</strong></td>
+                  <td data-label="CLIENTE">
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span>{r.nombre}</span>
                       <small style={{ color: '#888', fontSize: '0.7rem' }}>{r.email}</small>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="FECHA Y HORA">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Calendar size={14} color={pasada ? "#666" : "var(--color-primary)"} />
                       {r.fechaHoraReserva}
                     </div>
                   </td>
-                  <td>{r.numeroPersonas}</td>
-                  <td>
+                  <td data-label="PERSONAS">{r.numeroPersonas}</td>
+                  <td data-label="ZONA / MESA">
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span className={`badge ${r.zona.toLowerCase()}`} style={pasada ? { filter: 'grayscale(1) brightness(0.7)' } : {}}>{r.zona}</span>
                       <small style={{ color: '#aaa', marginTop: '2px' }}>Mesa: {r.mesa || '---'}</small>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="ESTADO">
                     <span 
                       className={`badge-estado ${pasada ? '' : (r.estado === 'CONFIRMADA' ? 'badge-servido' : r.estado === 'PENDIENTE' ? 'badge-abierto' : 'badge-cancelado')}`}
                       style={pasada ? { background: '#444', color: '#999' } : {}}
@@ -286,7 +286,7 @@ export default function AdminReservas() {
                       {pasada ? "PASADA" : r.estado}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="ACCIONES">
                     <div className="pedido-acciones">
                       {!pasada && (
                         <>

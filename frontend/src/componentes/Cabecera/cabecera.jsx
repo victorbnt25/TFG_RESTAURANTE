@@ -48,21 +48,21 @@ function Cabecera() {
       </div>
 
       <nav className={`menu-principal ${menuOpen ? "activo" : ""}`}>
-        <Link to="/">Inicio</Link>
-        <Link to="/carta">Carta</Link>
-        <Link to="/reservas">Reservas</Link>
+        <Link to="/" onClick={() => setMenuOpen(false)}>Inicio</Link>
+        <Link to="/carta" onClick={() => setMenuOpen(false)}>Carta</Link>
+        <Link to="/reservas" onClick={() => setMenuOpen(false)}>Reservas</Link>
         {usuario && (
-          <Link to="/mis-reservas" className="enlace-mis-reservas">
+          <Link to="/mis-reservas" className="enlace-mis-reservas" onClick={() => setMenuOpen(false)}>
             Mis Reservas
           </Link>
         )}
-        <Link to="/contacto">Contacto</Link>
+        <Link to="/contacto" onClick={() => setMenuOpen(false)}>Contacto</Link>
         {usuario && (
-          <Link to="/mis-pedidos">Mis pedidos</Link>
+          <Link to="/mis-pedidos" onClick={() => setMenuOpen(false)}>Mis pedidos</Link>
         )}
 
         {usuario && usuario.rol === "ADMIN" && (
-          <Link to="/admin" className="enlace-admin">
+          <Link to="/admin" className="enlace-admin" onClick={() => setMenuOpen(false)}>
             Panel Admin
           </Link>
         )}

@@ -44,45 +44,46 @@ function App() {
   }
 
   return (
-    <div className="layout">
-      <ScrollToTop />
-      {!esRutaAdmin && <Cabecera />}
+    <>
+      <div className="layout">
+        <ScrollToTop />
+        {!esRutaAdmin && <Cabecera />}
 
-      <main className={esRutaAdmin ? "" : "contenido"}>
-        <Routes>
-          <Route path="/" element={<><Hero /><Inicio /></>} />
-          <Route path="/carta" element={<Carta />} />
-          <Route path="/reservas" element={<Reservas />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/nosotros" element={<Nosotros />} />
-          <Route path="/registrarse" element={<Registrarse />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/carrito" element={<Carrito />} />
-          <Route path="/privacidad" element={<Privacidad />} />
-          <Route path="/mis-reservas" element={<MisReservas />} />
-          <Route path="/mis-pedidos" element={<MisPedidos />} />
+        <main className={esRutaAdmin ? "" : "contenido"}>
+          <Routes>
+            <Route path="/" element={<><Hero /><Inicio /></>} />
+            <Route path="/carta" element={<Carta />} />
+            <Route path="/reservas" element={<Reservas />} />
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/nosotros" element={<Nosotros />} />
+            <Route path="/registrarse" element={<Registrarse />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/carrito" element={<Carrito />} />
+            <Route path="/privacidad" element={<Privacidad />} />
+            <Route path="/mis-reservas" element={<MisReservas />} />
+            <Route path="/mis-pedidos" element={<MisPedidos />} />
 
-          <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
 
-          <Route element={<RutaProtegida />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="platos" element={<AdminPlatos />} />
-              <Route path="cocina" element={<AdminCocina />} />
-              <Route path="mesas" element={<AdminMesas />} />
-              <Route path="pedidos" element={<AdminPedidos />} />
-              <Route path="reservas" element={<AdminReservas />} />
-              <Route path="politica" element={<AdminPolitica />} />
+            <Route element={<RutaProtegida />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="platos" element={<AdminPlatos />} />
+                <Route path="cocina" element={<AdminCocina />} />
+                <Route path="mesas" element={<AdminMesas />} />
+                <Route path="pedidos" element={<AdminPedidos />} />
+                <Route path="reservas" element={<AdminReservas />} />
+                <Route path="politica" element={<AdminPolitica />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-      </main>
+          </Routes>
+        </main>
 
-      {!esRutaAdmin && <Footer />}
-      {!esRutaAdmin && <Chatbot />}
-      {!esRutaAdmin && <CookieConsent />}
-    </div>
-
+        {!esRutaAdmin && <Footer />}
+        {!esRutaAdmin && <Chatbot />}
+        <CookieConsent />
+      </div>
+    </>
   );
 }
 

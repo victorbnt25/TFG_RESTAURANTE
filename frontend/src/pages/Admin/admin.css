@@ -1008,6 +1008,143 @@
   }
 }
 
+/* ==========================================================================
+   MOBILE RESPONSIVE SYSTEM (FULL OVERHAUL)
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 80px;
+    min-width: 80px;
+    padding: 20px 10px;
+    align-items: center;
+  }
+  
+  .admin-nav-link span {
+    display: none;
+  }
+  
+  .admin-nav-link {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    font-size: 1.5rem;
+  }
+  
+  .admin-content {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+  
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    min-width: 100%;
+    position: relative;
+    padding: 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    overflow-x: auto;
+  }
+  
+  .admin-nav {
+    flex-direction: row;
+    margin-top: 0;
+    gap: 8px;
+  }
+  
+  .admin-nav-link {
+    padding: 8px 12px;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  
+  .admin-content {
+    padding: 15px;
+  }
+  
+  .admin-title {
+    font-size: 1.8rem;
+  }
+  
+  .admin-kpis-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  /* Convert tables to cards on very small screens */
+  .admin-table thead {
+    display: none;
+  }
+  
+  .admin-table, .admin-table tbody, .admin-table tr, .admin-table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .admin-table tr {
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px;
+  }
+  
+  .admin-table td {
+    border-bottom: 1px solid #222;
+    padding: 12px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+    border-right: none;
+  }
+  
+  .admin-table td:last-child {
+    border-bottom: none;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .admin-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    text-align: left;
+  }
+  
+  .admin-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filtros-container {
+    flex-wrap: wrap;
+  }
+  
+  .admin-busqueda-box {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-kpis-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-title {
+    font-size: 1.5rem;
+  }
+}
+
 /* ZONA DE COCINA */
 
 .admin-cocina-page {
@@ -1015,6 +1152,7 @@
   flex-direction: column;
   gap: 22px;
 }
+
 
 .admin-cocina-header {
   display: flex;
